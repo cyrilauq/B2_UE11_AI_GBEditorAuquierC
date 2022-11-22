@@ -7,9 +7,6 @@ import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.factory.ISBNFactory;
 import org.helmo.gbeditor.infrastructures.JsonRepository;
 import org.helmo.gbeditor.repositories.DataRepository;
-import org.helmo.gbeditor.repositories.FileUtils;
-
-import java.nio.file.Paths;
 
 /**
  * Cette classe s'occupe de la logique qui se cache derrière les actions de la vue CreateBookView.
@@ -39,17 +36,17 @@ public class ModifyBookPresenter extends Presenter {
         this.session = session;
     }
 
-    private Book getBookFor(final BookMetadata bookMetadata, String authorMatricul, final String filePath) {
-        if(filePath == null || filePath.isBlank()) {
-            return Book.of(bookMetadata, authorMatricul);
-        }
-        return Book.of(bookMetadata, authorMatricul,
-                FileUtils.copyFile(filePath,
-                        Paths.get(System.getProperty("user.home"), "ue36", "e200106").toAbsolutePath().toString(),
-                        bookMetadata.getIsbn()
-                )
-        );
-    }
+//    private Book getBookFor(final BookMetadata bookMetadata, String authorMatricul, final String filePath) {
+//        if(filePath == null || filePath.isBlank()) {
+//            return Book.of(bookMetadata, authorMatricul);
+//        }
+//        return Book.of(bookMetadata, authorMatricul,
+//                FileUtils.copyFile(filePath,
+//                        Paths.get(System.getProperty("user.home"), "ue36", "e200106").toAbsolutePath().toString(),
+//                        bookMetadata.getIsbn()
+//                )
+//        );
+//    }
 
     /**
      * Crée un nouveau livre à partir d'un titre, un code ISBN et un résumé donné.
@@ -58,6 +55,7 @@ public class ModifyBookPresenter extends Presenter {
      * @param title     Titre du livre.
      * @param isbn      Code ISBN du livre.
      * @param resume    Résumé du livre.
+     * @param filePath  Chemin d'accès de l'image de couverture.
      */
     public void modifyBook(final String title, final String isbn, final String resume, final String filePath) {
         try {

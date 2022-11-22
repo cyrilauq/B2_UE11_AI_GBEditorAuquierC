@@ -7,6 +7,9 @@ import org.helmo.gbeditor.repositories.DataRepository;
 
 import java.util.List;
 
+/**
+ * Gérer ce qui va être affiché à l'écran utilisateur et comment le programme va réagir aux évènements lancés par sa vue.
+ */
 public class CreatePagePresenter extends Presenter {
 
     private CreatePageInterface view;
@@ -16,10 +19,10 @@ public class CreatePagePresenter extends Presenter {
     private Page currentPage;
     private Book currentBook;
 
-    private final String BEGIN_OPTION = "Au début du livre";
-    private final String END_OPTION = "A la fin du livre";
-    private final String AFTER_PAGE_OPTION = "Après une page";
-    private final List<String> ADD_OPTION = List.of(BEGIN_OPTION, END_OPTION, AFTER_PAGE_OPTION);
+    private static final String BEGIN_OPTION = "Au début du livre";
+    private static final String END_OPTION = "A la fin du livre";
+    private static final String AFTER_PAGE_OPTION = "Après une page";
+    private static final List<String> ADD_OPTION = List.of(BEGIN_OPTION, END_OPTION, AFTER_PAGE_OPTION);
 
     public CreatePagePresenter(final Session session, final DataRepository repo) {
         this.session = session;
@@ -72,14 +75,28 @@ public class CreatePagePresenter extends Presenter {
         view.goTo("HomeView");
     }
 
+    /**
+     * Définit la vue avec laquelle le presenter va interagir.
+     *
+     * @param view  Vue avec laquelle interagir.
+     */
     public void setView(final CreatePageInterface view) {
         this.view = view;
     }
 
+    /**
+     * Réagit à l'évènement créé nouveau choix et affiche le formulaire de création de choix.
+     */
     public void onNotifyNewChoice() {
         view.showChoiceForm();
     }
 
+    /**
+     * Réagit à l'évènement créé nouveau choix et crée un nouveau choix ayant pour libéllé celui donné et comme page de destination celle donnée.
+     *
+     * @param choice            Libellé du choix à créer.
+     * @param contentCiblePage  Contenu de la page cible du choix à créer
+     */
     public void onNotifyNewChoice(final String choice, final String contentCiblePage) {
         if(choice == null || choice.isEmpty()) {
             view.setMessage("L'intitulé d'un choix ne peut pas être vide.");
@@ -91,6 +108,9 @@ public class CreatePagePresenter extends Presenter {
         }
     }
 
+    /**
+     * Affiche les choix disponibles à l'utilisateur.
+     */
     public void onShowChoices() {
         view.showChoiceForm();
         var book = repo.searchBookFor(session.getCurrentIsbn());

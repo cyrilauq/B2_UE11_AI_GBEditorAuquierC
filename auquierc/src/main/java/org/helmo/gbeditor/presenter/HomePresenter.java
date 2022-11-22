@@ -46,6 +46,11 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
         }
     }
 
+    /**
+     * Définit la vue avec laquelle le presenter va interagir.
+     *
+     * @param view  Vue avec laquelle interagir.
+     */
     public void setView(final HomeInterface view) {
         this.view = view;
     }
@@ -81,6 +86,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
      *
      * @param isbn  ISBN du livre à afficher.
      */
+    @Override
     public void displayDetailsFor(final String isbn) {
         var found = repo.searchBookFor(isbn);
         if(found != null) {
@@ -154,13 +160,18 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
         refresh();
     }
 
+    /**
+     * Réagit à l'évènement de modification de page ayant le contenu donné et rédirige l'utilsateur vers las vue de modification de page..
+     * Le page sera modifiable si et seulement si le choix est non null et non vide.
+     *
+     * @param pageContent   Contenu de la nouvelle page.
+     */
     public void onModifyPage(final String pageContent) {
         if(pageContent == null || pageContent.isEmpty()) {
             return;
         }
         session.setCurrentPageContent(pageContent);
-        // TODO : Créer la vue ModifyPageVue (pour pouvoir modifier une page)
-//        view.showPopUp("ModifyPageView");
+        view.goTo("ModifyPageView");
     }
 
     @Override

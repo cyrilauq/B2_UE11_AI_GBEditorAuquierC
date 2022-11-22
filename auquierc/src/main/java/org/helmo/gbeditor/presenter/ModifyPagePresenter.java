@@ -1,6 +1,5 @@
 package org.helmo.gbeditor.presenter;
 
-
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.Page;
 import org.helmo.gbeditor.domains.Session;
@@ -11,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Gérer ce qui va être affiché à l'écran utilisateur et comment le programme va réagir au évènement lancés par sa vue.
+ */
 public class ModifyPagePresenter extends Presenter implements PageViewHandler {
 
     private ModifyPageInterface view;
@@ -19,15 +21,33 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler {
     private Book currentBook;
     private Page currentPage;
 
+    /**
+     * Crée un nouveau ModifyPagePresenter avec une session et un DataRepository donné.
+     *
+     * @param session   Session courante sur laquelle on travaille actuellement.
+     * @param repo      Repository qui permet d'interagir avec la ressource choisie.
+     */
     public ModifyPagePresenter(final Session session, final DataRepository repo) {
         this.session = session;
         this.repo = repo;
     }
 
+    /**
+     * Définit la vue avec laquelle le presenter va interagir.
+     *
+     * @param view  Vue avec laquelle le presenter interagit.
+     */
     public void setView(final ModifyPageInterface view) {
         this.view = view;
     }
 
+    /**
+     * Crée un nouveau choix avec comme libellé le label donnée et comme cible la page donnée.
+     * Si aucune pas n'est trouvée pour le contenu donné, on ne fait rien.
+     *
+     * @param label         Libellé du choix à créer.
+     * @param targetContent Contenu de la page cible.
+     */
     public void onChoiceCreated(final String label, final String targetContent) {
         var target = currentBook.getPageFor(targetContent);
         if(target != null) {
@@ -80,12 +100,11 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler {
 
     @Override
     public void onEdit(String content) {
-        System.err.println("On edit clicked for page " + content);
+
     }
 
     @Override
     public void onConfirmedDelete(String content) {
-        System.err.println("On confirmed delete clicked for page " + content);
         currentPage.removeChoice(content);
     }
 }

@@ -2,9 +2,10 @@ package org.helmo.gbeditor.presenter;
 
 import org.helmo.gbeditor.modeles.ListChoiceItem;
 
-import java.util.Iterator;
-import java.util.List;
-
+/**
+ * Définit les méthodes qui seront implémentées par la vue et qui permettront au presenter d'interagir avec elle.
+ * Ces méthodes seront utiles pour la modification de pages.
+ */
 public interface ModifyPageInterface extends ViewInterface {
 
     /**

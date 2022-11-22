@@ -1,5 +1,8 @@
 package org.helmo.gbeditor.presenter;
 
+/**
+ * Définit les méthodes qui seront exposées pour pouvoir interagir avec une ListItemPageView.
+ */
 public interface PageViewHandler {
 
     /**

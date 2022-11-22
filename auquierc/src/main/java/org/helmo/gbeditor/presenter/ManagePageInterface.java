@@ -1,5 +1,9 @@
 package org.helmo.gbeditor.presenter;
 
+/**
+ * Définit les méthodes qui seront implémentées par la vue et qui permettront au presenter d'interagir avec elle.
+ * Ces méthodes seront utiles pour la gestion de pages.
+ */
 public interface ManagePageInterface extends ViewInterface {
 
     /**
