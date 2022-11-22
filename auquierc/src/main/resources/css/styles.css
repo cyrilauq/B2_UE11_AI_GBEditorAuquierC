@@ -1,0 +1,27 @@
+.title {
+    -fx-font-family: "Comic Sans MS",sans-serif;
+    -fx-font-size: 25;
+    -fx-alignment: CENTER;
+    -fx-padding: 20px, 50px, 20px, 50px;
+}
+
+.author-lbl {
+    -fx-alignment: TOP-RIGHT;
+}
+
+.content-root {
+}
+
+.popup {
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 5px;
+    -fx-padding: 3px;
+}
+
+.error {
+    -fx-text-fill: #b80b0b;
+    -fx-font-weight: bolder;
+}
