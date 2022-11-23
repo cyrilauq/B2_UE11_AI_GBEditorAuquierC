@@ -1,9 +1,6 @@
 package org.helmo.gbeditor.infrastructures;
 
-import org.helmo.gbeditor.domains.Book;
-import org.helmo.gbeditor.domains.BookMetadata;
-import org.helmo.gbeditor.domains.Page;
-import org.helmo.gbeditor.domains.Session;
+import org.helmo.gbeditor.domains.*;
 import org.helmo.gbeditor.infrastructures.exception.UnableToConnectException;
 import org.helmo.gbeditor.infrastructures.exception.UnableToTearDownException;
 import org.junit.jupiter.api.*;
@@ -104,7 +101,7 @@ public class BDRepositoryTests {
         repo.add(book1, book2);
         book1.addBegin(new Page("Hello"));
         repo.save(book1);
-        repo.remove(book2.getIsbn());
+        repo.remove(book2.get(BookFieldName.ISBN));
         assertIterableEquals(List.of(book1), repo.getBooks());
         assertIterableEquals(book1, repo.getBooks().get(0));
     }
@@ -121,7 +118,7 @@ public class BDRepositoryTests {
                 "200106", "fileName.png"
         );
         repo.add(book1, book2);
-        repo.remove(book2.getIsbn());
+        repo.remove(book2.get(BookFieldName.ISBN));
         assertIterableEquals(List.of(book1), repo.getBooks());
         repo.add(book2);
         assertIterableEquals(List.of(book1, book2), repo.getBooks());
@@ -138,7 +135,7 @@ public class BDRepositoryTests {
                 "200106", "fileName.png"
         );
         repo.add(book1, book2);
-        repo.remove(book2.getIsbn());
+        repo.remove(book2.get(BookFieldName.ISBN));
         book2 = Book.of(
                 new BookMetadata("Title Book V2","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
@@ -164,7 +161,7 @@ public class BDRepositoryTests {
         book2.addBegin(page1);
         book2.addEnd(page2);
         repo.add(book1, book2);
-        repo.remove(book2.getIsbn());
+        repo.remove(book2.get(BookFieldName.ISBN));
         book2 = Book.of(
                 new BookMetadata("Title Book V2","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
@@ -188,7 +185,7 @@ public class BDRepositoryTests {
         book1.addEnd(page1);
         book1.addEnd(page2);
         repo.add(book1, book2);
-        repo.remove(book2.getIsbn());
+        repo.remove(book2.get(BookFieldName.ISBN));
         book2 = Book.of(
                 new BookMetadata("Title Book V2","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
@@ -217,7 +214,7 @@ public class BDRepositoryTests {
         book2.addBegin(page1);
         book2.addEnd(page2);
         repo.add(book1, book2);
-        repo.remove(book2.getIsbn());
+        repo.remove(book2.get(BookFieldName.ISBN));
         book2 = Book.of(
                 new BookMetadata("Title Book V2","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
@@ -263,7 +260,7 @@ public class BDRepositoryTests {
         repo.save(book1);
         var result = repo.getBooks();
         assertIterableEquals(List.of(book1), result);
-        assertEquals(currentDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")), result.get(0).getPublishDate().format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")));
+        assertEquals(currentDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")), result.get(0).get(BookFieldName.PUBLISH_DATE));
     }
 
     @Test

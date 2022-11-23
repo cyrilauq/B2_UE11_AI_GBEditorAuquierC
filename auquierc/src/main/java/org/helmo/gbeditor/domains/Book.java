@@ -1,9 +1,6 @@
 package org.helmo.gbeditor.domains;
 
-import org.helmo.gbeditor.infrastructures.jdbc.ConnectionFailedException;
-
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -14,7 +11,6 @@ import java.util.*;
 public class Book implements Iterable<Page> {
 
     private final BookMetadata data;
-    private LocalDateTime datePublication;
     private String imgPath;
 
     private final List<Page> pagesList = new LinkedList<>();
@@ -41,6 +37,8 @@ public class Book implements Iterable<Page> {
     private void setIsbn(final String isbn) {
         data.setIsbn(isbn);
     }
+
+    public String get(final BookFieldName attribute) { return data.get(attribute); }
 
     /**
      * Publie le livre en lui donnant comme date et heure de publication celles de l'instant présent.
@@ -144,65 +142,9 @@ public class Book implements Iterable<Page> {
         this(bookMetadata, "");
     }
 
-    /**
-     * Ajoute une nouvelle page au livre si celle-ci n'est pas nulle.
-     *
-     * @param page  Page à ajouter au livre.
-     */
-    public void addPage(final Page page) {
-        if(page == null) { return; }
-        pagesList.add(page);
-    }
-
-    /**
-     * Trouve et retourne la première page du livre.
-     *
-     * @return  La première page du livre ou null si le livre ne contient aucune page.
-     */
-    public Page findFirstPage() {
-        return pagesList.isEmpty() ? null : pagesList.get(0);
-    }
-
-    /**
-     * Trouve et retourne la dernière page du livre.
-     *
-     * @return  La dernière page du livre ou null si le livre ne contient aucune page.
-     */
-    public Page findLastPage() {
-        return pagesList.get(pagesList.size() - 1);
-    }
-
     public String getImgPath() {
         return imgPath;
     }
-
-    /**
-     * Récupère le titre du livre.
-     *
-     * @return  Le titre du livre.
-     */
-    public String getTitle() { return data.getTitle(); }
-
-    /**
-     * Récupère le résumé du livre.
-     *
-     * @return  Le résumé du livre.
-     */
-    public String getResume() { return data.getSummary(); }
-
-    /**
-     * Récupère l'auteur du livre.
-     *
-     * @return  L'auteur du livre.
-     */
-    public String getAuthor() { return data.getAuthor(); }
-
-    /**
-     * Récupère l'ISBN du livre.
-     *
-     * @return  L'ISBN du livre.
-     */
-    public String getIsbn() { return data.getIsbn(); }
 
     /**
      * Crée un livre sur base des informations données et vérifie que ces données soient correctes et cohérentes.
@@ -275,6 +217,17 @@ public class Book implements Iterable<Page> {
      */
     public boolean hasIsbn(final String isbn) {
         return data.getIsbn().replace("-", "").equals(isbn.replace("-", ""));
+    }
+
+    public boolean pageIsATarget(final Page page) {
+        for(final var p : this) {
+            for(final var c : p) {
+                if(p.getPageForChoice(c).equals(page)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

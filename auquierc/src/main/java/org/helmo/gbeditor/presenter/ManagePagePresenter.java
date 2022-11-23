@@ -54,7 +54,7 @@ public class ManagePagePresenter extends Presenter implements PageViewHandler {
     private void refresh() {
         view.clearPages();
         currentBook = session.getCurrentBook();
-        currentBook.forEach(p -> view.addPage(currentBook.getNForPage(p), p.getContent()));
+        currentBook.forEach(p -> view.addPage(currentBook.getNForPage(p), p.getContent(), !currentBook.pageIsATarget(p)));
     }
 
     @Override

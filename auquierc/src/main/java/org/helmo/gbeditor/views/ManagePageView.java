@@ -47,8 +47,8 @@ public class ManagePageView extends View implements ManagePageInterface {
     }
 
     @Override
-    public void addPage(int numPage, String content) {
-        allPages.getChildren().add(new ListItemPageView(numPage, content, presenter));
+    public void addPage(final int numPage, final String content, final boolean isAlone) {
+        allPages.getChildren().add(new ListItemPageView(numPage, content, isAlone, presenter));
     }
 
     @Override

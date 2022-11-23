@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Wed Nov 23 08:33:59 CET 2022:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0184-a368-6581-00000d8658c0 
+Wed Nov 23 14:10:18 CET 2022:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0184-a49c-4c55-00000d7727e0 
 on database directory C:\Users\cyril\B2UE11\AI\GBEditorAuquierC\auquierc\Test with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@512ddf17 
 Loaded from file:/C:/Users/cyril/.gradle/caches/modules-2/files-2.1/org.apache.derby/derby/10.14.2.0/7efad40ef52fbb1f08142f07a83b42d29e47d8ce/derby-10.14.2.0.jar
 java.vendor=Eclipse Adoptium
@@ -11,7 +11,7 @@ os.arch=amd64
 os.version=10.0
 derby.system.home=null
 Database Class Loader started - derby.database.classpath=''
-Wed Nov 23 08:34:15 CET 2022 Thread[Test worker,5,main] Cleanup action starting
+Wed Nov 23 14:10:31 CET 2022 Thread[Test worker,5,main] Cleanup action starting
 java.sql.SQLException: Database 'Tests' not found.
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(Unknown Source)
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(Unknown Source)
@@ -31,11 +31,11 @@ java.sql.SQLException: Database 'Tests' not found.
 	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:228)
 	at org.helmo.gbeditor.infrastructures.RepositoryFactory.of(RepositoryFactory.java:72)
 	at org.helmo.gbeditor.infrastructures.RepositoryFactory.of(RepositoryFactory.java:104)
-	at org.helmo.gbeditor.infrastructures.BDRepositoryTests.lambda$createBDRepositoryWrongParamsValuesThrowUnableToConnectException$1(BDRepositoryTests.java:67)
+	at org.helmo.gbeditor.infrastructures.BDRepositoryTests.lambda$createBDRepositoryWrongParamsValuesThrowUnableToConnectException$1(BDRepositoryTests.java:64)
 	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:55)
 	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:37)
 	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3007)
-	at org.helmo.gbeditor.infrastructures.BDRepositoryTests.createBDRepositoryWrongParamsValuesThrowUnableToConnectException(BDRepositoryTests.java:66)
+	at org.helmo.gbeditor.infrastructures.BDRepositoryTests.createBDRepositoryWrongParamsValuesThrowUnableToConnectException(BDRepositoryTests.java:63)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -152,11 +152,11 @@ ERROR XJ004: Database 'Tests' not found.
 	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:228)
 	at org.helmo.gbeditor.infrastructures.RepositoryFactory.of(RepositoryFactory.java:72)
 	at org.helmo.gbeditor.infrastructures.RepositoryFactory.of(RepositoryFactory.java:104)
-	at org.helmo.gbeditor.infrastructures.BDRepositoryTests.lambda$createBDRepositoryWrongParamsValuesThrowUnableToConnectException$1(BDRepositoryTests.java:67)
+	at org.helmo.gbeditor.infrastructures.BDRepositoryTests.lambda$createBDRepositoryWrongParamsValuesThrowUnableToConnectException$1(BDRepositoryTests.java:64)
 	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:55)
 	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:37)
 	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3007)
-	at org.helmo.gbeditor.infrastructures.BDRepositoryTests.createBDRepositoryWrongParamsValuesThrowUnableToConnectException(BDRepositoryTests.java:66)
+	at org.helmo.gbeditor.infrastructures.BDRepositoryTests.createBDRepositoryWrongParamsValuesThrowUnableToConnectException(BDRepositoryTests.java:63)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)

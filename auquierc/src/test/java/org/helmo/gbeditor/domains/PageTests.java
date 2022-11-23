@@ -60,7 +60,7 @@ public class PageTests {
     @Test
     void whenAddChoiceAndTheTargetIsTheCurrentPageThenThrowException() {
         p1 = new Page("Page 1");
-        assertThrows(IllegalArgumentException.class, () -> p1.addChoice("Choice 1", p1));
+        assertThrows(Page.TheTargetPageCannotBeTheSourcePage.class, () -> p1.addChoice("Choice 1", p1));
     }
 
     @Test

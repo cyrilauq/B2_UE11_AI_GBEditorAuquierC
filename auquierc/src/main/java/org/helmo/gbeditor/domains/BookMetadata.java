@@ -1,6 +1,7 @@
 package org.helmo.gbeditor.domains;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Cette classe permet de stocker les informations générales d'un livre: titre, auteur, isbn et résumé.
@@ -47,6 +48,34 @@ public class BookMetadata {
 
     public String getTitle() {
         return title;
+    }
+
+    /**
+     * Récupère la valeur de l'attribut recherché.
+     *
+     * @param attribute     Attribut recherché.
+     *
+     * @return              La valeur de l'attribut recherché.
+     *
+     * @throws FieldNotFoundException si l'attribut recherché n'existe pas.
+     */
+    public String get(final BookFieldName attribute) {
+        switch (attribute) {
+            case TITLE:
+                return title;
+            case AUTHOR:
+                return author;
+            case SUMMARY:
+                return summary;
+            case ISBN:
+                return isbn.forUser();
+            case SYS_ISBN:
+                return isbn.toString();
+            case PUBLISH_DATE:
+                return publishDate == null ? null : publishDate.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm"));
+            default:
+                throw new FieldNotFoundException("Le champ chercher n'a pas été trouvé.");
+        }
     }
 
     public LocalDateTime getPublishDate() { return publishDate; }
@@ -100,5 +129,13 @@ public class BookMetadata {
                 ", summary='" + summary + '\'' +
                 ", author='" + author + '\'' +
                 '}';
+    }
+
+    public static class FieldNotFoundException extends RuntimeException {
+
+        public FieldNotFoundException(final String message) {
+            super(message);
+        }
+
     }
 }

@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.helmo.gbeditor.domains.Book;
+import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
+import org.helmo.gbeditor.infrastructures.exception.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.DataRepository;
 
 import java.io.BufferedReader;
@@ -49,7 +51,7 @@ public class JsonRepository implements DataRepository {
         loadBooks();
         final List<Book> result = new ArrayList<>();
         books.forEach(b -> {
-            if(b.getAuthor().equalsIgnoreCase(currentAuthor)) {
+            if(b.get(BookFieldName.AUTHOR).equalsIgnoreCase(currentAuthor)) {
                 result.add(b);
             }
         });
@@ -154,7 +156,7 @@ public class JsonRepository implements DataRepository {
 
     private void addDtoInBooks(final Book book, List<BookDTO> existingBooks) {
         for(final var b : existingBooks) {
-            if(b.getIsbn().equalsIgnoreCase(book.getIsbn())) {
+            if(b.getIsbn().equalsIgnoreCase(book.get(BookFieldName.ISBN))) {
                 existingBooks.remove(b);
                 existingBooks.add(Mapping.convertToBookDTO(book));
                 break;
@@ -189,18 +191,5 @@ public class JsonRepository implements DataRepository {
         private FileException(final String message, final IOException ex) {
             super(message, ex);
         }
-    }
-
-    /**
-     * Définit une erreur qui sera lancée lorsqu'un livre qu'on veut ajouter existe déjà.
-     */
-    public class BookAlreadyExistsException extends RuntimeException {
-
-        /**
-         * Crée une nouvelle erreur de type BookAlreadyExistsException
-         *
-         * @param msg   Message à donner à l'erreur.
-         */
-        public BookAlreadyExistsException(final String msg) { super(msg); }
     }
 }

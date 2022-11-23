@@ -23,22 +23,22 @@ public class BookTests {
 
     @Test
     void aBookKnowHisRealIsbn() {
-        assertEquals("2-200106-05-10", book.getIsbn());
+        assertEquals("2-200106-05-10", book.get(BookFieldName.SYS_ISBN));
     }
 
     @Test
     void aBookKnowHisTitle() {
-        assertEquals("Title", book.getTitle());
+        assertEquals("Title", book.get(BookFieldName.TITLE));
     }
 
     @Test
     void aBookKnowHiResume() {
-        assertEquals("Un test", book.getResume());
+        assertEquals("Un test", book.get(BookFieldName.SUMMARY));
     }
 
     @Test
     void aBookKnowHiAuthor() {
-        assertEquals("You", book.getAuthor());
+        assertEquals("You", book.get(BookFieldName.AUTHOR));
     }
 
     @Test
@@ -167,9 +167,6 @@ public class BookTests {
         var page3 = new Page("Troisième");
         page1.setChoices(Map.of("Retour", page2));
         page2.setChoices(Map.of("Retour", page3));
-        List<Page> pages = new ArrayList<>(List.of(
-                page2, page3, page1
-        ));
         var book = new Book(new BookMetadata("kmlkmlk","2-200106-05-X", "Un test", "You"));
 
         book.addBegin(page1);

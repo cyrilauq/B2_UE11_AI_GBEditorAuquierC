@@ -10,6 +10,8 @@ import org.helmo.gbeditor.presenter.ModifyPageInterface;
 import org.helmo.gbeditor.presenter.ModifyPagePresenter;
 import org.helmo.gbeditor.presenter.ViewName;
 
+import java.util.Collection;
+
 public class ModifyPageView extends View implements ModifyPageInterface {
     private final ModifyPagePresenter presenter;
 
@@ -36,6 +38,8 @@ public class ModifyPageView extends View implements ModifyPageInterface {
 
     private final ComboBox<String> addOptions = new ComboBox<>();
 
+    private final ComboBox<ListItemPageView> pagePositionChoice = new ComboBox<>();
+
     private final FlowPane optionPnl = new FlowPane(); {
         optionPnl.getChildren().addAll(new Label("Où ajouter la page?"), addOptions);
     }
@@ -50,7 +54,7 @@ public class ModifyPageView extends View implements ModifyPageInterface {
 
     private final Button showChoicesBtn = new Button("Ajouter un choix");
 
-    private final FlowPane choiceForm = new FlowPane(); {
+    private final VBox choiceForm = new VBox(); {
         choiceForm.getChildren().addAll(
                 new Label("Nouveau choix"),
                 new VBox(new Label("Intitulé: "), choiceContent),
@@ -79,7 +83,7 @@ public class ModifyPageView extends View implements ModifyPageInterface {
     }
 
     private void notifyOnChoiceCreated() {
-        presenter.onChoiceCreated(choiceContent.getText(), choiceTarget.getSelectionModel().getSelectedItem().getItemContent());
+        presenter.onChoiceCreated(choiceContent.getText(), choiceTarget.getSelectionModel().getSelectedItem() == null ? null :  choiceTarget.getSelectionModel().getSelectedItem().getItemContent());
     }
 
     private void notifyOnHomePressed() {
@@ -100,7 +104,7 @@ public class ModifyPageView extends View implements ModifyPageInterface {
     public void setChoices(Iterable<ListChoiceItem> choices) {
         this.choices.getChildren().clear();
         for (final var c : choices) {
-            this.choices.getChildren().add(new ListItemPageView(c.getNumPage(), c.getContent(), presenter));
+            this.choices.getChildren().add(new ChoiceView(c.getLabel(), c.getNumPage(), c.getContent(), presenter));
         }
     }
 
@@ -110,5 +114,15 @@ public class ModifyPageView extends View implements ModifyPageInterface {
         for(final var c : choices) {
             this.choiceTarget.getItems().add(new ListItemPageView(c.getNumPage(), c.getContent()));
         }
+    }
+
+    @Override
+    public void setMoveOptions(Collection<String> addOptions, String selectedOption) {
+
+    }
+
+    @Override
+    public void showMoveTarget(boolean show) {
+        pagePositionChoice.setVisible(show);
     }
 }

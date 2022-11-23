@@ -24,9 +24,11 @@ public class ListItemPageView extends VBox {
 
     private final Label contentLbl = new Label();
 
-    public ListItemPageView(final int numPage, final String content, final PageViewHandler handler) {
+    public ListItemPageView(final int numPage, final String content, final boolean isAlone, final PageViewHandler handler) {
         editBtn.setOnAction(a -> handler.onEdit(content));
 
+        confirmDelete.setContentText(isAlone ? "Voulez-vous vraiment supprimer cette page ?":
+                "Cette page est la cible de choix.\nÊtes-vous sûr de vouloir la supprimer.");
         contentLbl.setText(content);
         editBtn.setOnAction(e -> handler.onEdit(content));
         deleteBtn.setOnAction(e -> {

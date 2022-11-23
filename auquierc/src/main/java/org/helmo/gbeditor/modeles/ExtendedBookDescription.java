@@ -98,4 +98,12 @@ public class ExtendedBookDescription {
         ExtendedBookDescription that = (ExtendedBookDescription) o;
         return littleBookDescription.equals(that.littleBookDescription) && this.resume.equals(that.resume);
     }
+
+    @Override
+    public String toString() {
+        return "ExtendedBookDescription{" +
+                "resume='" + resume + '\'' +
+                ", littleBookDescription=" + littleBookDescription +
+                '}';
+    }
 }

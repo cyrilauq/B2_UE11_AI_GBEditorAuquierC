@@ -3,6 +3,7 @@ package org.helmo.gbeditor.presenter;
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.Page;
 import org.helmo.gbeditor.domains.Session;
+import org.helmo.gbeditor.infrastructures.exception.UnableToSavePageException;
 import org.helmo.gbeditor.modeles.ListChoiceItem;
 import org.helmo.gbeditor.repositories.DataRepository;
 
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Gérer ce qui va être affiché à l'écran utilisateur et comment le programme va réagir au évènement lancés par sa vue.
  */
-public class ModifyPagePresenter extends Presenter implements PageViewHandler {
+public class ModifyPagePresenter extends Presenter implements PageViewHandler, ChoiceViewHandler {
 
     private ModifyPageInterface view;
     private final Session session;
@@ -55,10 +56,14 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler {
                 currentPage.addChoice(label, target);
                 repo.save(currentBook);
                 view.setMessage("Le choix a bien été ajouté.", TypeMessage.MESSAGE);
+                refresh();
             } catch (Page.TheTargetPageCannotBeTheSourcePage e) {
                 view.setMessage("La page cible du choix ne peut pas être la même que la page de destination.", TypeMessage.MESSAGE);
             }
+        } else {
+            view.setMessage("Vous ne pouvez pas ajouter de choix sans spécifier de page de destination.", TypeMessage.MESSAGE);
         }
+        // TODO : Avertir utilisateur si page est la cible de choix.
     }
 
     @Override
@@ -72,6 +77,7 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler {
     }
 
     private void refresh() {
+        // TODO : Faut-il
         setCurrentInfos();
         view.setPageContent(currentPage.getContent());
         setChoices();
@@ -92,8 +98,7 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler {
 
     private void setChoices() {
         List<ListChoiceItem> choices = new ArrayList<>();
-        AtomicInteger i = new AtomicInteger(1);
-        currentPage.forEach(p -> choices.add(new ListChoiceItem(i.getAndIncrement(), currentPage.getPageForChoice(p).getContent())));
+        currentPage.forEach(p -> choices.add(new ListChoiceItem(p, currentBook.getNForPage(currentPage.getPageForChoice(p)), p)));
         view.setChoices(choices);
     }
 
@@ -109,6 +114,12 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler {
 
     @Override
     public void onConfirmedDelete(String content) {
-        currentPage.removeChoice(content);
+        try {
+            currentPage.removeChoice(content);
+            repo.save(currentBook);
+            refresh();
+        } catch (UnableToSavePageException e) {
+            view.setMessage("Une erreur est survenue lors de la suppression du choix", TypeMessage.MESSAGE);
+        }
     }
 }

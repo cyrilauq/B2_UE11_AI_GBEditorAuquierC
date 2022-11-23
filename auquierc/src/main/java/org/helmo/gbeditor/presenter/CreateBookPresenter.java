@@ -5,9 +5,8 @@ import org.helmo.gbeditor.domains.BookMetadata;
 import org.helmo.gbeditor.domains.ISBN;
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.factory.ISBNFactory;
-import org.helmo.gbeditor.infrastructures.RepositoryFactory;
+import org.helmo.gbeditor.infrastructures.exception.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.DataRepository;
-import org.helmo.gbeditor.infrastructures.JsonRepository;
 import org.helmo.gbeditor.repositories.FileUtils;
 
 import java.nio.file.Paths;
@@ -64,7 +63,7 @@ public class CreateBookPresenter extends Presenter {
                             (lastBookN = getLastBookNumber()) + 1).forUser());
             setMessage("Le livre a bien été créé.");
             view.refreshAll(ViewName.CREATE_BOOK_VIEW);
-        } catch (JsonRepository.BookAlreadyExistsException | Book.WrongFormattedBookException | ISBN.WrongFormattedISBNException e) {
+        } catch (BookAlreadyExistsException | Book.WrongFormattedBookException | ISBN.WrongFormattedISBNException e) {
             setMessage(e.getMessage());
         }
     }

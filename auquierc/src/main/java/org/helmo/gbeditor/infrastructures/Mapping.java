@@ -1,6 +1,7 @@
 package org.helmo.gbeditor.infrastructures;
 
 import org.helmo.gbeditor.domains.Book;
+import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.domains.BookMetadata;
 import org.helmo.gbeditor.domains.Page;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
@@ -122,10 +123,10 @@ public class Mapping {
      */
     public static BookDTO convertToBookDTO(Book b) {
         return new BookDTO(
-                b.getTitle(),
-                b.getIsbn(),
-                b.getAuthor(),
-                b.getResume(),
+                b.get(BookFieldName.TITLE),
+                b.get(BookFieldName.ISBN),
+                b.get(BookFieldName.AUTHOR),
+                b.get(BookFieldName.SUMMARY),
                 b.getImgPath(),
                 BookDTO.CURRENT_VERSION,
                 convertPages(b.iterator()),

@@ -1,11 +1,8 @@
 package org.helmo.gbeditor.presenter;
 
-import org.helmo.gbeditor.domains.Book;
-import org.helmo.gbeditor.domains.BookMetadata;
-import org.helmo.gbeditor.domains.ISBN;
-import org.helmo.gbeditor.domains.Session;
+import org.helmo.gbeditor.domains.*;
 import org.helmo.gbeditor.factory.ISBNFactory;
-import org.helmo.gbeditor.infrastructures.JsonRepository;
+import org.helmo.gbeditor.infrastructures.exception.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.DataRepository;
 
 /**
@@ -71,7 +68,7 @@ public class ModifyBookPresenter extends Presenter {
                             (lastBookN = getLastBookNumber()) + 1).forUser());
             setMessage("Le livre a bien été modifié.");
             view.refreshAll(ViewName.MODIFY_BOOK_VIEW);
-        } catch (JsonRepository.BookAlreadyExistsException | Book.WrongFormattedBookException | ISBN.WrongFormattedISBNException e) {
+        } catch (BookAlreadyExistsException | Book.WrongFormattedBookException | ISBN.WrongFormattedISBNException e) {
             setMessage(e.getMessage());
         }
     }
@@ -91,10 +88,10 @@ public class ModifyBookPresenter extends Presenter {
         lastBookN = getLastBookNumber();
         setView(view);
         view.setAuthorName(session.getAuthor());
-        view.setIsbn(currentBook.getIsbn());
-        view.setTitle(currentBook.getTitle());
+        view.setIsbn(currentBook.get(BookFieldName.ISBN));
+        view.setTitle(currentBook.get(BookFieldName.TITLE));
         view.setImg(currentBook.getImgPath());
-        view.setResume(currentBook.getResume());
+        view.setResume(currentBook.get(BookFieldName.SUMMARY));
     }
 
     private int getLastBookNumber() {

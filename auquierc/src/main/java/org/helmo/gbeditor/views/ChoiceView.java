@@ -1,25 +1,27 @@
 package org.helmo.gbeditor.views;
 
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import org.helmo.gbeditor.presenter.ChoiceViewHandler;
 
-public class ChoiceView extends Pane {
-
-    private final ListItemPageView pageView;
+public class ChoiceView extends HBox {
 
     private final Label choiceLbl = new Label();
 
-    public ChoiceView(final String choice, final int numPage, final String target) {
-        choiceLbl.setText(choice);
-        getChildren().addAll(choiceLbl, pageView = new ListItemPageView(numPage, target));
-    }
+    private final Button deleteBtn = new Button("Supprimer");
 
-    public String getContent() {
-        return choiceLbl.getText();
+    public ChoiceView(final String choice, final int numPage, final String target, final ChoiceViewHandler handler) {
+        choiceLbl.setText(choice);
+        deleteBtn.setOnAction(a -> handler.onConfirmedDelete(choice));
+        getChildren().addAll(new VBox(choiceLbl, new Label("Aller en page " + numPage + ": " + target)), deleteBtn);
     }
 
     public String getChoice() {
-        return pageView.getItemContent();
+        return choiceLbl.getText();
     }
 
 }

@@ -11,7 +11,7 @@ public class LittleBookDescription {
     private final String imgPath;
     private final String author;
     private final String isbn;
-    private LocalDateTime publishDate;
+    private String publishDate;
 
     /**
      * Créer une nouvelle LittleBookDescription ==> description non détaillée d'un livre.
@@ -37,7 +37,7 @@ public class LittleBookDescription {
      * @param isbn      ISBN du livre
      * @param author    Auteur du livre
      */
-    public LittleBookDescription(final String title, final String imgPath, final String isbn, final String author, final LocalDateTime publishDate) {
+    public LittleBookDescription(final String title, final String imgPath, final String isbn, final String author, final String publishDate) {
         this(title, imgPath, isbn, author);
         this.publishDate = publishDate;
     }
@@ -47,7 +47,7 @@ public class LittleBookDescription {
     }
 
     public String getPublishDate() {
-        return publishDate == null ? "Non publié" : "Le " + publishDate.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm"));
+        return publishDate == null ? "Non publié" : "Le " + publishDate;
     }
 
     public boolean canBePublished() {
@@ -86,5 +86,16 @@ public class LittleBookDescription {
         }
         LittleBookDescription that = (LittleBookDescription) o;
         return title.equals(that.title) && imgPath.equals(that.imgPath) && author.equals(that.author) && isbn.equals(that.isbn);
+    }
+
+    @Override
+    public String toString() {
+        return "LittleBookDescription{" +
+                "title='" + title + '\'' +
+                ", imgPath='" + imgPath + '\'' +
+                ", author='" + author + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", publishDate='" + publishDate + '\'' +
+                '}';
     }
 }

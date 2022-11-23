@@ -1,6 +1,7 @@
 package org.helmo.gbeditor.infrastructures;
 
 import org.helmo.gbeditor.domains.Book;
+import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
@@ -11,7 +12,6 @@ import org.helmo.gbeditor.repositories.DataRepository;
 
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.helmo.gbeditor.infrastructures.jdbc.SQLInstructions.*;
 
@@ -89,12 +89,24 @@ public class BDRepository implements DataRepository {
         this.author = author;
     }
 
+    private boolean containsBook(final String isbn) {
+        try(PreparedStatement stmt = factory.newConnection().prepareStatement(SELECT_ID_BOOK_STMT)) {
+            stmt.setString(1, isbn);
+            return stmt.executeQuery().next();
+        } catch (SQLException e) {
+            return true;
+        }
+    }
+
     @Override
     public void add(final Book... books) {
         // TODO : Enlever la transaction ou l'utiliser correctement
         if(books != null) {
             List.of(books).forEach(b -> {
                 var dto = Mapping.convertToBookDTO(b);
+                if(containsBook(dto.getIsbn())) {
+                    throw new BookAlreadyExistsException("The books already exists.");
+                }
                 Transaction
                         .from(factory.newConnection())
                         .commit((con) -> {
@@ -209,6 +221,8 @@ public class BDRepository implements DataRepository {
             saveStmt.setString(4, dto.getImgPath());
             saveStmt.setString(5, dto.getAuthor());
             saveStmt.executeUpdate();
+
+            // TODO : avant d'ajouter un livre vérifier que l'iSBN n'est pas déjà pris et lancé une exception si c'est le cas.
 
             Transaction
                     .from(factory.newConnection())
@@ -459,7 +473,7 @@ public class BDRepository implements DataRepository {
     @Override
     public Book searchBookFor(String isbn) {
         for (final var b : allBooks) {
-            if(b.getIsbn().equalsIgnoreCase(isbn)) {
+            if(b.get(BookFieldName.ISBN).equalsIgnoreCase(isbn)) {
                 return b;
             }
         }

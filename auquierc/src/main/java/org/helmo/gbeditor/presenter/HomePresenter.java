@@ -1,6 +1,7 @@
 package org.helmo.gbeditor.presenter;
 
 import org.helmo.gbeditor.domains.Book;
+import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.infrastructures.exception.UnableToOpenResourceException;
 import org.helmo.gbeditor.modeles.ExtendedBookDescription;
@@ -72,12 +73,12 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
         if(books.size() > 0) {
             for(int i = currentPage * MAX_BOOKS_PAGE; i < ((currentPage + 1) * MAX_BOOKS_PAGE) && i < books.size(); i++) {
                 var b = books.get(i);
-                var title = b.getTitle().length() > 15 ? b.getTitle().substring(0, 15) + "..." : b.getTitle();
+                var title = b.get(BookFieldName.TITLE).length() > 15 ? b.get(BookFieldName.TITLE).substring(0, 15) + "..." : b.get(BookFieldName.TITLE);
                 view.addBook(new LittleBookDescription(title,
-                        b.getImgPath(), b.getIsbn(), b.getAuthor(),
-                        b.getPublishDate()));
+                        b.getImgPath(), b.get(BookFieldName.ISBN), b.get(BookFieldName.AUTHOR),
+                        b.get(BookFieldName.PUBLISH_DATE)));
             }
-            displayDetailsFor(books.get(currentPage * MAX_BOOKS_PAGE).getIsbn());
+            displayDetailsFor(books.get(currentPage * MAX_BOOKS_PAGE).get(BookFieldName.ISBN));
         } else {
             view.setMessage("Vous n'avez pas encore créé de livre.", TypeMessage.MESSAGE);
         }
@@ -94,19 +95,27 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
         if(found != null) {
             session.setCurrentBook(currentBook = found);
             session.setCurrentIsbn(isbn);
-            view.setDetails(new ExtendedBookDescription(
-                    new LittleBookDescription(
-                            found.getTitle(),
-                            found.getImgPath(),
-                            found.getIsbn(),
-                            found.getAuthor(),
-                            found.getPublishDate()),
-                    found.getResume()
-            ));
+            view.setDetails(getExtendedBookDescriptionFor(found));
             found.forEach(p -> {
                 view.addAvailablePages(found.getNPageFor(p), p.getContent());
             });
         }
+    }
+
+    private static ExtendedBookDescription getExtendedBookDescriptionFor(Book found) {
+        return new ExtendedBookDescription(
+                getLittleBookDescriptionFor(found),
+                found.get(BookFieldName.SUMMARY)
+        );
+    }
+
+    private static LittleBookDescription getLittleBookDescriptionFor(Book found) {
+        return new LittleBookDescription(
+                found.get(BookFieldName.TITLE),
+                found.getImgPath(),
+                found.get(BookFieldName.ISBN),
+                found.get(BookFieldName.AUTHOR),
+                found.get(BookFieldName.PUBLISH_DATE));
     }
 
     /**
