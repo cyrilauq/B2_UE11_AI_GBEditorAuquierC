@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Tue Nov 22 09:54:24 CET 2022:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0184-9e8b-a948-00000d803a40 
+Wed Nov 23 08:33:59 CET 2022:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0184-a368-6581-00000d8658c0 
 on database directory C:\Users\cyril\B2UE11\AI\GBEditorAuquierC\auquierc\Test with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@512ddf17 
 Loaded from file:/C:/Users/cyril/.gradle/caches/modules-2/files-2.1/org.apache.derby/derby/10.14.2.0/7efad40ef52fbb1f08142f07a83b42d29e47d8ce/derby-10.14.2.0.jar
 java.vendor=Eclipse Adoptium
@@ -11,7 +11,7 @@ os.arch=amd64
 os.version=10.0
 derby.system.home=null
 Database Class Loader started - derby.database.classpath=''
-Tue Nov 22 09:54:34 CET 2022 Thread[Test worker,5,main] Cleanup action starting
+Wed Nov 23 08:34:15 CET 2022 Thread[Test worker,5,main] Cleanup action starting
 java.sql.SQLException: Database 'Tests' not found.
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(Unknown Source)
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(Unknown Source)

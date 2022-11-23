@@ -52,7 +52,7 @@ public class Program extends Application {
                 new ModifyBookView(ViewName.MODIFY_BOOK_VIEW, new ModifyBookPresenter(session, repo)),
                 new HomeView(ViewName.HOME_VIEW, new HomePresenter(session, repo)),
                 new CreatePageView(ViewName.CREATE_PAGE_VIEW, new CreatePagePresenter(session, repo)),
-                new ManagePageView(ViewName.MANAGA_PAGE_VIEW, new ManagePagePresenter(session, repo)),
+                new ManagePageView(ViewName.MANAGE_PAGE_VIEW, new ManagePagePresenter(session, repo)),
                 new ModifyPageView(ViewName.MODIFY_PAGE_VIEW, new ModifyPagePresenter(session, repo))
         );
     }

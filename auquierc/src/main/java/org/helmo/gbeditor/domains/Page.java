@@ -58,7 +58,7 @@ public class Page implements Iterable<String>, Comparable<Page> {
      */
     public void addChoice(final String choice, final Page target) {
         if(target == this) {
-            throw new IllegalArgumentException("Une page ne peut pas être liée à elle-même.");
+            throw new TheTargetPageCannotBeTheSourcePage("Une page ne peut pas être liée à elle-même.");
         }
         if(choice != null && !choice.isEmpty() && target != null) {
             choices.put(choice, target);
@@ -122,5 +122,13 @@ public class Page implements Iterable<String>, Comparable<Page> {
     @Override
     public int compareTo(Page o) {
         return getContent().compareTo(o.content);
+    }
+
+    public static class TheTargetPageCannotBeTheSourcePage extends RuntimeException {
+
+        public TheTargetPageCannotBeTheSourcePage(final String message) {
+            super(message);
+        }
+
     }
 }

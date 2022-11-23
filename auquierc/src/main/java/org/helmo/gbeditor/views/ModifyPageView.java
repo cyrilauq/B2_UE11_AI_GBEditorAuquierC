@@ -10,12 +10,10 @@ import org.helmo.gbeditor.presenter.ModifyPageInterface;
 import org.helmo.gbeditor.presenter.ModifyPagePresenter;
 import org.helmo.gbeditor.presenter.ViewName;
 
-import java.util.ArrayList;
-
 public class ModifyPageView extends View implements ModifyPageInterface {
     private final ModifyPagePresenter presenter;
 
-    private final HeaderView header = new HeaderView("Modification de page", "Home"); {
+    private final HeaderView header = new HeaderView("Modification de page", "Retour"); {
         header.setOnBtnAction(e -> notifyOnHomePressed());
     }
 

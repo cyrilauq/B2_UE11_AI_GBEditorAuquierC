@@ -27,7 +27,6 @@ public class CreatePagePresenter extends Presenter {
     public CreatePagePresenter(final Session session, final DataRepository repo) {
         this.session = session;
         this.repo = repo;
-        currentPage = new Page("");
     }
 
     public void onNotifyAddPage(final String newPageContent, final String otherPageContent, final String addOption) {
@@ -55,6 +54,7 @@ public class CreatePagePresenter extends Presenter {
 
     @Override
     public void onEnter(String fromView) {
+        currentPage = new Page("");
         currentBook = repo.searchBookFor(session.getCurrentIsbn());
         view.setAuthorName(session.getAuthor());
         view.hideChoiceForm();

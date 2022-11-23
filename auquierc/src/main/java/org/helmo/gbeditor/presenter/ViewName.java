@@ -8,7 +8,7 @@ public enum ViewName {
     MODIFY_BOOK_VIEW("ModifyBookView"),
     CREATE_PAGE_VIEW("CreatePageView"),
     MODIFY_PAGE_VIEW("ModifyPageView"),
-    MANAGA_PAGE_VIEW("ManagePageView"),
+    MANAGE_PAGE_VIEW("ManagePageView"),
     LOGIN_VIEW("LoginView"),
     HOME_VIEW("HomeView");
 

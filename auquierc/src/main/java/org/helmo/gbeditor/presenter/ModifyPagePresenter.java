@@ -51,9 +51,13 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler {
     public void onChoiceCreated(final String label, final String targetContent) {
         var target = currentBook.getPageFor(targetContent);
         if(target != null) {
-            currentPage.addChoice(label, target);
-            repo.save(currentBook);
-            view.setMessage("Le choix a bien été ajouté.", TypeMessage.MESSAGE);
+            try {
+                currentPage.addChoice(label, target);
+                repo.save(currentBook);
+                view.setMessage("Le choix a bien été ajouté.", TypeMessage.MESSAGE);
+            } catch (Page.TheTargetPageCannotBeTheSourcePage e) {
+                view.setMessage("La page cible du choix ne peut pas être la même que la page de destination.", TypeMessage.MESSAGE);
+            }
         }
     }
 
@@ -95,7 +99,7 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler {
 
     @Override
     public void onHomePressed() {
-        view.goTo(ViewName.HOME_VIEW.getName());
+        view.goTo(ViewName.MANAGE_PAGE_VIEW.getName());
     }
 
     @Override

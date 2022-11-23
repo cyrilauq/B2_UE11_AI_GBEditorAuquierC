@@ -12,10 +12,12 @@ import java.util.List;
 
 /**
  * Gérer ce qui va être affiché à l'écran utilisateur et comment le programme va réagir aux évènements lancés par sa vue.
+ *
+ *  TODO : Insérer une page récupéré l'ID généré de la page et l'ajouter dans le DTO pour pouvoir faire la modif après.
  */
 public class HomePresenter extends Presenter implements BookDescriptionHandler, BookDetailsHandler {
     private final static int MAX_BOOKS_PAGE = 8;
-
+    // TODO : Load livre dans la methode getBookFor(final String isbn);
     private HomeInterface view;
     private final DataRepository repo;
     private final Session session;
@@ -198,7 +200,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
     public void onManagePages(String isbn) {
         if(isbn == null || isbn.isEmpty()) { return; }
         // TODO : Créer la vue ManagePagesView, permet d'ajouter une page, supprimer un page ou modifier une page.
-        view.goTo(ViewName.MANAGA_PAGE_VIEW.getName());
+        view.goTo(ViewName.MANAGE_PAGE_VIEW.getName());
     }
 
     /**
