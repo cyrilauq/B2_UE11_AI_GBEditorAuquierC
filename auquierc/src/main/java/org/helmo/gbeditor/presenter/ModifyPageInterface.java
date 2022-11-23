@@ -2,8 +2,6 @@ package org.helmo.gbeditor.presenter;
 
 import org.helmo.gbeditor.modeles.ListChoiceItem;
 
-import java.util.Collection;
-
 /**
  * Définit les méthodes qui seront implémentées par la vue et qui permettront au presenter d'interagir avec elle.
  * Ces méthodes seront utiles pour la modification de pages.
@@ -30,15 +28,5 @@ public interface ModifyPageInterface extends ViewInterface {
      * @param choices   Choix possibles.
      */
     void setTarget(final Iterable<ListChoiceItem> choices);
-
-    /**
-     * Affiche à l'écran les options disponibles pour l'ajout d'une page et affiche à l'écran le premier choix disponible.
-     * Elle permet aussi de dire quel est le choix qui sera sélectionné par défaut.
-     *
-     * @param addOptions    Options d'ajout de page
-     */
-    void setMoveOptions(final Collection<String> addOptions, final String selectedOption);
-
-    void showMoveTarget(final boolean show);
 
 }

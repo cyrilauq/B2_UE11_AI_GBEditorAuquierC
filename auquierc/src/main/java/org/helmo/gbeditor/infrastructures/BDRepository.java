@@ -2,6 +2,7 @@ package org.helmo.gbeditor.infrastructures;
 
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
+import org.helmo.gbeditor.domains.Page;
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
@@ -90,7 +91,7 @@ public class BDRepository implements DataRepository {
     }
 
     private boolean containsBook(final String isbn) {
-        try(PreparedStatement stmt = factory.newConnection().prepareStatement(SELECT_ID_BOOK_STMT)) {
+        try(PreparedStatement stmt = connection.prepareStatement(SELECT_ID_BOOK_STMT)) {
             stmt.setString(1, isbn);
             return stmt.executeQuery().next();
         } catch (SQLException e) {
@@ -100,6 +101,7 @@ public class BDRepository implements DataRepository {
 
     @Override
     public void add(final Book... books) {
+        connection = factory.newConnection();
         // TODO : Enlever la transaction ou l'utiliser correctement
         if(books != null) {
             List.of(books).forEach(b -> {
@@ -108,10 +110,10 @@ public class BDRepository implements DataRepository {
                     throw new BookAlreadyExistsException("The books already exists.");
                 }
                 Transaction
-                        .from(factory.newConnection())
+                        .from(connection)
                         .commit((con) -> {
-                            this.saveAuthorIfNotExists(dto.getAuthor());
-                            this.saveBook(dto);
+                            saveAuthorIfNotExists(dto.getAuthor());
+                            saveBook(dto);
                         })
                         .onRollback((ex) -> {throw new UnableToSaveException(ex);})
                         .execute();
@@ -119,10 +121,15 @@ public class BDRepository implements DataRepository {
             });
             loadBooks();
         }
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            throw new UnableToSaveException(e);
+        }
     }
 
     private void savePage(final PageDTO dto, final int id_book) throws SQLException {
-        try (PreparedStatement saveStmt = factory.newConnection().prepareStatement(INSERT_PAGE_STMT)) {
+        try (PreparedStatement saveStmt = connection.prepareStatement(INSERT_PAGE_STMT)) {
             if(id_book != -1) {
                 saveStmt.setString(1, dto.getContent());
                 saveStmt.setInt(2, id_book);
@@ -150,7 +157,7 @@ public class BDRepository implements DataRepository {
     }
 
     private void saveChoices(final PageDTO dto, final int id_book) throws SQLException {
-        try (PreparedStatement saveStmt = factory.newConnection().prepareStatement(INSERT_CHOICES_STMT)) {
+        try (PreparedStatement saveStmt = connection.prepareStatement(INSERT_CHOICES_STMT)) {
             dto.getChoices().forEach((c, p) -> {
                 try {
                     saveStmt.setString(1, c);
@@ -174,32 +181,22 @@ public class BDRepository implements DataRepository {
     }
 
     private void updatePage(final PageDTO dto, final int id_book) throws SQLException {
-        try (PreparedStatement saveStmt = factory.newConnection().prepareStatement(UPDATE_PAGE_STMT)) {
+        try (PreparedStatement saveStmt = connection.prepareStatement(UPDATE_PAGE_STMT)) {
             if(id_book != -1) {
                 saveStmt.setString(1, dto.getContent());
-                var prevId = getIdPageFor(dto.getPrevPageContent(), id_book);
-                var nextId = getIdPageFor(dto.getNextPageContent(), id_book);
-                if(prevId == -1) {
-                    saveStmt.setNull(2, Types.BIGINT);
-                } else {
-                    saveStmt.setInt(2, prevId);
-                }
-                if(nextId == -1) {
-                    saveStmt.setNull(3, Types.BIGINT);
-                } else {
-                    saveStmt.setInt(3, nextId);
-                }
+                saveStmt.setInt(2, id_book);
+                saveStmt.setString(3, dto.getContent());
                 saveStmt.setInt(4, id_book);
-                saveStmt.setString(5, dto.getContent());
-                saveStmt.setInt(6, id_book);
                 saveStmt.executeUpdate();
-                saveChoices(dto, id_book);
             }
+        }
+        if(id_book != -1) {
+            saveChoices(dto, id_book);
         }
     }
 
     private boolean pageExists(final String pageContent, final int id_book) throws SQLException {
-        try(PreparedStatement stmt = factory.newConnection().prepareStatement(PAGE_EXISTS_STMT)) {
+        try(PreparedStatement stmt = connection.prepareStatement(PAGE_EXISTS_STMT)) {
             stmt.setString(1, pageContent);
             stmt.setInt(2, id_book);
             return stmt.executeQuery().next();
@@ -207,83 +204,77 @@ public class BDRepository implements DataRepository {
     }
 
     private void deletePageForBook(final int id_book) throws SQLException, UnableToSavePageException {
-        try (PreparedStatement stmt = factory.newConnection().prepareStatement(DELETE_PAGE_FROM_BOOK_STMT)) {
+        try (PreparedStatement stmt = connection.prepareStatement(DELETE_PAGE_FROM_BOOK_STMT)) {
             stmt.setInt(1,id_book);
             stmt.executeUpdate();
         }
     }
 
     private void saveBook(BookDTO dto) throws SQLException, UnableToSavePageException {
-        try (PreparedStatement saveStmt = factory.newConnection().prepareStatement(INSERT_BOOK_STMT)) {
+        int id_book = -1;
+        try (PreparedStatement saveStmt = connection.prepareStatement(INSERT_BOOK_STMT, Statement.RETURN_GENERATED_KEYS)) {
             saveStmt.setString(1, dto.getTitle());
             saveStmt.setString(2, dto.getIsbn());
             saveStmt.setString(3, dto.getResume());
             saveStmt.setString(4, dto.getImgPath());
             saveStmt.setString(5, dto.getAuthor());
             saveStmt.executeUpdate();
+            var key = saveStmt.getGeneratedKeys();
+            if(key.next() && !key.wasNull()) {
+                id_book = key.getInt(1);
+            }
 
             // TODO : avant d'ajouter un livre vérifier que l'iSBN n'est pas déjà pris et lancé une exception si c'est le cas.
-
-            Transaction
-                    .from(factory.newConnection())
-                    .commit((con) -> {
-                        for (PageDTO p : dto) {
-                            try {
-                                saveOrUpadatePage(p, dto.getIsbn());
-                            } catch (SQLException e) {
-                                throw new SQLException(e);
-                            }
-                        }
-                    })
-                    .onRollback((ex) -> {throw new UnableToSavePageException("Une erreur est survenue lors de la sauvegarde des pages du livre " + dto.getTitle() + ".\nErreur: " + ex.getMessage(), ex);})
-                    .execute();
-            dto.forEach(p -> {
-                try {
-                    saveOrUpadatePage(p, dto.getIsbn());
-                } catch (SQLException e) {
-                    throw new UnableToSavePageException("Une erreur est survenue lors de la sauvegarde des pages du livre " + dto.getTitle() + ".\nErreur: " + e.getMessage(), e);
-                }
-            });
+        }
+        if(id_book != -1) {
+            saveAllPages(dto, id_book);
         }
     }
 
-    private void updateBook(final Book book) throws SQLException {
-        var dto = Mapping.convertToBookDTO(book);
-        try (PreparedStatement saveStmt = factory.newConnection().prepareStatement(UPDATE_BOOKS_STMT)) {
-            var id_book = getIdBookFor(book);
-            deletePageForBook(id_book);
-            saveStmt.setString(1, dto.getTitle());
-            saveStmt.setString(2, dto.getResume());
-            saveStmt.setString(3, dto.getIsbn());
-            saveStmt.setString(4, dto.getImgPath());
-            saveStmt.setString(5, dto.getAuthor());
-            if(dto.getPublishDate() == null) {
-                saveStmt.setTimestamp(6, null);
-            } else {
-                saveStmt.setTimestamp(6, Timestamp.valueOf(dto.getPublishDate()));
+    private void addChoicesToPages(final BookDTO dto, final int id_book) throws SQLException {
+        try(final var stmt = connection.prepareStatement(INSERT_CHOICES_STMT)) {
+            for(final var page : dto) {
+                page.getChoices().forEach((c, p) -> {
+                    try {
+                        stmt.setString(1, c);
+                        stmt.setInt(2, getIdPageFor(page.getContent(), id_book));
+                        if(p.contains(": ") && p.startsWith("Page")) {
+                            stmt.setInt(3, getIdPageFor(extractNPage(p), id_book));
+                        } else {
+                            stmt.setInt(3, getIdPageFor(p, id_book));
+                        }
+                        stmt.addBatch();
+                    } catch (SQLException e) {
+                        throw new UnableToSavePageException(e.getMessage(), e);
+                    }
+                });
+                stmt.executeBatch();
             }
-            saveStmt.setInt(7, id_book);
-            saveStmt.executeUpdate();
-            dto.forEach(p -> {
-                try {
-                    saveOrUpadatePage(p, dto.getIsbn());
-                } catch (SQLException e) {
-                    throw new UnableToSavePageException("Une erreur est survenue lors de la sauvegarde des pages du livre " + dto.getTitle() + ".\nErreur: " + e.getMessage(), e);
-                }
-            });
-            dto.forEach(p -> {
-                try {
-                    saveOrUpadatePage(p, dto.getIsbn());
-                } catch (SQLException e) {
-                    throw new UnableToSavePageException("Une erreur est survenue lors de la sauvegarde des pages du livre " + dto.getTitle() + ".\nErreur: " + e.getMessage(), e);
-                }
-            });
+        }
+    }
+
+    private void saveAllPages(final BookDTO dto, final int id_book) throws SQLException {
+        try(final var stmt = connection.prepareStatement(INSERT_PAGE_STMT)) {
+            for(final var p : dto) {
+                savePage(p, id_book, stmt);
+            }
+            stmt.executeBatch();
+        }
+        addChoicesToPages(dto, id_book);
+    }
+
+    private void savePage(final PageDTO dto, final int id_book, final PreparedStatement stmt) throws SQLException {
+        if(id_book != -1) {
+            stmt.setString(1, dto.getContent());
+            stmt.setInt(2, id_book);
+            stmt.setInt(3, dto.getNumPage());
+            stmt.addBatch();
         }
     }
 
     private void saveAuthorIfNotExists(final String author) {
         if(!authorExists(author)) {
-            try(PreparedStatement loadStmt = factory.newConnection().prepareStatement(INSERT_AUTHOR_STMT, Statement.RETURN_GENERATED_KEYS)) {
+            try(PreparedStatement loadStmt = connection.prepareStatement(INSERT_AUTHOR_STMT, Statement.RETURN_GENERATED_KEYS)) {
                 loadStmt.setString(1, author);
                 loadStmt.executeUpdate();
             } catch (SQLException e) {
@@ -293,7 +284,7 @@ public class BDRepository implements DataRepository {
     }
 
     private boolean authorExists(final String author) {
-        try(PreparedStatement loadStmt = factory.newConnection().prepareStatement(AUTHOR_EXISTS_STMT)) {
+        try(PreparedStatement loadStmt = connection.prepareStatement(AUTHOR_EXISTS_STMT)) {
             loadStmt.setString(1, author);
             var keys = loadStmt.executeQuery();
             return keys.next();
@@ -303,7 +294,7 @@ public class BDRepository implements DataRepository {
     }
 
     private void removeBook(final String isbn) {
-        try(PreparedStatement loadStmt = factory.newConnection().prepareStatement(DELETE_BOOKS_WITH_ISBN_STMT)) {
+        try(PreparedStatement loadStmt = connection.prepareStatement(DELETE_BOOKS_WITH_ISBN_STMT)) {
             var toRemove = isbn.replaceAll("-", "");
             deletePageForBook(getIdBookForIsbn(toRemove));
             loadStmt.setString(1, toRemove);
@@ -324,8 +315,8 @@ public class BDRepository implements DataRepository {
         return result;
     }
 
-    private int getIdBookForIsbn(final String isbn) {
-            try(PreparedStatement loadStmt = factory.newConnection().prepareStatement(SELECT_ID_BOOK_STMT)) {
+    private int getIdBookForIsbn(final String isbn) throws SQLException {
+            try(PreparedStatement loadStmt = connection.prepareStatement(SELECT_ID_BOOK_STMT)) {
                 loadStmt.setString(1, isbn.replaceAll("-", ""));
                 var keys = loadStmt.executeQuery();
                 if(keys.next() && !keys.wasNull()) {
@@ -333,13 +324,11 @@ public class BDRepository implements DataRepository {
                 }
                 keys.close();
                 return -1;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
     }
 
     private int getIdPageFor(final String content, final int id_book) {
-        try(PreparedStatement loadStmt = factory.newConnection().prepareStatement(SELECT_PAGE_ID_STMT)) {
+        try(PreparedStatement loadStmt = connection.prepareStatement(SELECT_PAGE_ID_STMT)) {
             loadStmt.setString(1, content);
             loadStmt.setInt(2, id_book);
             var keys = loadStmt.executeQuery();
@@ -354,7 +343,7 @@ public class BDRepository implements DataRepository {
     }
 
     private int getIdPageFor(final int num, final int id_book) {
-        try(PreparedStatement loadStmt = factory.newConnection().prepareStatement(SELECT_PAGE_ID_FROM_NUM_STMT)) {
+        try(PreparedStatement loadStmt = connection.prepareStatement(SELECT_PAGE_ID_FROM_NUM_STMT)) {
             loadStmt.setInt(1, num);
             loadStmt.setInt(2, id_book);
             var keys = loadStmt.executeQuery();
@@ -370,17 +359,39 @@ public class BDRepository implements DataRepository {
 
     @Override
     public void save(Book book) {
-        try {
-            updateBook(book);
-        } catch (SQLException e) {
-            throw new UnableToSaveBookException("Une erreur est survenue lors de la sauvegarde du livre.\nErreur: " + e.getMessage(), e);
+        Transaction
+                .from(connection = factory.newConnection())
+                .commit((con) -> updateBook(book))
+                .onRollback((ex) -> {throw new UnableToSaveException(ex);})
+                .execute();
+    }
+
+    private void updateBook(final Book book) throws SQLException {
+        // TODO : Utiliser la grosse transaction du cours
+        var dto = Mapping.convertToBookDTO(book);
+        try (PreparedStatement saveStmt = connection.prepareStatement(UPDATE_BOOKS_STMT)) {
+            var id_book = getIdBookFor(book);
+            deletePageForBook(id_book);
+            saveStmt.setString(1, dto.getTitle());
+            saveStmt.setString(2, dto.getResume());
+            saveStmt.setString(3, dto.getIsbn());
+            saveStmt.setString(4, dto.getImgPath());
+            saveStmt.setString(5, dto.getAuthor());
+            if(dto.getPublishDate() == null) {
+                saveStmt.setTimestamp(6, null);
+            } else {
+                saveStmt.setTimestamp(6, Timestamp.valueOf(dto.getPublishDate()));
+            }
+            saveStmt.setInt(7, id_book);
+            saveStmt.executeUpdate();
+            saveAllPages(dto, id_book);
         }
     }
 
     @Override
     public boolean remove(String... books) {
         Transaction
-            .from(factory.newConnection())
+            .from(connection = factory.newConnection())
             .commit((con) -> List.of(books).forEach(this::removeBook))
             .onRollback((ex) -> {throw new UnableToSaveException(ex);})
             .execute();
@@ -405,7 +416,7 @@ public class BDRepository implements DataRepository {
         tracker.clear();
         existingIsbn.clear();
         allDtos.clear();
-        try(PreparedStatement loadStmt = factory.newConnection().prepareStatement(SELECT_ALL_BOOKS_STMT)) {
+        try(PreparedStatement loadStmt = (connection = factory.newConnection()).prepareStatement(SELECT_ALL_BOOKS_STMT)) {
             loadStmt.setString(1, author);
             ResultSet rs = loadStmt.executeQuery();
             var isbn = "";
@@ -431,7 +442,7 @@ public class BDRepository implements DataRepository {
 
     private Collection<PageDTO> getPageFor(final String isbn) throws SQLException {
         final List<PageDTO> result = new ArrayList<>();
-        try(PreparedStatement stmt = factory.newConnection().prepareStatement(SELECT_PAGE_FROM_ISBN_STMT)) {
+        try(PreparedStatement stmt = connection.prepareStatement(SELECT_PAGE_FROM_ISBN_STMT)) {
             stmt.setString(1, isbn);
             ResultSet rs = stmt.executeQuery();
             while (rs.next() && !rs.wasNull()) {
@@ -446,7 +457,7 @@ public class BDRepository implements DataRepository {
 
     private Map<String, String> getChoicesFor(final int id_page) throws SQLException {
         final Map<String, String> result = new TreeMap<>();
-        try(PreparedStatement stmt = factory.newConnection().prepareStatement(SELECT_CHOICES_FROM_PAGE_STMT)) {
+        try(PreparedStatement stmt = connection.prepareStatement(SELECT_CHOICES_FROM_PAGE_STMT)) {
             stmt.setInt(1, id_page);
             ResultSet rs = stmt.executeQuery();
             while (rs.next() && !rs.wasNull()) {

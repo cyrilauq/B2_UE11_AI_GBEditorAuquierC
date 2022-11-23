@@ -24,11 +24,24 @@ public class CreatePagePresenter extends Presenter {
     private static final String AFTER_PAGE_OPTION = "Après une page";
     private static final List<String> ADD_OPTION = List.of(BEGIN_OPTION, END_OPTION, AFTER_PAGE_OPTION);
 
+    /**
+     * Crée un nouveau CreatePagePresenter avec une session et un DataRepository donné.
+     *
+     * @param session   Session actuelle sur laquelle l'application est lancée.
+     * @param repo      Repository avec lequel l'application travaille.
+     */
     public CreatePagePresenter(final Session session, final DataRepository repo) {
         this.session = session;
         this.repo = repo;
     }
 
+    /**
+     * Ajoute une page avec un contenu donnée et à un endroit donné.
+     *
+     * @param newPageContent        Contenu de la nouvelle page.
+     * @param otherPageContent      Page après laquelle la nouvelle page va s'insérer (si nécessaire)
+     * @param addOption             Endroit dans le livre où la nouvelle page va s'insérer.
+     */
     public void onNotifyAddPage(final String newPageContent, final String otherPageContent, final String addOption) {
         if(newPageContent != null && !newPageContent.isEmpty()) {
             currentPage.setContent(newPageContent);
@@ -46,6 +59,11 @@ public class CreatePagePresenter extends Presenter {
         }
     }
 
+    /**
+     * Régit à la selection d'une option d'ajout de page.
+     *
+     * @param option    Option déterminant où la page va s'insérer dans le livre.
+     */
     public void onNotifyOptionSelected(final String option) {
         if(AFTER_PAGE_OPTION.equals(option)) {
             view.showBookPages(true);

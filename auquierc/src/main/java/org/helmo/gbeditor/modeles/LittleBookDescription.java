@@ -1,8 +1,5 @@
 package org.helmo.gbeditor.modeles;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 /**
  * Définit les informations qui seront données à la vue lorsqu'on voudra afficher un livre.
  */
@@ -26,7 +23,6 @@ public class LittleBookDescription {
         this.imgPath = imgPath;
         this.author = author;
         this.isbn = isbn;
-        this.publishDate = publishDate;
     }
 
     /**

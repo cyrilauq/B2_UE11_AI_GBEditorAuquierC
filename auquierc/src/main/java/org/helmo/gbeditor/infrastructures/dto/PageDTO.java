@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Cette classe s'occupe de gérer le manière dont une page sera stockée.
+ */
 public class PageDTO {
     @SerializedName("content")
     public final String content;

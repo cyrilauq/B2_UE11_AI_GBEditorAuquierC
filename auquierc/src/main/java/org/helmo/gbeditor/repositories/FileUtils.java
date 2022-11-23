@@ -116,8 +116,9 @@ public class FileUtils {
      */
     private static boolean browseAndVerifyBytes(byte[] bytes, DataInputStream dis) throws IOException {
         int i = 0;
+        byte b;
         while(true) {
-            var b = bytes[i++];
+            b = bytes[i++];
             if(i == bytes.length) {
                 return true;
             }

@@ -1,5 +1,8 @@
 package org.helmo.gbeditor.presenter;
 
+/**
+ * Expose une méthode qui sera utile pour permettre à l'utilisateur de supprimer un choix.
+ */
 public interface ChoiceViewHandler {
 
     /**

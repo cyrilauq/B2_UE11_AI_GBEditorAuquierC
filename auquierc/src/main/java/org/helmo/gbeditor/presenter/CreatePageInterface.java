@@ -2,6 +2,9 @@ package org.helmo.gbeditor.presenter;
 
 import java.util.Collection;
 
+/**
+ * Déclare les méthodes qui seront utiles pour pouvoir afficher les informations necessaire à la création de page.
+ */
 public interface CreatePageInterface extends ViewInterface {
 
     /**
@@ -16,14 +19,33 @@ public interface CreatePageInterface extends ViewInterface {
      */
     void clearBookPages();
 
+    /**
+     * Affiche un message donné à l'utilisateur.
+     *
+     * @param message   Message à afficher à l'utilisateur
+     */
     void setMessage(final String message);
 
+    /**
+     * Cache le menu d'ajout de choix d'une page.
+     */
     void showChoiceForm();
 
+    /**
+     * Cache le menu d'ajout de choix d'une page.
+     */
     void hideChoiceForm();
 
+    /**
+     * Ajoute une page dans les cibles possibles d'un choix.
+     *
+     * @param choice    Possibilité de cible.
+     */
     void addChoiceTarget(final String choice);
 
+    /**
+     * Vide l'affichage des pages cible possible pour un choix.
+     */
     void clearChoiceTarget();
 
     /**

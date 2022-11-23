@@ -115,14 +115,4 @@ public class ModifyPageView extends View implements ModifyPageInterface {
             this.choiceTarget.getItems().add(new ListItemPageView(c.getNumPage(), c.getContent()));
         }
     }
-
-    @Override
-    public void setMoveOptions(Collection<String> addOptions, String selectedOption) {
-
-    }
-
-    @Override
-    public void showMoveTarget(boolean show) {
-        pagePositionChoice.setVisible(show);
-    }
 }

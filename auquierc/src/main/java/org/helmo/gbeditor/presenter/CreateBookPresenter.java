@@ -24,10 +24,6 @@ public class CreateBookPresenter extends Presenter {
     private final DataRepository repo;
     private CreateBookInterface view;
 
-    private final List<Book> allbooks = new ArrayList<>();
-
-    private int lastBookN;
-
     private static final int LANG_CODE = 2;
 
     /**
@@ -55,12 +51,11 @@ public class CreateBookPresenter extends Presenter {
                     session.getMatricule().substring(1),
                     filePath);
             repo.add(newBook);
-            allbooks.add(newBook);
             view.resetInputs();
             view.setIsbn(
                     ISBNFactory.computeISBNFor(LANG_CODE,
                             session.getMatricule().substring(1),
-                            (lastBookN = getLastBookNumber()) + 1).forUser());
+                            (getLastBookNumber()) + 1).forUser());
             setMessage("Le livre a bien été créé.");
             view.refreshAll(ViewName.CREATE_BOOK_VIEW);
         } catch (BookAlreadyExistsException | Book.WrongFormattedBookException | ISBN.WrongFormattedISBNException e) {
@@ -91,8 +86,6 @@ public class CreateBookPresenter extends Presenter {
      */
     @Override
     public void onEnter(String fromView) {
-        allbooks.addAll(repo.getBooks());
-        lastBookN = getLastBookNumber();
         setView(view);
         view.setAuthorName(session.getAuthor());
         view.setIsbn(
@@ -100,7 +93,7 @@ public class CreateBookPresenter extends Presenter {
                         session
                                 .getMatricule()
                                 .substring(1),
-                        lastBookN + 1).forUser());
+                        getLastBookNumber() + 1).forUser());
     }
 
     private int getLastBookNumber() {

@@ -55,7 +55,11 @@
     <rule ref="category/java/codestyle.xml/ExtendsObject" />
     <rule ref="category/java/codestyle.xml/FieldDeclarationsShouldBeAtStartOfClass" />
     <rule ref="category/java/codestyle.xml/FieldNamingConventions" />
-    <rule ref="category/java/codestyle.xml/LongVariable" />
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <property name="minimum" value="30" />
+        </properties>
+    </rule>
     <rule ref="category/java/codestyle.xml/NoPackage" />
     <rule ref="category/java/codestyle.xml/PackageCase" />
     <rule ref="category/java/codestyle.xml/PrematureDeclaration" />
@@ -73,7 +77,11 @@
             <property name="cycloOptions" value="" />
         </properties>
     </rule>
-    <rule ref="category/java/design.xml/DataClass" />
+    <rule ref="category/java/design.xml/DataClass">
+        <properties>
+            <property name="violationSuppressRegex" value=".*'.*(Dto|DTO).*'.*"/>
+        </properties>
+    </rule>
     <rule ref="category/java/design.xml/ExcessiveParameterList">
         <properties>
             <property name="minimum" value="5" />

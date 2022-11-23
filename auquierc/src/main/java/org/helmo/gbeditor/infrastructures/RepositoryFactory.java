@@ -12,6 +12,9 @@ import java.sql.SQLException;
 
 import static org.helmo.gbeditor.infrastructures.jdbc.DBConfig.*;
 
+/**
+ * Cette classe permet d'instancier une factory pour repository et de créer des repository cohérent.
+ */
 public class RepositoryFactory {
 
     private boolean isJson = false;
@@ -28,6 +31,11 @@ public class RepositoryFactory {
         this.isJson = isJson;
     }
 
+    /**
+     * Crée une nouvelle factory mémorisant le type de ressources qui seron utilisées.
+     *
+     * @param repoType  Type de ressources.
+     */
     public RepositoryFactory(final RepositoryType repoType) { }
 
     /**
@@ -39,6 +47,11 @@ public class RepositoryFactory {
         this.currentAuthor = currentAuthor;
     }
 
+    /**
+     * Crée un repository sur base de la configuration donnée lors de l'initialisation de la factory.
+     *
+     * @return  Un repository valide permettant d'interagir avec le type de ressources données en argument lors de l'initialisation de la factory.
+     */
     public DataRepository newRepository() {
         if(isJson) {
             return of(Paths.get(System.getProperty("user.home"), "ue36"), "e200106");
@@ -58,6 +71,15 @@ public class RepositoryFactory {
         return new JsonRepository(Paths.get(filePath), fileName);
     }
 
+    /**
+     * Crée un nouveaut repository utilisant le Json dont le fichier se trouve dans le dossier filePath donné et avec le nom fileName donné.
+     *
+     * @param filePath  Chemin d'accès pour le dossier où se trouve le fichier.
+     * @param fileName  Nom du fichier json.
+     *
+     * @return          Un repository permettant de travailler avec un fichier json.
+     *                  Ce fichier se trouvera dans le dossier filePath donné et aura le nom fileName donné.
+     */
     public static DataRepository of(final Path filePath, final String fileName) {
         return new JsonRepository(filePath, fileName);
     }

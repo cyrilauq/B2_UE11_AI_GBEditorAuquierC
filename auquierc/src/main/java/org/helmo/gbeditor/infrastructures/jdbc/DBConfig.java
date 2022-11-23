@@ -1,5 +1,8 @@
 package org.helmo.gbeditor.infrastructures.jdbc;
 
+/**
+ * Définit la configuration de la base de donnée utilisée lors de l'exécution du programme.
+ */
 public class DBConfig {
 
     public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
