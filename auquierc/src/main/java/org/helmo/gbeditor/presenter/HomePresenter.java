@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Gérer ce qui va être affiché à l'écran utilisateur et comment le programme va réagir aux évènements lancés par sa vue.
  *
- *  TODO : Insérer une page récupéré l'ID généré de la page et l'ajouter dans le DTO pour pouvoir faire la modif après.
+ *  TODO : Empêcher la publication ne contenant aucune page.
  */
 public class HomePresenter extends Presenter implements BookDescriptionHandler, BookDetailsHandler {
     private final static int MAX_BOOKS_PAGE = 8;
