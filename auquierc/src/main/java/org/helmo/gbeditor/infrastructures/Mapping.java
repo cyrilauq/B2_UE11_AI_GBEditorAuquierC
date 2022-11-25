@@ -7,6 +7,8 @@ import org.helmo.gbeditor.domains.Page;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -122,6 +124,7 @@ public class Mapping {
      * @return      L'équivalent BookDTO du Book donnée.
      */
     public static BookDTO convertToBookDTO(Book b) {
+        final var date = b.get(BookFieldName.PUBLISH_DATE);
         return new BookDTO(
                 b.get(BookFieldName.TITLE),
                 b.get(BookFieldName.ISBN),
@@ -130,7 +133,7 @@ public class Mapping {
                 b.getImgPath(),
                 BookDTO.CURRENT_VERSION,
                 convertPages(b.iterator()),
-                b.getPublishDate()
+                date == null ? null : LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm"))
         );
     }
 

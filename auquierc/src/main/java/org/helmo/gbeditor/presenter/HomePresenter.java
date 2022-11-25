@@ -22,7 +22,6 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
     private HomeInterface view;
     private final DataRepository repo;
     private final Session session;
-    private Book currentBook;
 
     private int currentPage;
 
@@ -93,7 +92,8 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
     public void displayDetailsFor(final String isbn) {
         var found = repo.searchBookFor(isbn);
         if(found != null) {
-            session.setCurrentBook(currentBook = found);
+            session.setCurrentBook(found);
+            session.setCurrentBook(found);
             session.setCurrentIsbn(isbn);
             view.setDetails(getExtendedBookDescriptionFor(found));
             found.forEach(p -> {
@@ -187,6 +187,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
 
     @Override
     public void onPublishBook(String isbn) {
+        final var currentBook = session.getCurrentBook();
         if(isbn == null || isbn.isEmpty() || currentBook == null) { return; }
         // TODO : Demander confirmation pour la publication du livre. Expliquer à l'utilisateur qu'il ne pourra plus le modifier.
         currentBook.publish();

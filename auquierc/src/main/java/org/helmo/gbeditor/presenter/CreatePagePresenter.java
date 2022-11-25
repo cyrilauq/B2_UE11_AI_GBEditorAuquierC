@@ -90,7 +90,7 @@ public class CreatePagePresenter extends Presenter {
 
     @Override
     public void onHomePressed() {
-        view.goTo("HomeView");
+        view.goTo(ViewName.MANAGE_PAGE_VIEW.getName());
     }
 
     /**

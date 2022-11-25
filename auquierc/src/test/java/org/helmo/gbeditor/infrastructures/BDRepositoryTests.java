@@ -12,8 +12,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BDRepositoryTests {
-    private Session session;
-    private BDRepository repo = null;
+    private BDRepository repo;
 
     private Book book1;
     private Book book2;
@@ -28,15 +27,20 @@ public class BDRepositoryTests {
                 new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );
-        session = new Session();
-        session.setAuthor("Auquier", "Cyril");
         try {
+//            repo = RepositoryFactory.of(
+//                    "org.apache.derby.jdbc.EmbeddedDriver",
+//                    "jdbc:derby:Test;create=true",
+//                    "",
+//                    "");
             repo = RepositoryFactory.of(
-                    "org.apache.derby.jdbc.EmbeddedDriver",
-                    "jdbc:derby:Test;create=true",
-                    "",
-                    "",
-                    "Auquier Cyril");
+                    "com.mysql.cj.jdbc.Driver",
+                    "jdbc:mysql://localhost:3306/gbreader_tests?useUnicode=true & " +
+                            "useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false & " +
+                            "serverTimezone=UTC&useSSL=false",
+                    "u823384744_cyril",
+                    "Ca5wsd0e");
+            repo.setCurrentAuthor("Auquier Cyril");
             repo.setUp();
         } catch(UnableToTearDownException e) {
             System.err.println(e.getMessage());
@@ -46,7 +50,7 @@ public class BDRepositoryTests {
     @AfterEach
     public void tearDown() throws Exception {
         repo.tearDown();
-   }
+    }
 
     @Test
     public void createBDRepositoryWithRightParamsValuesDoesNotThrowAnyKindOfError() {

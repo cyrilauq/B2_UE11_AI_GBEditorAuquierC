@@ -2,15 +2,16 @@ package org.helmo.gbeditor.views;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.helmo.gbeditor.modeles.ListChoiceItem;
 import org.helmo.gbeditor.presenter.ModifyPageInterface;
 import org.helmo.gbeditor.presenter.ModifyPagePresenter;
 import org.helmo.gbeditor.presenter.ViewName;
-
-import java.util.Collection;
 
 public class ModifyPageView extends View implements ModifyPageInterface {
     private final ModifyPagePresenter presenter;

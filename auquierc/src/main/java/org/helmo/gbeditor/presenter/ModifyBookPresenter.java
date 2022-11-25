@@ -18,8 +18,6 @@ public class ModifyBookPresenter extends Presenter {
 
     private Book currentBook;
 
-    private int lastBookN;
-
     private static final int LANG_CODE = 2;
 
     /**
@@ -65,7 +63,7 @@ public class ModifyBookPresenter extends Presenter {
             view.setIsbn(
                     ISBNFactory.computeISBNFor(LANG_CODE,
                             session.getMatricule().substring(1),
-                            (lastBookN = getLastBookNumber()) + 1).forUser());
+                            (getLastBookNumber()) + 1).forUser());
             setMessage("Le livre a bien été modifié.");
             view.refreshAll(ViewName.MODIFY_BOOK_VIEW);
         } catch (BookAlreadyExistsException | Book.WrongFormattedBookException | ISBN.WrongFormattedISBNException e) {
@@ -85,7 +83,6 @@ public class ModifyBookPresenter extends Presenter {
     @Override
     public void onEnter(String fromView) {
         currentBook = repo.searchBookFor(session.getCurrentIsbn());
-        lastBookN = getLastBookNumber();
         setView(view);
         view.setAuthorName(session.getAuthor());
         view.setIsbn(currentBook.get(BookFieldName.ISBN));

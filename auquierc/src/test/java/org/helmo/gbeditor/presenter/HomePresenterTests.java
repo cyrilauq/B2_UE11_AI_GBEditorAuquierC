@@ -71,8 +71,9 @@ public class HomePresenterTests {
                         "src", "test", "resources", "PresenterTests"
                 ).toString(), "all_same_books", "Auquier Cyril"
         );
-        factory.setCurrentAuthor("Auquier Cyril");
-        presenter = new HomePresenter(session, factory.newRepository());
+        final var repo = factory.newRepository();
+        repo.setCurrentAuthor("Auquier Cyril");
+        presenter = new HomePresenter(session, repo);
         presenter.setView(mockedView);
         clearInvocations(mockedView);
         presenter.onEnter("CreateView");
@@ -89,8 +90,9 @@ public class HomePresenterTests {
                         "src", "test", "resources", "PresenterTests"
                 ).toString(), "all_same_books", "Auquier Cyril"
         );
-        factory.setCurrentAuthor("Auquier Cyril");
-        presenter = new HomePresenter(session, factory.newRepository());
+        final var repo = factory.newRepository();
+        repo.setCurrentAuthor("Auquier Cyril");
+        presenter = new HomePresenter(session, repo);
         presenter.setView(mockedView);
         presenter.onEnter("CreateView");
         presenter.displayDetailsFor("0123456789");

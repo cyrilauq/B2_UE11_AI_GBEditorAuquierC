@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Cette classe permet d'initaliser une nouvelle ConnectionFactory qui sauvegardera l'url de la base de données, le login et le mot de passe pour s'y connecté.
+ * Cette classe permet d'initialiser une nouvelle ConnectionFactory qui sauvegardera les données nécessaires pour la création d'une connection à la base de données.
  */
 public class ConnectionFactory {
     private final String bdUrl;
@@ -34,7 +34,7 @@ public class ConnectionFactory {
      *
      * @throws UnableToConnectException Si la connection n'a pas pu se faire.
      */
-    public Connection newConnection() throws UnableToConnectException {
+    public Connection newConnection() {
         try {
             return DriverManager.getConnection(bdUrl, user, password);
         } catch (SQLException e) {

@@ -46,6 +46,13 @@ public class LittleBookDescription {
         return publishDate == null ? "Non publié" : "Le " + publishDate;
     }
 
+    /**
+     * Détermine si un livre peut-être publié ou non.
+     * Se base sur le fait que le livre ait une date de publication ou non.
+     *
+     * @return      True si la date de publication du livre est nulle.
+     *              False si le livre a une date de publication.
+     */
     public boolean canBePublished() {
         return publishDate != null;
     }

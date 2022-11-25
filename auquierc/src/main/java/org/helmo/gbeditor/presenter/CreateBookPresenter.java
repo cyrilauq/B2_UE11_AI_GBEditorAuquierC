@@ -10,8 +10,6 @@ import org.helmo.gbeditor.repositories.DataRepository;
 import org.helmo.gbeditor.repositories.FileUtils;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Cette classe s'occupe de la logique qui se cache derrière les actions de la vue CreateBookView.

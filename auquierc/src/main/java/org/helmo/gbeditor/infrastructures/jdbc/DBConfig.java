@@ -8,9 +8,7 @@ public class DBConfig {
     public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
 
     // Accès BD distante
-    public static final String DB_URL = "jdbc:mysql://192.168.128.13:3306/in20b1001?useUnicode=true & " +
-            "useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false & " +
-            "serverTimezone=UTC&useSSL=false";
+    public static final String DB_URL = "jdbc:mysql://192.168.128.13:3306/in20b1001";
     public final static String DB_USER = "in20b1001";
     public final static String DB_PASSWORD = "4918";
 

@@ -22,8 +22,6 @@ import static org.helmo.gbeditor.infrastructures.jdbc.SQLInstructions.*;
 public class BDRepository implements DataRepository {
 
     private Connection connection;
-
-    private Session session;
     private final List<Book> allBooks = new ArrayList<>();
     private final List<BookDTO> allDtos = new ArrayList<>();
     private final SortedSet<String> existingIsbn = new TreeSet<>();
@@ -34,25 +32,12 @@ public class BDRepository implements DataRepository {
     private final Map<Book, BookDTO> tracker = new HashMap<>();
 
     /**
-     * Créer un nouveau BDRepository sur base d'une connection et une session donnée.
-     *
-     * @param connection    Connection à la base de données.
-     * @param session       Session courante.
-     */
-    public BDRepository(final Connection connection, final Session session) {
-        this.connection = connection;
-        this.session = session;
-    }
-
-    /**
      * Créer un nouveau BDRepository sur base d'une factory et d'un auteur donnée.
      *
      * @param factory
-     * @param author
      */
-    public BDRepository(final ConnectionFactory factory, final String author) {
+    public BDRepository(final ConnectionFactory factory) {
         this.factory = factory;
-        this.author = author;
     }
 
     /**
@@ -136,23 +121,6 @@ public class BDRepository implements DataRepository {
                 saveStmt.setInt(3, dto.getNumPage());
                 saveStmt.executeUpdate();
             }
-        }
-    }
-
-    /**
-     * Sauvegarde une page dans la base de données ou la modifie.
-     *
-     * @param dto           Page à ajouter
-     * @param isbn          ISBN du livre auquel la page appartient
-     *
-     * @throws SQLException Si la page n'a pas pu être ajoutée ou modifiée
-     */
-    private void saveOrUpadatePage(final PageDTO dto, final String isbn) throws SQLException {
-        var id_book = getIdBookForIsbn(isbn);
-        if(pageExists(dto.getContent(), id_book)) {
-            updatePage(dto, id_book);
-        } else {
-            savePage(dto, id_book);
         }
     }
 
@@ -316,15 +284,15 @@ public class BDRepository implements DataRepository {
     }
 
     private int getIdBookForIsbn(final String isbn) throws SQLException {
-            try(PreparedStatement loadStmt = connection.prepareStatement(SELECT_ID_BOOK_STMT)) {
-                loadStmt.setString(1, isbn.replaceAll("-", ""));
-                var keys = loadStmt.executeQuery();
-                if(keys.next() && !keys.wasNull()) {
-                    return keys.getInt(1);
-                }
-                keys.close();
-                return -1;
+        try(PreparedStatement loadStmt = connection.prepareStatement(SELECT_ID_BOOK_STMT)) {
+            loadStmt.setString(1, isbn.replaceAll("-", ""));
+            var keys = loadStmt.executeQuery();
+            if(keys.next() && !keys.wasNull()) {
+                return keys.getInt(1);
             }
+            keys.close();
+            return -1;
+        }
     }
 
     private int getIdPageFor(final String content, final int id_book) {
@@ -391,10 +359,10 @@ public class BDRepository implements DataRepository {
     @Override
     public boolean remove(String... books) {
         Transaction
-            .from(connection = factory.newConnection())
-            .commit((con) -> List.of(books).forEach(this::removeBook))
-            .onRollback((ex) -> {throw new UnableToSaveException(ex);})
-            .execute();
+                .from(connection = factory.newConnection())
+                .commit((con) -> List.of(books).forEach(this::removeBook))
+                .onRollback((ex) -> {throw new UnableToSaveException(ex);})
+                .execute();
         return true;
     }
 

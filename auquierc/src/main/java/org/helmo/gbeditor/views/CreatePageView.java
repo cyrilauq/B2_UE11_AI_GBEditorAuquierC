@@ -1,8 +1,13 @@
 package org.helmo.gbeditor.views;
 
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.helmo.gbeditor.presenter.CreatePageInterface;
 import org.helmo.gbeditor.presenter.CreatePagePresenter;
 import org.helmo.gbeditor.presenter.ViewName;
@@ -14,7 +19,7 @@ public class CreatePageView extends View implements CreatePageInterface {
 
     private final CreatePagePresenter presenter;
 
-    private final HeaderView header = new HeaderView("Créer une nouvelle page", "Home", Theme.SND_WINDOW_WIDTH); {
+    private final HeaderView header = new HeaderView("Créer une nouvelle page", "Retour", Theme.SND_WINDOW_WIDTH); {
         header.setOnBtnAction(a -> notifyOnHomePressed());
     }
 

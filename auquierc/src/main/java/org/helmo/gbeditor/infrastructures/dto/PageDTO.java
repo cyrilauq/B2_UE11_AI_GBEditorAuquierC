@@ -11,37 +11,26 @@ import java.util.TreeMap;
 public class PageDTO {
     @SerializedName("content")
     public final String content;
-    @SerializedName("prevPageContent")
-    public final String prevPageContent;
-    @SerializedName("nextPageContent")
-    public String nextPageContent = "";
     @SerializedName("choices")
     public final Map<String, String> choices = new TreeMap<>();
     @SerializedName("numPage")
     public int numPage;
 
-    public PageDTO(final String content, final String prevPageContent, final Map<String, String> choices) {
-        this.content = content;
-        this.prevPageContent = prevPageContent;
-        this.choices.putAll(choices);
-        numPage = 0;
-    }
-
+    /**
+     * Crée une nouvelle PageDTO avec un contenu, des choix et un numéro de page donnés.
+     *
+     * @param content   Contenu de la page
+     * @param choices   Choix de la page
+     * @param numPage   Numéro de la page
+     */
     public PageDTO(final String content, final Map<String, String> choices, final int numPage) {
-        this(content, "", choices);
+        this.content = content;
+        this.choices.putAll(choices);
         this.numPage = numPage;
-    }
-
-    public String getNextPageContent() {
-        return nextPageContent;
     }
 
     public String getContent() {
         return content;
-    }
-
-    public String getPrevPageContent() {
-        return prevPageContent;
     }
 
     public Map<String, String> getChoices() {

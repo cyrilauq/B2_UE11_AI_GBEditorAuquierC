@@ -1,7 +1,5 @@
 package org.helmo.gbeditor.modeles;
 
-import java.time.format.DateTimeFormatter;
-
 /**
  * Définit les informations qui seront données à la vue lorsqu'on voudra afficher les détails d'un livre.
  */
@@ -39,6 +37,13 @@ public class ExtendedBookDescription {
         return littleBookDescription.getPublishDate();
     }
 
+    /**
+     * Détermine si un livre peut-être publié ou non.
+     * Se base sur le fait que le livre ait une date de publication ou non.
+     *
+     * @return      True si la date de publication du livre est nulle.
+     *              False si le livre a une date de publication.
+     */
     public boolean canBePublished() {
         return littleBookDescription.canBePublished();
     }

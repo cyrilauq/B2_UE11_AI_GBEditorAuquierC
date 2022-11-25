@@ -1,6 +1,5 @@
 package org.helmo.gbeditor.views;
 
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -15,9 +14,9 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
-import org.helmo.gbeditor.presenter.TypeMessage;
 import org.helmo.gbeditor.presenter.CreateBookInterface;
 import org.helmo.gbeditor.presenter.CreateBookPresenter;
+import org.helmo.gbeditor.presenter.TypeMessage;
 import org.helmo.gbeditor.presenter.ViewName;
 import org.helmo.gbeditor.views.style.Theme;
 

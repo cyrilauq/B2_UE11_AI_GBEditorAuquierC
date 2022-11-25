@@ -1,7 +1,9 @@
 package org.helmo.gbeditor.domains;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * S'occupe des opérations faites sur un livre.
@@ -9,6 +11,8 @@ import java.util.*;
  * @author  Cyril Auquier
  */
 public class Book implements Iterable<Page> {
+    private final static int TITLE_MAX_LENGTH = 150;
+    private final static int SUMMARY_MAX_LENGTH = 500;
 
     private final BookMetadata data;
     private String imgPath;
@@ -22,7 +26,7 @@ public class Book implements Iterable<Page> {
      * @param imgPath   Chemin d'accès à la couverture du livre
      */
     public Book(final BookMetadata bookMetadata, final String imgPath) {
-        this.data = BookMetadata.copyOf(bookMetadata);
+        this.data = bookMetadata;
         this.imgPath = imgPath;
     }
 
@@ -38,6 +42,15 @@ public class Book implements Iterable<Page> {
         data.setIsbn(isbn);
     }
 
+    /**
+     * Récupère la valeur d'un attribut donné.
+     *
+     * @param attribute Attribut dont on cherche la valeur.
+     *
+     * @return          La valeur lièe à l'attribut recherché.
+     *
+     * @throws BookMetadata.FieldNotFoundException  Si l'attribut n'existe pas.
+     */
     public String get(final BookFieldName attribute) { return data.get(attribute); }
 
     /**
@@ -50,14 +63,25 @@ public class Book implements Iterable<Page> {
         data.publish();
     }
 
+    /**
+     * Définit à quelle date le livre a été publié.
+     *
+     * @param publishDate   Date à laquelle le livre a été publié.
+     */
     public void setPublishDate(final LocalDateTime publishDate) {
         data.setPublishDate(publishDate);
     }
 
-    public LocalDateTime getPublishDate() {
-        return data.getPublishDate();
-    }
-
+    /**
+     * Modifie les données du livre en les raplaçant par celles données.
+     *
+     * @param data              Nouvelle donnée du livre.
+     * @param authorMatricule   Matricule de l'auteur connecté.
+     * @param imgPath           Chemin d'accès à l'image de couverture du livre.
+     *
+     * @throws CannotModifyPublishedBookException   Si le livre est publié.
+     * @throws WrongFormattedBookException          Si les données fournies ne sont pas valide.
+     */
     public void setNewData(final BookMetadata data, final String authorMatricule, final String imgPath) {
         if(this.data.getPublishDate() != null) {
             throw new CannotModifyPublishedBookException();
@@ -130,15 +154,6 @@ public class Book implements Iterable<Page> {
      * @param bookMetadata  Meta data du livre.
      */
     public Book(final BookMetadata bookMetadata) {
-        this(bookMetadata, "");
-    }
-
-    /**
-     * Crée un nuveau livre à partir d'un titre, un résumé, un auteur et un code ISBN donné.
-     *
-     * @param bookMetadata  Meta data du livre.
-     */
-    public Book(final BookMetadata bookMetadata, final List<Page> pages) {
         this(bookMetadata, "");
     }
 
@@ -219,6 +234,14 @@ public class Book implements Iterable<Page> {
         return data.getIsbn().replace("-", "").equals(isbn.replace("-", ""));
     }
 
+    /**
+     * Détermine si la page donnée est liée ou non à une ou plusieurs autres pages.
+     *
+     * @param page  Page
+     *
+     * @return      Si la page est liée à au moins une autre page, renvoie true.
+     *              Si la page n'a pas de lien avec d'autres pages, renvoie false.
+     */
     public boolean pageIsATarget(final Page page) {
         for(final var p : this) {
             for(final var c : p) {
@@ -269,14 +292,19 @@ public class Book implements Iterable<Page> {
     }
 
     private static String verifyContent(final String title, final String resume, final String validIsbn) {
-        if(title.length() > 150) {
+        if(title.length() > TITLE_MAX_LENGTH) {
             return BookTypeError.TITLE_TOO_LONG.getMessage();
-        } else if(resume.length() > 500) {
+        } else if(resume.length() > SUMMARY_MAX_LENGTH) {
             return BookTypeError.RESUME_TOO_LONG.getMessage();
         }
         return validIsbn;
     }
 
+    /**
+     * Récupère le nombre de pages présente dans le livre.
+     *
+     * @return      Le nombre de page présente dans le livre.
+     */
     public int pageCount() {
         return pagesList.size();
     }

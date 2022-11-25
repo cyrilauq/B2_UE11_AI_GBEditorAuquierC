@@ -2,6 +2,8 @@ package org.helmo.gbeditor.domains;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Cette classe permet de stocker les informations générales d'un livre: titre, auteur, isbn et résumé.
@@ -14,6 +16,7 @@ public class BookMetadata {
     private String summary;
     private final String author;
     private LocalDateTime publishDate;
+    private Map<BookFieldName, String> attributes = new TreeMap<>();
 
     /**
      * Crée un nouvel objet BookMetaData sur base d'infos données.
@@ -131,8 +134,16 @@ public class BookMetadata {
                 '}';
     }
 
+    /**
+     * Cette classe instancie une exception qui sera lancée quand on cherchera à récupérer un champ qui n'existe pas.
+     */
     public static class FieldNotFoundException extends RuntimeException {
 
+        /**
+         * Crée une nouvelle FieldNotFoundException avec un message donné.
+         *
+         * @param message   Message de l'exception.
+         */
         public FieldNotFoundException(final String message) {
             super(message);
         }

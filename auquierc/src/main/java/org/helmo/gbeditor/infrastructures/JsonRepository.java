@@ -78,10 +78,6 @@ public class JsonRepository implements DataRepository {
         Path pathFile = Paths.get(path.toString(), file);
         fileExists(path.toString(), pathFile);
         try (BufferedReader r = Files.newBufferedReader(pathFile)) {
-            var gson = new GsonBuilder()
-                    .serializeNulls()
-                    .registerTypeAdapter(BookDTO.class, new CustomDeserialize())
-                    .create();
             List<BookDTO> temp = new Gson().fromJson(r, new TypeToken<List<BookDTO>>() {}.getType());
             if(temp == null) {
                 return new ArrayList<>();

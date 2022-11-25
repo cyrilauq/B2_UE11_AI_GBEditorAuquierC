@@ -43,7 +43,7 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler, C
     }
 
     /**
-     * Crée un nouveau choix avec comme libellé le label donnée et comme cible la page donnée.
+     * Crée un nouveau choix avec comme libellé le label donné et comme cible la page donnée.
      * Si aucune pas n'est trouvée pour le contenu donné, on ne fait rien.
      *
      * @param label         Libellé du choix à créer.

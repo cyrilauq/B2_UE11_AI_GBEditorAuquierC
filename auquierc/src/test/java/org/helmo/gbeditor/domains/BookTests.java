@@ -224,7 +224,10 @@ public class BookTests {
         List<Page> pages = new ArrayList<>(List.of(
                 page1, page2, page3
         ));
-        var book = new Book(new BookMetadata("kmlkmlk","2-200106-05-X", "Un test", "You"), pages);
+        var book = new Book(new BookMetadata("kmlkmlk","2-200106-05-X", "Un test", "You"));
+        book.addEnd(page1);
+        book.addEnd(page2);
+        book.addEnd(page3);
         book.removePage(page2);
         book.removePage(page3);
         book.removePage(page1);

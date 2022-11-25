@@ -1,19 +1,20 @@
 package org.helmo.gbeditor.presenter;
 
-// TODO : Réfléchir à un nom plus parlant
-/*
+/**
  * Cette interface s'occupe d'initialiser les méthodes permettant de réagir aux interactions de l'utilisateur avec les details d'un livre.
+ *
+ * TODO : Réfléchir à un nom plus parlant
  */
 public interface BookDetailsHandler {
 
-    /*
+    /**
      * Permet à l'utilisateur publier un livre ayant l'ISBN donné.
      *
      * @param isbn  ISBN du livre à publier.
      */
     void onPublishBook(final String isbn);
 
-    /*
+    /**
      * Permet à l'utilisateur de modifier un livre ayant l'ISBN donné.
      *
      * @param isbn  ISBN du livre à modifier.
