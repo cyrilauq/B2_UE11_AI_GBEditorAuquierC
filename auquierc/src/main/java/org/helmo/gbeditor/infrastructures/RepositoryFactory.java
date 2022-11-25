@@ -54,7 +54,7 @@ public class RepositoryFactory {
      *
      * @return          Un DataRepository qui travaille avec le Json.
      */
-    public static DataRepository of(final String filePath, final String fileName) {
+    private static DataRepository of(final String filePath, final String fileName) {
         return new JsonRepository(Paths.get(filePath), fileName);
     }
 
@@ -67,7 +67,7 @@ public class RepositoryFactory {
      * @return          Un repository permettant de travailler avec un fichier json.
      *                  Ce fichier se trouvera dans le dossier filePath donné et aura le nom fileName donné.
      */
-    public static DataRepository of(final Path filePath, final String fileName) {
+    private static DataRepository of(final Path filePath, final String fileName) {
         return new JsonRepository(filePath, fileName);
     }
 

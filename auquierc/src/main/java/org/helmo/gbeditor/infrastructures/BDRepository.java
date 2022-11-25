@@ -2,8 +2,6 @@ package org.helmo.gbeditor.infrastructures;
 
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
-import org.helmo.gbeditor.domains.Page;
-import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
 import org.helmo.gbeditor.infrastructures.exception.*;
@@ -80,36 +78,33 @@ public class BDRepository implements DataRepository {
             stmt.setString(1, isbn);
             return stmt.executeQuery().next();
         } catch (SQLException e) {
-            return true;
+            return false;
         }
     }
 
     @Override
     public void add(final Book... books) {
-        connection = factory.newConnection();
-        // TODO : Enlever la transaction ou l'utiliser correctement
-        if(books != null) {
-            List.of(books).forEach(b -> {
-                var dto = Mapping.convertToBookDTO(b);
-                if(containsBook(dto.getIsbn())) {
-                    throw new BookAlreadyExistsException("The books already exists.");
-                }
-                Transaction
-                        .from(connection)
-                        .commit((con) -> {
-                            saveAuthorIfNotExists(dto.getAuthor());
-                            saveBook(dto);
-                        })
-                        .onRollback((ex) -> {throw new UnableToSaveException(ex);})
-                        .execute();
-                tracker.put(b, dto);
-            });
-            loadBooks();
-        }
+        Transaction
+                .from(connection = factory.newConnection())
+                .commit((con) -> {
+                    for(final var b : books) {
+                        var dto = Mapping.convertToBookDTO(b);
+                        saveAuthorIfNotExists(dto.getAuthor());
+                        saveBook(dto);
+                        tracker.put(b, dto);
+                    }
+                })
+                .onRollback((ex) -> {throw new DataManipulationException("Une erreur est survenue lors de la sauvegarde du livre.", ex);})
+                .execute();
+        loadBooks();
+        closeConnection();
+    }
+
+    private void closeConnection() {
         try {
             connection.close();
         } catch (SQLException e) {
-            throw new UnableToSaveException(e);
+            throw new DataManipulationException("Erreur lors de la déconnexion à la base de donnée", e);
         }
     }
 
@@ -137,7 +132,7 @@ public class BDRepository implements DataRepository {
                     }
                     saveStmt.executeUpdate();
                 } catch (SQLException e) {
-                    throw new UnableToSavePageException(e.getMessage(), e);
+                    throw new DataManipulationException("Une erreur est survenue lors de la sauvegarde des choix du livre.", e);
                 }
             });
         }
@@ -178,7 +173,7 @@ public class BDRepository implements DataRepository {
         }
     }
 
-    private void saveBook(BookDTO dto) throws SQLException, UnableToSavePageException {
+    private void saveBook(BookDTO dto) throws SQLException {
         int id_book = -1;
         try (PreparedStatement saveStmt = connection.prepareStatement(INSERT_BOOK_STMT, Statement.RETURN_GENERATED_KEYS)) {
             saveStmt.setString(1, dto.getTitle());
@@ -213,7 +208,7 @@ public class BDRepository implements DataRepository {
                         }
                         stmt.addBatch();
                     } catch (SQLException e) {
-                        throw new UnableToSavePageException(e.getMessage(), e);
+                        throw new DataManipulationException("Une erreur est survenue lors de la sauvegarde des choix du livre.", e);
                     }
                 });
                 stmt.executeBatch();
@@ -246,7 +241,7 @@ public class BDRepository implements DataRepository {
                 loadStmt.setString(1, author);
                 loadStmt.executeUpdate();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DataManipulationException(e);
             }
         }
     }
@@ -257,7 +252,7 @@ public class BDRepository implements DataRepository {
             var keys = loadStmt.executeQuery();
             return keys.next();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataManipulationException(e);
         }
     }
 
@@ -269,7 +264,7 @@ public class BDRepository implements DataRepository {
             loadStmt.executeUpdate();
             existingIsbn.remove(toRemove);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataManipulationException("Une erreur est survenu dans la suppression du livre.", e);
         }
     }
 
@@ -306,7 +301,7 @@ public class BDRepository implements DataRepository {
             keys.close();
             return -1;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataManipulationException(e);
         }
     }
 
@@ -321,7 +316,7 @@ public class BDRepository implements DataRepository {
             keys.close();
             return -1;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataManipulationException(e);
         }
     }
 
@@ -330,12 +325,11 @@ public class BDRepository implements DataRepository {
         Transaction
                 .from(connection = factory.newConnection())
                 .commit((con) -> updateBook(book))
-                .onRollback((ex) -> {throw new UnableToSaveException(ex);})
+                .onRollback((ex) -> {throw new DataManipulationException("Une erreur est survenue lors de la sauvegarde du livre.", ex);})
                 .execute();
     }
 
     private void updateBook(final Book book) throws SQLException {
-        // TODO : Utiliser la grosse transaction du cours
         var dto = Mapping.convertToBookDTO(book);
         try (PreparedStatement saveStmt = connection.prepareStatement(UPDATE_BOOKS_STMT)) {
             var id_book = getIdBookFor(book);
@@ -361,7 +355,7 @@ public class BDRepository implements DataRepository {
         Transaction
                 .from(connection = factory.newConnection())
                 .commit((con) -> List.of(books).forEach(this::removeBook))
-                .onRollback((ex) -> {throw new UnableToSaveException(ex);})
+                .onRollback((ex) -> {throw new DataManipulationException("Une erreur est survenue lors de la suppression du livre.", ex);})
                 .execute();
         return true;
     }
@@ -386,39 +380,52 @@ public class BDRepository implements DataRepository {
         allDtos.clear();
         try(PreparedStatement loadStmt = (connection = factory.newConnection()).prepareStatement(SELECT_ALL_BOOKS_STMT)) {
             loadStmt.setString(1, author);
-            ResultSet rs = loadStmt.executeQuery();
-            var isbn = "";
-            while (rs.next() && !rs.wasNull()) {
-                isbn = rs.getString("isbn");
-                var publishDate = rs.getTimestamp("datePublication");
-                var tempDTO = new BookDTO(rs.getString("title"),
-                        isbn,
-                        rs.getString("author"),
-                        rs.getString("resume"),
-                        rs.getString("imgPath"),
-                        BookDTO.CURRENT_VERSION, new ArrayList<>(getPageFor(isbn)),
-                        publishDate == null ? null : publishDate.toLocalDateTime());
-                tempDTO.id = rs.getInt("id_book");
-                allDtos.add(tempDTO);
-                tracker.put(Mapping.convertToBook(tempDTO), tempDTO);
-                existingIsbn.add(isbn);
-            }
+            getDataFromStmt(loadStmt);
         } catch (SQLException | UnableToConnectException e) {
-            throw new UnableToOpenResourceException("Une erreur est survenue lors de la connexion à la base de données.", e);
+            throw new DataManipulationException("Une erreur est survenue lors de la récupération des données.", e);
         }
     }
 
+    private void getDataFromStmt(PreparedStatement loadStmt) throws SQLException {
+        try (final var rs = loadStmt.executeQuery()) {
+            while (rs.next() && !rs.wasNull()) {
+                var tempDTO = converertResultSetToDTO(rs);
+                allDtos.add(tempDTO);
+                tracker.put(Mapping.convertToBook(tempDTO), tempDTO);
+                existingIsbn.add(tempDTO.getIsbn());
+            }
+        }
+    }
+
+    private BookDTO converertResultSetToDTO(final ResultSet rs) throws SQLException {
+        var isbn = rs.getString("isbn");
+        var publishDate = rs.getTimestamp("datePublication");
+        var result = new BookDTO(rs.getString("title"),
+                isbn,
+                rs.getString("author"),
+                rs.getString("resume"),
+                rs.getString("imgPath"),
+                BookDTO.CURRENT_VERSION, new ArrayList<>(getPageFor(isbn)),
+                publishDate == null ? null : publishDate.toLocalDateTime());
+        result.id = rs.getInt("id_book");
+        return result;
+    }
+
     private Collection<PageDTO> getPageFor(final String isbn) throws SQLException {
-        final List<PageDTO> result = new ArrayList<>();
         try(PreparedStatement stmt = connection.prepareStatement(SELECT_PAGE_FROM_ISBN_STMT)) {
             stmt.setString(1, isbn);
-            ResultSet rs = stmt.executeQuery();
+            return getResultFromStmt(stmt);
+        }
+    }
+
+    private List<PageDTO> getResultFromStmt(final PreparedStatement stmt) throws SQLException {
+        final List<PageDTO> result = new ArrayList<>();
+        try (final var rs = stmt.executeQuery()) {
             while (rs.next() && !rs.wasNull()) {
                 result.add(
                         new PageDTO(rs.getString("content"), getChoicesFor(rs.getInt("id_page")), rs.getInt("num_page"))
                 );
             }
-            rs.close();
         }
         return result;
     }
@@ -437,7 +444,7 @@ public class BDRepository implements DataRepository {
 
     @Override
     public String getLastIsbn() {
-        try(Statement stmt = factory.newConnection().createStatement()) {
+        try(Statement stmt = (connection = factory.newConnection()).createStatement()) {
             stmt.executeQuery(SELECT_LAST_ISBN_STMT);
             ResultSet rs = stmt.getResultSet();
             if (rs.next() && !rs.wasNull()) {
@@ -445,7 +452,7 @@ public class BDRepository implements DataRepository {
             }
             return "0000000000";
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataManipulationException("Le livre n'a pas pu être récupéré.", e);
         }
     }
 
