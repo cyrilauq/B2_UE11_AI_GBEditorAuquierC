@@ -72,6 +72,8 @@ public class CreatePagePresenter extends Presenter {
 
     @Override
     public void onEnter(String fromView) {
+        view.clearBookPages();
+        view.clearChoiceTarget();
         currentPage = new Page("");
         currentBook = repo.searchBookFor(session.getCurrentIsbn());
         view.setAuthorName(session.getAuthor());

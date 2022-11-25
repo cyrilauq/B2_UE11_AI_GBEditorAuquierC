@@ -61,7 +61,11 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler, C
                 view.setMessage("La page cible du choix ne peut pas être la même que la page de destination.", TypeMessage.MESSAGE);
             }
         } else {
-            view.setMessage("Vous ne pouvez pas ajouter de choix sans spécifier de page de destination.", TypeMessage.MESSAGE);
+            if(label == null || label.isBlank()) {
+                view.setMessage("L'intitulé d'un choix ne peut pas être vide.", TypeMessage.MESSAGE);
+            } else {
+                view.setMessage("Vous ne pouvez pas ajouter de choix sans spécifier de page de destination.", TypeMessage.MESSAGE);
+            }
         }
         // TODO : Avertir utilisateur si page est la cible de choix.
     }

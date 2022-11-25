@@ -6,7 +6,6 @@ import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
 import org.helmo.gbeditor.infrastructures.exception.*;
 import org.helmo.gbeditor.infrastructures.jdbc.ConnectionFactory;
-import org.helmo.gbeditor.infrastructures.jdbc.UnableToSaveException;
 import org.helmo.gbeditor.repositories.DataRepository;
 
 import java.sql.*;
@@ -108,64 +107,6 @@ public class BDRepository implements DataRepository {
         }
     }
 
-    private void savePage(final PageDTO dto, final int id_book) throws SQLException {
-        try (PreparedStatement saveStmt = connection.prepareStatement(INSERT_PAGE_STMT)) {
-            if(id_book != -1) {
-                saveStmt.setString(1, dto.getContent());
-                saveStmt.setInt(2, id_book);
-                saveStmt.setInt(3, dto.getNumPage());
-                saveStmt.executeUpdate();
-            }
-        }
-    }
-
-    private void saveChoices(final PageDTO dto, final int id_book) throws SQLException {
-        try (PreparedStatement saveStmt = connection.prepareStatement(INSERT_CHOICES_STMT)) {
-            dto.getChoices().forEach((c, p) -> {
-                try {
-                    saveStmt.setString(1, c);
-                    saveStmt.setInt(2, getIdPageFor(dto.getContent(), id_book));
-                    if(p.contains(": ") && p.startsWith("Page")) {
-                        saveStmt.setInt(3, getIdPageFor(extractNPage(p), id_book));
-                    } else {
-                        saveStmt.setInt(3, getIdPageFor(p, id_book));
-                    }
-                    saveStmt.executeUpdate();
-                } catch (SQLException e) {
-                    throw new DataManipulationException("Une erreur est survenue lors de la sauvegarde des choix du livre.", e);
-                }
-            });
-        }
-    }
-
-    private int extractNPage(final String page) {
-        var num = page.substring(page.indexOf(" ") + 1, page.contains(":") ? page.indexOf(":") : page.length());
-        return Integer.parseInt(num);
-    }
-
-    private void updatePage(final PageDTO dto, final int id_book) throws SQLException {
-        try (PreparedStatement saveStmt = connection.prepareStatement(UPDATE_PAGE_STMT)) {
-            if(id_book != -1) {
-                saveStmt.setString(1, dto.getContent());
-                saveStmt.setInt(2, id_book);
-                saveStmt.setString(3, dto.getContent());
-                saveStmt.setInt(4, id_book);
-                saveStmt.executeUpdate();
-            }
-        }
-        if(id_book != -1) {
-            saveChoices(dto, id_book);
-        }
-    }
-
-    private boolean pageExists(final String pageContent, final int id_book) throws SQLException {
-        try(PreparedStatement stmt = connection.prepareStatement(PAGE_EXISTS_STMT)) {
-            stmt.setString(1, pageContent);
-            stmt.setInt(2, id_book);
-            return stmt.executeQuery().next();
-        }
-    }
-
     private void deletePageForBook(final int id_book) throws SQLException, UnableToSavePageException {
         try (PreparedStatement stmt = connection.prepareStatement(DELETE_PAGE_FROM_BOOK_STMT)) {
             stmt.setInt(1,id_book);
@@ -201,11 +142,7 @@ public class BDRepository implements DataRepository {
                     try {
                         stmt.setString(1, c);
                         stmt.setInt(2, getIdPageFor(page.getContent(), id_book));
-                        if(p.contains(": ") && p.startsWith("Page")) {
-                            stmt.setInt(3, getIdPageFor(extractNPage(p), id_book));
-                        } else {
-                            stmt.setInt(3, getIdPageFor(p, id_book));
-                        }
+                        stmt.setInt(3, getIdPageFor(p, id_book));
                         stmt.addBatch();
                     } catch (SQLException e) {
                         throw new DataManipulationException("Une erreur est survenue lors de la sauvegarde des choix du livre.", e);

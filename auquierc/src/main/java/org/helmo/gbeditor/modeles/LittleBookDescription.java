@@ -1,5 +1,7 @@
 package org.helmo.gbeditor.modeles;
 
+import java.util.Objects;
+
 /**
  * Définit les informations qui seront données à la vue lorsqu'on voudra afficher un livre.
  */
@@ -100,5 +102,10 @@ public class LittleBookDescription {
                 ", isbn='" + isbn + '\'' +
                 ", publishDate='" + publishDate + '\'' +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, imgPath, author, isbn, publishDate);
     }
 }

@@ -1,5 +1,7 @@
 package org.helmo.gbeditor.modeles;
 
+import java.util.Objects;
+
 /**
  * Définit les informations qui seront données à la vue lorsqu'on voudra afficher les détails d'un livre.
  */
@@ -110,5 +112,10 @@ public class ExtendedBookDescription {
                 "resume='" + resume + '\'' +
                 ", littleBookDescription=" + littleBookDescription +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resume, littleBookDescription);
     }
 }

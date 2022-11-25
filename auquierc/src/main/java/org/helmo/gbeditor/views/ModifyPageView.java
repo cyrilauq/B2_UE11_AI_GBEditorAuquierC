@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import org.helmo.gbeditor.modeles.ListChoiceItem;
 import org.helmo.gbeditor.presenter.ModifyPageInterface;
 import org.helmo.gbeditor.presenter.ModifyPagePresenter;
+import org.helmo.gbeditor.presenter.TypeMessage;
 import org.helmo.gbeditor.presenter.ViewName;
 
 public class ModifyPageView extends View implements ModifyPageInterface {
@@ -67,6 +68,8 @@ public class ModifyPageView extends View implements ModifyPageInterface {
 
     private final FlowPane choices = new FlowPane();
 
+    private final Label message = new Label();
+
     private final VBox choicesPnl = new VBox(new Label("Choix disponibles"), choices);
 
     /**
@@ -77,7 +80,7 @@ public class ModifyPageView extends View implements ModifyPageInterface {
     public ModifyPageView(ViewName viewName, final ModifyPagePresenter presenter) {
         super(viewName);
 
-        getChildren().addAll(header, optionPnl, choicesPnl, choiceForm);
+        getChildren().addAll(header, optionPnl, choicesPnl, choiceForm, message);
 
         this.presenter = presenter;
         presenter.setView(this);
@@ -99,6 +102,13 @@ public class ModifyPageView extends View implements ModifyPageInterface {
     @Override
     public void setPageContent(String content) {
 
+    }
+
+    @Override
+    public void setMessage(String txt, TypeMessage type) {
+        message.getStyleClass().clear();
+        message.getStyleClass().add(type.name());
+        message.setText(txt);
     }
 
     @Override

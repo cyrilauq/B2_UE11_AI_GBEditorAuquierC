@@ -8,6 +8,9 @@ import java.nio.file.StandardCopyOption;
 /**
  * Définit des méthodes utiles pour manipuler des fichiers.
  * Ces méthodes servent par exemples à copier un fichier et vérifier son extension.
+ *
+ * TODO : Convertir image en binaire pour l'insérer dans la DB
+ * TODO : Récupérer l'image binaire de la DB et la convertir en image dans la vue.
  */
 public class FileUtils {
     private final static byte[] PNG_BYTES = {

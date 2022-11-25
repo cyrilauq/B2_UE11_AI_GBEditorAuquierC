@@ -36,7 +36,7 @@ public class LoginPresenter extends Presenter {
         if(inputsAreValid(name, firstname)) {
             connexion(name, firstname);
             repo.setCurrentAuthor(name + " " + firstname);
-            view.goTo("HomeView");
+            view.goTo(ViewName.HOME_VIEW.getName());
         }
     }
 

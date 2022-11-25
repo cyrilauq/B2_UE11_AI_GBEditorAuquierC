@@ -11,11 +11,6 @@ import java.util.TreeMap;
  * @author cyril
  */
 public class BookMetadata {
-    private String title;
-    private ISBN isbn;
-    private String summary;
-    private final String author;
-    private LocalDateTime publishDate;
     private Map<BookFieldName, String> attributes = new TreeMap<>();
 
     /**
@@ -27,30 +22,16 @@ public class BookMetadata {
      * @param author    Auteur du livre
      */
     public BookMetadata(final String title, final String isbn, final String resume, final String author) {
-        this.title = title;
-        this.isbn = ISBN.of(isbn);
-        this.summary = resume;
-        this.author = author;
-    }
-
-    /**
-     * Crée un nouvel objet BookMetaData sur base d'infos données.
-     *
-     * @param title     Titre du livre
-     * @param isbn      ISBN du livre
-     * @param resume    Résumé du livre
-     * @param author    Auteur du livre
-     */
-    public BookMetadata(final String title, final String isbn, final String resume, final String author, final LocalDateTime publishDate) {
-        this.title = title;
-        this.isbn = ISBN.of(isbn);
-        this.summary = resume;
-        this.author = author;
-        this.publishDate = publishDate;
+        attributes.put(BookFieldName.ISBN, ISBN.of(isbn).forUser());
+        attributes.put(BookFieldName.SYS_ISBN, ISBN.of(isbn).toString());
+        attributes.put(BookFieldName.AUTHOR, author == null ? "" : author);
+        attributes.put(BookFieldName.SUMMARY, resume == null ? "" : resume);
+        attributes.put(BookFieldName.TITLE, title == null ? "" : title);
+        attributes.put(BookFieldName.PUBLISH_DATE, "");
     }
 
     public String getTitle() {
-        return title;
+        return get(BookFieldName.TITLE);
     }
 
     /**
@@ -63,74 +44,53 @@ public class BookMetadata {
      * @throws FieldNotFoundException si l'attribut recherché n'existe pas.
      */
     public String get(final BookFieldName attribute) {
-        switch (attribute) {
-            case TITLE:
-                return title;
-            case AUTHOR:
-                return author;
-            case SUMMARY:
-                return summary;
-            case ISBN:
-                return isbn.forUser();
-            case SYS_ISBN:
-                return isbn.toString();
-            case PUBLISH_DATE:
-                return publishDate == null ? null : publishDate.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm"));
-            default:
-                throw new FieldNotFoundException("Le champ chercher n'a pas été trouvé.");
+        if(attribute == null || !attributes.containsKey(attribute)) {
+            throw new FieldNotFoundException("Le champ chercher n'a pas été trouvé.");
         }
+        var val = attributes.get(attribute);
+        return val.isEmpty() ? null : val;
     }
 
-    public LocalDateTime getPublishDate() { return publishDate; }
+    public String getPublishDate() { return get(BookFieldName.PUBLISH_DATE); }
 
     public void setPublishDate(final LocalDateTime publishDate) {
-        this.publishDate = publishDate;
+        attributes.put(BookFieldName.PUBLISH_DATE, publishDate == null ? "" : publishDate.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")));
     }
 
     public void publish() {
-        publishDate = LocalDateTime.now();
+        attributes.put(BookFieldName.PUBLISH_DATE, LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")));
     }
 
-    public String getIsbn() { return isbn.toString(); }
+    public String getIsbn() { return get(BookFieldName.SYS_ISBN); }
 
     public String getSummary() {
-        return summary;
+        return get(BookFieldName.SUMMARY);
     }
 
     public String getAuthor() {
-        return author;
+        return get(BookFieldName.AUTHOR);
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        attributes.put(BookFieldName.AUTHOR, title);
     }
 
     public void setIsbn(String isbn) {
-        this.isbn = new ISBN(isbn);
+        attributes.put(BookFieldName.ISBN, new ISBN(isbn).forUser());
+        attributes.put(BookFieldName.SYS_ISBN, new ISBN(isbn).toString());
     }
 
     public void setSummary(String resume) {
-        this.summary = resume;
-    }
-
-    /**
-     * Crée une copie identique à un objet BookMetaData donné.
-     *
-     * @param toCopy    Objet BookMetaData qu'on souhaite copier.
-     *
-     * @return          La copie conforme du BookMetaData donné.
-     */
-    public static BookMetadata copyOf(BookMetadata toCopy) {
-        return new BookMetadata(toCopy.title, toCopy.isbn.toString(), toCopy.summary, toCopy.author);
+        attributes.put(BookFieldName.SUMMARY, resume);
     }
 
     @Override
     public String toString() {
         return "BookMetadata{" +
-                "title='" + title + '\'' +
-                ", isbn=" + isbn +
-                ", summary='" + summary + '\'' +
-                ", author='" + author + '\'' +
+                "title='" + get(BookFieldName.TITLE) + '\'' +
+                ", isbn=" + get(BookFieldName.ISBN) +
+                ", summary='" + get(BookFieldName.SUMMARY) + '\'' +
+                ", author='" + get(BookFieldName.AUTHOR) + '\'' +
                 '}';
     }
 

@@ -76,6 +76,8 @@ public class CreatePageView extends View implements CreatePageInterface {
                 validChoiceBtn);
     }
 
+    private final Label message = new Label();
+
     /**
      * Crée une nouvelle CreatePageView avec un titre donné et le presenter correspondant à la vue.
      *
@@ -91,7 +93,8 @@ public class CreatePageView extends View implements CreatePageInterface {
                 bookPages,
                 showChoicesBtn,
                 choiceForm,
-                validPage);
+                validPage,
+                message);
 
         this.presenter = presenter;
         this.presenter.setView(this);
@@ -154,7 +157,7 @@ public class CreatePageView extends View implements CreatePageInterface {
 
     @Override
     public void setMessage(String txt) {
-
+        message.setText(txt);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.helmo.gbeditor.presenter;
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.domains.Session;
+import org.helmo.gbeditor.infrastructures.exception.DataManipulationException;
 import org.helmo.gbeditor.infrastructures.exception.UnableToOpenResourceException;
 import org.helmo.gbeditor.modeles.ExtendedBookDescription;
 import org.helmo.gbeditor.modeles.LittleBookDescription;
@@ -64,22 +65,24 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
     }
 
     private void displayBooks() {
-        view.clearBooks();
-        books.clear();
-        if(books.size() == 0) {
+        try {
+            view.clearBooks();
+            books.clear();
             books.addAll(repo.getBooks());
-        }
-        if(books.size() > 0) {
-            for(int i = currentPage * MAX_BOOKS_PAGE; i < ((currentPage + 1) * MAX_BOOKS_PAGE) && i < books.size(); i++) {
-                var b = books.get(i);
-                var title = b.get(BookFieldName.TITLE).length() > 15 ? b.get(BookFieldName.TITLE).substring(0, 15) + "..." : b.get(BookFieldName.TITLE);
-                view.addBook(new LittleBookDescription(title,
-                        b.getImgPath(), b.get(BookFieldName.ISBN), b.get(BookFieldName.AUTHOR),
-                        b.get(BookFieldName.PUBLISH_DATE)));
+            if(books.size() > 0) {
+                for(int i = currentPage * MAX_BOOKS_PAGE; i < ((currentPage + 1) * MAX_BOOKS_PAGE) && i < books.size(); i++) {
+                    var b = books.get(i);
+                    var title = b.get(BookFieldName.TITLE).length() > 15 ? b.get(BookFieldName.TITLE).substring(0, 15) + "..." : b.get(BookFieldName.TITLE);
+                    view.addBook(new LittleBookDescription(title,
+                            b.getImgPath(), b.get(BookFieldName.ISBN), b.get(BookFieldName.AUTHOR),
+                            b.get(BookFieldName.PUBLISH_DATE)));
+                }
+                displayDetailsFor(books.get(currentPage * MAX_BOOKS_PAGE).get(BookFieldName.ISBN));
+            } else {
+                view.setMessage("Vous n'avez pas encore créé de livre.", TypeMessage.MESSAGE);
             }
-            displayDetailsFor(books.get(currentPage * MAX_BOOKS_PAGE).get(BookFieldName.ISBN));
-        } else {
-            view.setMessage("Vous n'avez pas encore créé de livre.", TypeMessage.MESSAGE);
+        } catch (DataManipulationException ignored) {
+            view.setMessage("Les livres n'ont pas pu être chargé.", TypeMessage.ERROR);
         }
     }
 
@@ -90,15 +93,19 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
      */
     @Override
     public void displayDetailsFor(final String isbn) {
-        var found = repo.searchBookFor(isbn);
-        if(found != null) {
-            session.setCurrentBook(found);
-            session.setCurrentBook(found);
-            session.setCurrentIsbn(isbn);
-            view.setDetails(getExtendedBookDescriptionFor(found));
-            found.forEach(p -> {
-                view.addAvailablePages(found.getNPageFor(p), p.getContent());
-            });
+        try {
+            var found = repo.searchBookFor(isbn);
+            if(found != null) {
+                session.setCurrentBook(found);
+                session.setCurrentBook(found);
+                session.setCurrentIsbn(isbn);
+                view.setDetails(getExtendedBookDescriptionFor(found));
+                found.forEach(p -> {
+                    view.addAvailablePages(found.getNPageFor(p), p.getContent());
+                });
+            }
+        } catch (DataManipulationException e) {
+            view.setMessage("Le livre n'a pas pu être récupéré.", TypeMessage.ERROR);
         }
     }
 
@@ -142,7 +149,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
      * Renvoie l'utilisateur vers la vue de création de livre.
      */
     public void onCreate() {
-        view.showPopUp("CreateBookView");
+        view.showPopUp(ViewName.CREATE_BOOK_VIEW.getName());
     }
 
     /**
@@ -182,7 +189,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
             return;
         }
         session.setCurrentPageContent(pageContent);
-        view.goTo("ModifyPageView");
+        view.goTo(ViewName.MODIFY_PAGE_VIEW.getName());
     }
 
     @Override
@@ -190,8 +197,12 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
         final var currentBook = session.getCurrentBook();
         if(isbn == null || isbn.isEmpty() || currentBook == null) { return; }
         // TODO : Demander confirmation pour la publication du livre. Expliquer à l'utilisateur qu'il ne pourra plus le modifier.
-        currentBook.publish();
-        repo.save(currentBook);
+        try {
+            currentBook.publish();
+            repo.save(currentBook);
+        } catch (DataManipulationException e) {
+            view.setMessage("Le livre n'a pas pu être publié.", TypeMessage.ERROR);
+        }
     }
 
     /**
@@ -203,7 +214,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
     public void onModifyBook(final String isbn) {
         if(isbn == null || isbn.isEmpty()) { return; }
         session.setCurrentIsbn(isbn);
-        view.goTo("ModifyBookView");
+        view.goTo(ViewName.MODIFY_BOOK_VIEW.getName());
     }
 
     @Override
@@ -227,12 +238,11 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
      * Affiche le formulaire de création de page.
      */
     public void onNotifyNewPage() {
-        view.showPopUp("CreatePageView");
+        view.showPopUp(ViewName.CREATE_PAGE_VIEW.getName());
     }
 
     @Override
     public void onRefresh() {
-        repo.loadBooks();
         refresh();
     }
 }

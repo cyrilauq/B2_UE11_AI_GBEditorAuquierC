@@ -33,13 +33,6 @@ public class BDRepositoryTests {
                         "jdbc:derby:Test;create=true",
                         "",
                         "");
-//            repo = RepositoryFactory.of(
-//                    "com.mysql.cj.jdbc.Driver",
-//                    "jdbc:mysql://localhost:3306/gbreader_tests?useUnicode=true & " +
-//                            "useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false & " +
-//                            "serverTimezone=UTC&useSSL=false",
-//                    "u823384744_cyril",
-//                    "Ca5wsd0e");
             repo.setCurrentAuthor("Auquier Cyril");
             repo.setUp();
         } catch(UnableToTearDownException e) {
