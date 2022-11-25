@@ -253,6 +253,7 @@ public class BDRepositoryTests {
     void whenBookIsPublishedAndSavedThenTheBookIsMemorizedInTheDBWithPublishDateTime() {
         repo.add(book1);
         var currentDateTime = LocalDateTime.now();
+        book1.addEnd(new Page("Hello"));
         book1.publish();
         repo.save(book1);
         var result = repo.getBooks();

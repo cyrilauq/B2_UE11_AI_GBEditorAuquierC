@@ -339,6 +339,7 @@ public class BookTests {
 
     @Test
     void whenBookIsPublishedThenModifyItIsImpossible() {
+        book.addEnd(new Page("Page 1"));
         book.publish();
         assertThrows(Book.CannotModifyPublishedBookException.class, () -> book.setNewData(
                 new BookMetadata(
@@ -350,6 +351,7 @@ public class BookTests {
 
     @Test
     void whenPublishBookAlreadyPublishedThenThrowException() {
+        book.addEnd(new Page("Page 1"));
         book.publish();
         assertThrows(Book.BookAlreadyPublishedException.class, () -> book.publish());
     }

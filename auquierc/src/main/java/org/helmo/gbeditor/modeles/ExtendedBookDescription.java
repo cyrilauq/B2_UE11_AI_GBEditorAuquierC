@@ -36,7 +36,7 @@ public class ExtendedBookDescription {
      *          Exemple: Le 20-11-22 à 10:10.
      */
     public String getPublishDate() {
-        return littleBookDescription.getPublishDate();
+        return littleBookDescription.getPublishState();
     }
 
     /**

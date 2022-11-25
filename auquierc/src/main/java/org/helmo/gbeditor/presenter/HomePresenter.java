@@ -202,6 +202,8 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
             repo.save(currentBook);
         } catch (DataManipulationException e) {
             view.setMessage("Le livre n'a pas pu être publié.", TypeMessage.ERROR);
+        } catch (Book.BookAlreadyPublishedException | Book.CannotPublishEmptyBookException e) {
+            view.setMessage(e.getMessage(), TypeMessage.MESSAGE);
         }
     }
 

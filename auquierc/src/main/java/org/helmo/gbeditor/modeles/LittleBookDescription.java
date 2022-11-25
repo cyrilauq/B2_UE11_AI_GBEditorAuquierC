@@ -44,8 +44,8 @@ public class LittleBookDescription {
         return imgPath;
     }
 
-    public String getPublishDate() {
-        return publishDate == null ? "Non publié" : "Le " + publishDate;
+    public String getPublishState() {
+        return publishDate == null ? "Non publié" : "Publié";
     }
 
     /**

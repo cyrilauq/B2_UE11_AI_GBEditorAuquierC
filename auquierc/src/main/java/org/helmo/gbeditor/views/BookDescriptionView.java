@@ -52,7 +52,7 @@ public class BookDescriptionView extends VBox {
             img.setImage(getImgFor(book.getImgPath()));
         }
 
-        getChildren().addAll(title, img, isbn, author);
+        getChildren().addAll(new Label(book.getPublishState()), title, img, isbn, author);
         setOnMouseClicked(e -> handler.displayDetailsFor(book.getIsbn()));
     }
 

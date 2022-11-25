@@ -60,6 +60,9 @@ public class Book implements Iterable<Page> {
         if(data.getPublishDate() != null) {
             throw new BookAlreadyPublishedException();
         }
+        if(pagesList.isEmpty()) {
+            throw new CannotPublishEmptyBookException();
+        }
         data.publish();
     }
 
@@ -361,6 +364,18 @@ public class Book implements Iterable<Page> {
          */
         public WrongFormattedBookException(String message) {
             super(message);
+        }
+    }
+
+    /**
+     * Définit une exception qui sera lancée quand l'utilisateur tentera de publié un livre qui ne contient pas de page.
+     */
+    public static class CannotPublishEmptyBookException extends RuntimeException {
+        /**
+         * Crée une nouvelle CannotPublishEmptyBookException.
+         */
+        public CannotPublishEmptyBookException() {
+            super("Un livre publié si il ne possède pas de page.");
         }
     }
 
