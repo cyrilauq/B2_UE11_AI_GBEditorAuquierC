@@ -44,6 +44,12 @@ public class LittleBookDescription {
         return imgPath;
     }
 
+    /**
+     * Récupère l'état de publication d'un livre.
+     *
+     * @return  La méthode renverra "Non publié" si <code>publishDate</code> vaut null, donc si le livre n'a pas encore été publié.
+     *          Sinon, "Publié".
+     */
     public String getPublishState() {
         return publishDate == null ? "Non publié" : "Publié";
     }

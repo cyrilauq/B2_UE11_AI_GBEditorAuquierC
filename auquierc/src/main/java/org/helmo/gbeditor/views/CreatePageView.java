@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.helmo.gbeditor.presenter.CreatePageInterface;
 import org.helmo.gbeditor.presenter.CreatePagePresenter;
+import org.helmo.gbeditor.presenter.TypeMessage;
 import org.helmo.gbeditor.presenter.ViewName;
 import org.helmo.gbeditor.views.style.Theme;
 
@@ -44,36 +45,12 @@ public class CreatePageView extends View implements CreatePageInterface {
         validPage.setOnAction(a -> notifyOnPageCreated());
     }
 
-    private final Button addChoiceBtn = new Button("Ajouter un choix"); {
-        addChoiceBtn.setOnAction(a -> notifyOnNewChoice());
-    }
-
     private final ComboBox<String> addOptions = new ComboBox<>(); {
         addOptions.setOnAction(a -> notifyOptionSelected());
     }
 
     private final FlowPane optionPnl = new FlowPane(); {
         optionPnl.getChildren().addAll(new Label("Où ajouter la page?"), addOptions);
-    }
-
-    private final ComboBox<String> choiceTarget = new ComboBox<>();
-
-    private final TextArea choiceContent = new TextArea();
-
-    private final Button validChoiceBtn = new Button("Ajouter le choix"); {
-        validChoiceBtn.setOnAction(a -> onAddNewChoice());
-    }
-
-    private final Button showChoicesBtn = new Button("Ajouter un choix"); {
-        showChoicesBtn.setOnAction(a -> onNotifyShowChoices());
-    }
-
-    private final FlowPane choiceForm = new FlowPane(); {
-        choiceForm.getChildren().addAll(
-                new Label("Nouveau choix"),
-                new VBox(new Label("Intitulé: "), choiceContent),
-                new VBox(new Label("Page cible: "), choiceTarget),
-                validChoiceBtn);
     }
 
     private final Label message = new Label();
@@ -91,8 +68,6 @@ public class CreatePageView extends View implements CreatePageInterface {
                 pageContentPnl,
                 optionPnl,
                 bookPages,
-                showChoicesBtn,
-                choiceForm,
                 validPage,
                 message);
 
@@ -114,21 +89,8 @@ public class CreatePageView extends View implements CreatePageInterface {
         return addOptions.getSelectionModel().getSelectedItem();
     }
 
-    private void notifyOnNewChoice() {
-        presenter.onNotifyNewChoice();
-    }
-
-    private void onAddNewChoice() {
-        presenter.onNotifyNewChoice(choiceContent.getText(),
-            choiceTarget.getSelectionModel().getSelectedItem());
-    }
-
     private void notifyOptionSelected() {
         presenter.onNotifyOptionSelected(addOptions.getSelectionModel().getSelectedItem());
-    }
-
-    private void onNotifyShowChoices() {
-        presenter.onShowChoices();
     }
 
     @Override
@@ -161,28 +123,13 @@ public class CreatePageView extends View implements CreatePageInterface {
     }
 
     @Override
+    public void setMessage(String txt, TypeMessage message) {
+        this.message.setText(txt);
+    }
+
+    @Override
     public void showBookPages(boolean show) {
         bookPages.setVisible(show);
-    }
-
-    @Override
-    public void showChoiceForm() {
-        choiceForm.setVisible(true);
-    }
-
-    @Override
-    public void hideChoiceForm() {
-        choiceForm.setVisible(false);
-    }
-
-    @Override
-    public void addChoiceTarget(String choice) {
-        choiceTarget.getItems().add(choice);
-    }
-
-    @Override
-    public void clearChoiceTarget() {
-        choiceTarget.getItems().clear();
     }
 
     @Override

@@ -22,7 +22,7 @@ public class BookDTO implements Comparable<BookDTO>, Iterable<PageDTO> {
     @SerializedName("imgPath")
     public final String imgPath;
     @SerializedName("pages")
-    public final List<PageDTO> pages = new ArrayList<>();
+    public List<PageDTO> pages = new ArrayList<>();
     @SerializedName("version")
     public String version = "1";
     @SerializedName("publishDate")

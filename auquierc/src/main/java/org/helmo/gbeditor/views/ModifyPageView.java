@@ -21,26 +21,7 @@ public class ModifyPageView extends View implements ModifyPageInterface {
         header.setOnBtnAction(e -> notifyOnHomePressed());
     }
 
-//    private final TextArea pageContent = new TextArea(); {
-//        pageContent.setWrapText(true);
-//        pageContent.addEventHandler(KeyEvent.KEY_TYPED, new KeyTypesHandler(pageContent, null, 150));
-//        pageContent.setPrefWidth(Theme.SND_WINDOW_WIDTH * .5);
-//    }
-//
-//    private final Label pageContentLbl = new Label("Contenu de la page"); {
-//        pageContentLbl.setWrapText(true);
-//    }
-//
-//    private final HBox pageContentPnl = new HBox(); {
-//        pageContentPnl.getChildren().addAll(new Label("Contenu de la page"),
-//                pageContent);
-//    }
-
-    private final ComboBox<String> bookPages = new ComboBox<>();
-
     private final ComboBox<String> addOptions = new ComboBox<>();
-
-    private final ComboBox<ListItemPageView> pagePositionChoice = new ComboBox<>();
 
     private final FlowPane optionPnl = new FlowPane(); {
         optionPnl.getChildren().addAll(new Label("Où ajouter la page?"), addOptions);

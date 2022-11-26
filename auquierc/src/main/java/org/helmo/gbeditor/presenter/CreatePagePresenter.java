@@ -44,19 +44,25 @@ public class CreatePagePresenter extends Presenter {
      */
     public void onNotifyAddPage(final String newPageContent, final String otherPageContent, final String addOption) {
         if(newPageContent != null && !newPageContent.isEmpty()) {
-            currentPage.setContent(newPageContent);
-            if(addOption.equals(BEGIN_OPTION)) {
-                currentBook.addBegin(currentPage);
-            } else if(addOption.equals(END_OPTION)) {
-                currentBook.addEnd(currentPage);
-            } else {
-                var page = currentBook.getPageFor(otherPageContent);
-                currentBook.addAfter(currentPage, page);
-            }
-            repo.save(currentBook);
+            addPageToBook(newPageContent, otherPageContent, addOption);
+            view.setMessage("La page a bien été créée.", TypeMessage.MESSAGE);
         } else {
             view.setMessage("Le contenu de la page ne peut pas être vide.", TypeMessage.ERROR);
         }
+    }
+
+    private void addPageToBook(final String newPageContent, final String otherPageContent, final String addOption) {
+        currentPage.setContent(newPageContent);
+        if(addOption.equals(BEGIN_OPTION)) {
+            currentBook.addBegin(currentPage);
+        } else if(addOption.equals(END_OPTION)) {
+            currentBook.addEnd(currentPage);
+        } else {
+            var page = currentBook.getPageFor(otherPageContent);
+            currentBook.addAfter(currentPage, page);
+        }
+        repo.save(currentBook);
+        currentPage = new Page("");
     }
 
     /**
@@ -73,11 +79,9 @@ public class CreatePagePresenter extends Presenter {
     @Override
     public void onEnter(String fromView) {
         view.clearBookPages();
-        view.clearChoiceTarget();
         currentPage = new Page("");
         currentBook = repo.searchBookFor(session.getCurrentIsbn());
         view.setAuthorName(session.getAuthor());
-        view.hideChoiceForm();
         view.setAddOptions(ADD_OPTION, BEGIN_OPTION);
         view.showBookPages(false);
         setBookPages();
@@ -102,40 +106,5 @@ public class CreatePagePresenter extends Presenter {
      */
     public void setView(final CreatePageInterface view) {
         this.view = view;
-    }
-
-    /**
-     * Réagit à l'évènement créé nouveau choix et affiche le formulaire de création de choix.
-     */
-    public void onNotifyNewChoice() {
-        view.showChoiceForm();
-    }
-
-    /**
-     * Réagit à l'évènement créé nouveau choix et crée un nouveau choix ayant pour libéllé celui donné et comme page de destination celle donnée.
-     *
-     * @param choice            Libellé du choix à créer.
-     * @param contentCiblePage  Contenu de la page cible du choix à créer
-     */
-    public void onNotifyNewChoice(final String choice, final String contentCiblePage) {
-        if(choice == null || choice.isEmpty()) {
-            view.setMessage("L'intitulé d'un choix ne peut pas être vide.");
-        } else if(contentCiblePage == null || contentCiblePage.isEmpty()) {
-            view.setMessage("Le choix doit obligatoirement pointé sur une page.");
-        } else {
-            currentPage.addChoice(choice.substring(choice.indexOf(":") + 2),
-                    repo.searchBookFor(session.getCurrentIsbn()).getPageFor(contentCiblePage));
-        }
-    }
-
-    /**
-     * Affiche les choix disponibles à l'utilisateur.
-     */
-    public void onShowChoices() {
-        view.showChoiceForm();
-        var book = repo.searchBookFor(session.getCurrentIsbn());
-        for(final var p : book) {
-            view.addChoiceTarget("Page " + book.getNForPage(p) + ": " + p.getContent());
-        }
     }
 }

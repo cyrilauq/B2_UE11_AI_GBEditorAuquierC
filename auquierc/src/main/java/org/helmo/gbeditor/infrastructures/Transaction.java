@@ -1,6 +1,6 @@
 package org.helmo.gbeditor.infrastructures;
 
-import org.helmo.gbeditor.infrastructures.jdbc.UnableToRollbackException;
+import org.helmo.gbeditor.infrastructures.exception.UnableToRollbackException;
 
 import java.sql.Connection;
 import java.sql.SQLException;

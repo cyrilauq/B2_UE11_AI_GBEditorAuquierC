@@ -27,28 +27,6 @@ public interface CreatePageInterface extends ViewInterface {
     void setMessage(final String message);
 
     /**
-     * Cache le menu d'ajout de choix d'une page.
-     */
-    void showChoiceForm();
-
-    /**
-     * Cache le menu d'ajout de choix d'une page.
-     */
-    void hideChoiceForm();
-
-    /**
-     * Ajoute une page dans les cibles possibles d'un choix.
-     *
-     * @param choice    Possibilité de cible.
-     */
-    void addChoiceTarget(final String choice);
-
-    /**
-     * Vide l'affichage des pages cible possible pour un choix.
-     */
-    void clearChoiceTarget();
-
-    /**
      * Affiche à l'écran les options disponibles pour l'ajout d'une page et affiche à l'écran le premier choix disponible.
      * Elle permet aussi de dire quel est le choix qui sera sélectionné par défaut.
      *
