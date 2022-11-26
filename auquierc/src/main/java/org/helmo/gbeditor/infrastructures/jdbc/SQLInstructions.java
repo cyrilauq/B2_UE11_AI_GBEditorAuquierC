@@ -83,7 +83,8 @@ public class SQLInstructions {
             "LEFT JOIN author a ON a.id_author = b.id_author " +
             "WHERE a.name = ?";
 
-    public static final String SELECT_BOOKS_WITH_ISBN_STMT = "SELECT b.title, b.resume, b.isbn, b.imgPath, " +
+    public static final String SELECT_BOOKS_WITH_ISBN_STMT = "SELECT b.id_book, b.title, b.resume, b.isbn, b.imgPath, " +
+            "b.datePublication, " +
             "(SELECT a.name FROM author a WHERE a.id_author = b.id_author) AS author " +
             "FROM book b " +
             "WHERE b.isbn = ?";

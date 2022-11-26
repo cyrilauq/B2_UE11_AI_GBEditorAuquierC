@@ -127,16 +127,20 @@ public class PageBDRepository {
     }
 
     private static Map<String, String> getChoicesFor(final Connection connection, final int id_page) throws SQLException {
-        final Map<String, String> result = new TreeMap<>();
         try(PreparedStatement stmt = connection.prepareStatement(SELECT_CHOICES_FROM_PAGE_STMT)) {
             stmt.setInt(1, id_page);
-            ResultSet rs = stmt.executeQuery();
+            return getChoicesFrom(stmt);
+        }
+    }
+
+    private static Map<String, String> getChoicesFrom(final PreparedStatement stmt) throws SQLException {
+        try(final var rs = stmt.executeQuery()) {
+            final Map<String, String> result = new TreeMap<>();
             while (rs.next() && !rs.wasNull()) {
                 result.put(rs.getString("content"), rs.getInt("targetP") + "");
             }
-            rs.close();
+            return result;
         }
-        return result;
     }
 
 }

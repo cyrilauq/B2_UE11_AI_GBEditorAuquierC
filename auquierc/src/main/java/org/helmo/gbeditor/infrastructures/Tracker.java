@@ -9,6 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Permet de lier un livre avec sa représentation en base de donnée.
+ * Cette liaison permet de récupérer à coup sûr l'identifiant en base de données du livre.
+ */
 public class Tracker {
 
     private final Map<Book, BookDTO> books = new HashMap<>();
@@ -39,7 +43,7 @@ public class Tracker {
      *              False si le livre ne s'y trouve pas.
      */
     public boolean contains(final Book book) {
-        return books.containsKey(book);
+        return getIdBookFor(book) != -1;
     }
 
     /**

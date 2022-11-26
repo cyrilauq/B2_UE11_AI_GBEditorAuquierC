@@ -45,11 +45,28 @@ public class BookBDRepository {
         saveStmt.setInt(7, dto.id);
     }
 
+    /**
+     * Insère le DTO donné au PreparedStatement donné pour pouvoir le sauvegarde en base de donnée plus tard.
+     *
+     * @param dto       DTO à sauvegarder
+     * @param saveStmt  PreparedStatement permettant la sauvegarde du DTO
+     *
+     * @throws SQLException
+     */
     protected static void addDtoToInserStmt(BookDTO dto, PreparedStatement saveStmt) throws SQLException {
         saveStmt.setString(1, dto.getTitle());
         saveStmt.setString(2, dto.getIsbn());
         saveStmt.setString(3, dto.getResume());
         saveStmt.setString(4, dto.getImgPath());
         saveStmt.setString(5, dto.getAuthor());
+    }
+
+    protected static BookDTO convertResultSetToDTO(final PreparedStatement stmt) throws SQLException {
+        try(final var rs = stmt.executeQuery()) {
+            while (rs.next() && !rs.wasNull()) {
+                return convertResultSetToDTO(stmt.getConnection(), rs);
+            }
+        }
+        return null;
     }
 }

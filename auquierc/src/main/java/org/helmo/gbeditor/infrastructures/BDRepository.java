@@ -2,6 +2,7 @@ package org.helmo.gbeditor.infrastructures;
 
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
+import org.helmo.gbeditor.factory.ISBNFactory;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
 import org.helmo.gbeditor.infrastructures.exception.*;
@@ -89,7 +90,7 @@ public class BDRepository implements DataRepository {
                 .from(connection = factory.newConnection())
                 .commit((con) -> {
                     for(final var b : books) {
-                        verifyIfBookExists(containsBook(b.get(BookFieldName.SYS_ISBN)));
+                        verifyIfBookExists(containsBook(Mapping.convertISBNToDTO(b.get(BookFieldName.SYS_ISBN))));
                         var dto = Mapping.convertToBookDTO(b);
                         saveAuthorIfNotExists(dto.getAuthor());
                         saveBook(dto);
@@ -164,7 +165,7 @@ public class BDRepository implements DataRepository {
 
     private void removeBook(final String isbn) {
         try(PreparedStatement loadStmt = connection.prepareStatement(DELETE_BOOKS_WITH_ISBN_STMT)) {
-            var toRemove = isbn.replaceAll("-", "");
+            var toRemove = Mapping.convertISBNToDTO(isbn.replaceAll("-", ""));
             deletePageForBook(getIdBookForIsbn(toRemove));
             loadStmt.setString(1, toRemove);
             loadStmt.executeUpdate();
@@ -246,7 +247,6 @@ public class BDRepository implements DataRepository {
         try (final var rs = loadStmt.executeQuery()) {
             while (rs.next() && !rs.wasNull()) {
                 var tempDTO = convertResultSetToDTO(connection, rs);
-                tempDTO.pages = getPageFor(tempDTO.getIsbn());
                 tracker.put(Mapping.convertToBook(tempDTO), tempDTO);
                 existingIsbn.add(tempDTO.getIsbn());
             }
@@ -263,26 +263,34 @@ public class BDRepository implements DataRepository {
     @Override
     public String getLastIsbn() {
         try(Statement stmt = (connection = factory.newConnection()).createStatement()) {
-            stmt.executeQuery(SELECT_LAST_ISBN_STMT);
-            ResultSet rs = stmt.getResultSet();
-            if (rs.next() && !rs.wasNull()) {
-                return rs.getString("isbn");
-            }
-            rs.close();
-            return "0000000000";
+            return getIsbnFrom(stmt);
         } catch (SQLException e) {
             throw new DataManipulationException("Le livre n'a pas pu être récupéré.", e);
         }
     }
 
+    private String getIsbnFrom(final Statement stmt) throws SQLException {
+        try(final var rs = stmt.executeQuery(SELECT_LAST_ISBN_STMT)) {
+            if (rs.next() && !rs.wasNull()) {
+                return rs.getString("isbn");
+            }
+            return "0000000000";
+        }
+    }
+
     @Override
     public Book searchBookFor(String isbn) {
-        // TODO : Charger toutes les données du livre ici.
-        for (final var b : tracker.getAllBooks()) {
-            if(b.get(BookFieldName.ISBN).equalsIgnoreCase(isbn)) {
-                return b;
+        Book result = null;
+        try(final var stmt = (connection = factory.newConnection()).prepareStatement(SELECT_BOOKS_WITH_ISBN_STMT)) {
+            stmt.setString(1, Mapping.convertISBNToDTO(isbn));
+            var tempDTO = convertResultSetToDTO(stmt);
+            if(tempDTO != null) {
+                tempDTO.pages = getPageFor(tempDTO.getIsbn());
+                result = Mapping.convertToBook(tempDTO);
             }
+        } catch (SQLException e) {
+            throw new DataManipulationException("Une erreur est survenue lors de la récupération du livre ayant l'ISBN: " + isbn, e);
         }
-        return null;
+        return result;
     }
 }

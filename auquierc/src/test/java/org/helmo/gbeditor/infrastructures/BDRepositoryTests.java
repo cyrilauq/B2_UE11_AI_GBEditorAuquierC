@@ -106,7 +106,7 @@ public class BDRepositoryTests {
         repo.save(book1);
         repo.remove(book2.get(BookFieldName.ISBN));
         compareResult(List.of(book1), repo.getBooks());
-        assertIterableEquals(book1, repo.getBooks().get(0));
+        assertEquals(book1, repo.getBooks().get(0));
     }
 
     @Test
@@ -189,6 +189,7 @@ public class BDRepositoryTests {
         book1.addEnd(page2);
         repo.add(book1, book2);
         repo.remove(book2.get(BookFieldName.ISBN));
+        compareResult(List.of(book1), repo.getBooks());
         book2 = Book.of(
                 new BookMetadata("Title Book V2","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
@@ -249,7 +250,7 @@ public class BDRepositoryTests {
         compareResult(List.of(book1), repo.getBooks());
         var book1Iter = book1.iterator();
         var repo1Iter = repo.getBooks().get(0).iterator();
-        assertIterableEquals(book1, repo.getBooks().get(0));
+        assertIterableEquals(book1, repo.searchBookFor("2-200106-05-X"));
         while(book1Iter.hasNext() && repo1Iter.hasNext()) {
             assertIterableEquals(book1Iter.next(), repo1Iter.next());
         }
@@ -281,6 +282,21 @@ public class BDRepositoryTests {
         );
         repo.save(book1);
         compareResult(List.of(bookResult, book2), repo.getBooks());
+    }
+
+    @Test
+    void whenIsbnIsChangedAndTheBookSavedThenNoBookIsAddedButTheBookIsUpdatedInTheDB() {
+        var result = Book.of(
+                new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
+                "200106", "fileName.png"
+        );
+        repo.add(book1);
+        assertNotEquals(result, repo.getBooks().get(0));
+        book1.setNewData(
+                new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
+                "200106", "fileName.png");
+        repo.save(book1);
+        assertIterableEquals(List.of(result), repo.getBooks());
     }
 
     private void compareResult(final Collection<Book> expected, final Collection<Book> actual) {

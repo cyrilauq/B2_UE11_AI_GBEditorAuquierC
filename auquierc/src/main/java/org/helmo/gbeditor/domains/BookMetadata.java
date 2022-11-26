@@ -13,7 +13,7 @@ import java.util.Map;
  * Pour stocker les attributs d'une BookMetaData j'ai choisi une Map, car je voulais lier des clés(BookFieldName = nom des attributs)
  * à des valeurs(String = valeur des attributs).
  * Pour l'implémentation de la Map j'ai choisi une HashMap, car je ne souhaitais pas avoir de tris sur mes attributs et que j'allais souvent utiliser
- * la méthode get qui a une CTT en O(1) pour une HashMap contraiement àla TreeMap où la sa CTT en en O(logN).
+ * la méthode get qui a une CTT en O(1) pour une HashMap contrairement à la TreeMap où sa CTT en en O(logN).
  */
 public class BookMetadata {
     private final Map<BookFieldName, String> attributes = new HashMap<>();
@@ -29,10 +29,10 @@ public class BookMetadata {
     public BookMetadata(final String title, final String isbn, final String resume, final String author) {
         attributes.put(BookFieldName.ISBN, ISBN.of(isbn).forUser());
         attributes.put(BookFieldName.SYS_ISBN, ISBN.of(isbn).toString());
-        attributes.put(BookFieldName.AUTHOR, author == null ? "" : author);
-        attributes.put(BookFieldName.SUMMARY, resume == null ? "" : resume);
-        attributes.put(BookFieldName.TITLE, title == null ? "" : title);
-        attributes.put(BookFieldName.PUBLISH_DATE, "");
+        attributes.put(BookFieldName.AUTHOR, author);
+        attributes.put(BookFieldName.SUMMARY, resume);
+        attributes.put(BookFieldName.TITLE, title);
+        attributes.put(BookFieldName.PUBLISH_DATE, null);
     }
 
     /**
@@ -46,8 +46,7 @@ public class BookMetadata {
      */
     public String get(final BookFieldName attribute) {
         verifyIfFieldExists(attribute);
-        var val = attributes.get(attribute);
-        return val.isEmpty() ? null : val;
+        return attributes.get(attribute);
     }
 
     public void setPublishDate(final LocalDateTime publishDate) {

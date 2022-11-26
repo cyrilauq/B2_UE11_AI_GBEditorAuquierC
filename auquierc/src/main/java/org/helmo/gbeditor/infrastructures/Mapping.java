@@ -180,11 +180,11 @@ public class Mapping {
         return result;
     }
 
-    private static String convertISBNFromDTO(final String isbn) {
+    protected static String convertISBNFromDTO(final String isbn) {
         final var temp = isbn.replaceAll("-", "");
-        if(isbn.length() == ISBN.ISBN_MAX_LENGTH) {
+        if(temp.length() == ISBN.ISBN_MAX_LENGTH) {
             String result = temp.substring(0, 9);
-            if(isbn.endsWith("10")) {
+            if(temp.endsWith("10")) {
                 return result +  "X";
             }
             return result +  "0";
@@ -192,11 +192,11 @@ public class Mapping {
         return isbn;
     }
 
-    private static String convertISBNToDTO(final String isbn) {
+    protected static String convertISBNToDTO(final String isbn) {
         final var temp = isbn.replaceAll("-", "");
-        if(isbn.length() == ISBN.ISBN_MAX_LENGTH) {
+        if(temp.length() == ISBN.ISBN_MIN_LENGTH) {
             String result = temp.substring(0, 9);
-            if(isbn.endsWith("0")) {
+            if(temp.endsWith("0")) {
                 return result +  "11";
             }
             return result +  "10";
