@@ -1,12 +1,12 @@
 package org.helmo.gbeditor.presenter;
 
-import static org.mockito.Mockito.*;
-
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.infrastructures.RepositoryFactory;
 import org.helmo.gbeditor.repositories.DataRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.mockito.Mockito.*;
 
 public class LoginPresenterTests {
     private ViewInterface mockedView;

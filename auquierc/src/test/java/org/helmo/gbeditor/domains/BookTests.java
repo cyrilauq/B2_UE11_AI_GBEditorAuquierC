@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,11 +18,6 @@ public class BookTests {
                 new BookMetadata("Title","2-200106-05-X", "Un test", "You"),
                 "200106"
         );
-    }
-
-    @Test
-    void aBookKnowHisRealIsbn() {
-        assertEquals("2-200106-05-10", book.get(BookFieldName.SYS_ISBN));
     }
 
     @Test
@@ -173,9 +167,9 @@ public class BookTests {
         book.addEnd(page3);
         book.addAfter(page2, page1);
 
-        assertEquals(1, book.getNPageFor(page1));
-        assertEquals(2, book.getNPageFor(page2));
-        assertEquals(3, book.getNPageFor(page3));
+        assertEquals(1, book.getNForPage(page1));
+        assertEquals(2, book.getNForPage(page2));
+        assertEquals(3, book.getNForPage(page3));
 
         assertIterableEquals(new ArrayList<>(
                         List.of(
@@ -261,8 +255,8 @@ public class BookTests {
         book.addBegin(page1);
         book.addEnd(page2);
         var pages = List.of(page1, page2);
-        assertEquals(1, book.getNPageFor(page1));
-        assertEquals(2, book.getNPageFor(page2));
+        assertEquals(1, book.getNForPage(page1));
+        assertEquals(2, book.getNForPage(page2));
         assertEquals(page2, book.getPageFor("Page 2"));
         assertEquals(2, book.pageCount());
         assertIterableEquals(book, pages);
@@ -284,8 +278,8 @@ public class BookTests {
         book.addEnd(page2);
         book.addEnd(page3);
         book.removePage(page2);
-        assertEquals(1, book.getNPageFor(page1));
-        assertEquals(2, book.getNPageFor(page3));
+        assertEquals(1, book.getNForPage(page1));
+        assertEquals(2, book.getNForPage(page3));
         assertEquals(page3, book.getPageFor("Page 3"));
         assertEquals(2, book.pageCount());
         assertFalse(page1.getChoices().values().contains(page2));

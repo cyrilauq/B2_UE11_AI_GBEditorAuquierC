@@ -85,6 +85,9 @@ public class Transaction {
     }
 }
 
+/**
+ * Cette classe définit une exception qui sera lancée si la transaction n'est pas supportée.
+ */
 class TransactionNotSupportedException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;

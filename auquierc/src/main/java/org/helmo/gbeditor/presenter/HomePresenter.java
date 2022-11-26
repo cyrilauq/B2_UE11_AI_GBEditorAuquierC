@@ -101,7 +101,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
                 session.setCurrentIsbn(isbn);
                 view.setDetails(getExtendedBookDescriptionFor(found));
                 found.forEach(p -> {
-                    view.addAvailablePages(found.getNPageFor(p), p.getContent());
+                    view.addAvailablePages(found.getNForPage(p), p.getContent());
                 });
             }
         } catch (DataManipulationException e) {

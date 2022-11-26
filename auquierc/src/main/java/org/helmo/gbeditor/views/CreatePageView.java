@@ -7,7 +7,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import org.helmo.gbeditor.presenter.CreatePageInterface;
 import org.helmo.gbeditor.presenter.CreatePagePresenter;
 import org.helmo.gbeditor.presenter.TypeMessage;

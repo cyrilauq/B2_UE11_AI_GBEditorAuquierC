@@ -1,7 +1,6 @@
 package org.helmo.gbeditor.infrastructures;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;

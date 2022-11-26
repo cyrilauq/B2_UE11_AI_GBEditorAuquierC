@@ -1,9 +1,6 @@
 package org.helmo.gbeditor.infrastructures;
 
-import org.helmo.gbeditor.domains.Book;
-import org.helmo.gbeditor.domains.BookFieldName;
-import org.helmo.gbeditor.domains.BookMetadata;
-import org.helmo.gbeditor.domains.Page;
+import org.helmo.gbeditor.domains.*;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
 
@@ -12,9 +9,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
- *
  * Définit la manière dont on convertit un BookDTO vers en Book et vis-versa, et les méthodes utiles à ces conversions.
- *
+ * TODO : ne pas faire la conversion dans de l'ISBN lorsqu'on l'initialise mais lors qu'on converti Book => DTO et vice versa.
  */
 public class Mapping {
 
@@ -45,7 +41,7 @@ public class Mapping {
         return new Book(
                 new BookMetadata(
                         dto.getTitle(),
-                        dto.getIsbn(),
+                        convertISBNFromDTO(dto.getIsbn()),
                         dto.getResume(),
                         dto.getAuthor()
                 )
@@ -61,7 +57,7 @@ public class Mapping {
         return new Book(
                 new BookMetadata(
                         dto.getTitle(),
-                        dto.getIsbn(),
+                        convertISBNFromDTO(dto.getIsbn()),
                         dto.getResume(),
                         dto.getAuthor()
                 ),
@@ -103,7 +99,7 @@ public class Mapping {
         final var result = new Book(
                 new BookMetadata(
                         dto.getTitle(),
-                        dto.getIsbn(),
+                        convertISBNFromDTO(dto.getIsbn()),
                         dto.getResume(),
                         dto.getAuthor()
                 ),
@@ -127,7 +123,7 @@ public class Mapping {
         final var date = b.get(BookFieldName.PUBLISH_DATE);
         return new BookDTO(
                 b.get(BookFieldName.TITLE),
-                b.get(BookFieldName.ISBN),
+                convertISBNToDTO(b.get(BookFieldName.ISBN)),
                 b.get(BookFieldName.AUTHOR),
                 b.get(BookFieldName.SUMMARY),
                 b.getImgPath(),
@@ -182,6 +178,30 @@ public class Mapping {
             ));
         }
         return result;
+    }
+
+    private static String convertISBNFromDTO(final String isbn) {
+        final var temp = isbn.replaceAll("-", "");
+        if(isbn.length() == ISBN.ISBN_MAX_LENGTH) {
+            String result = temp.substring(0, 9);
+            if(isbn.endsWith("10")) {
+                return result +  "X";
+            }
+            return result +  "0";
+        }
+        return isbn;
+    }
+
+    private static String convertISBNToDTO(final String isbn) {
+        final var temp = isbn.replaceAll("-", "");
+        if(isbn.length() == ISBN.ISBN_MAX_LENGTH) {
+            String result = temp.substring(0, 9);
+            if(isbn.endsWith("0")) {
+                return result +  "11";
+            }
+            return result +  "10";
+        }
+        return isbn;
     }
 
 }

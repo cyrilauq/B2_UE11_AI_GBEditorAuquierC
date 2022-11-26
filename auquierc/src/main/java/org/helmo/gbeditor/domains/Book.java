@@ -30,18 +30,6 @@ public class Book implements Iterable<Page> {
         this.imgPath = imgPath;
     }
 
-    private void setTitle(final String title) {
-        data.setTitle(title);
-    }
-
-    private void setSummary(final String summary) {
-        data.setSummary(summary);
-    }
-
-    private void setIsbn(final String isbn) {
-        data.setIsbn(isbn);
-    }
-
     /**
      * Récupère la valeur d'un attribut donné.
      *
@@ -57,7 +45,7 @@ public class Book implements Iterable<Page> {
      * Publie le livre en lui donnant comme date et heure de publication celles de l'instant présent.
      */
     public void publish() {
-        if(data.getPublishDate() != null) {
+        if(data.get(BookFieldName.PUBLISH_DATE) != null) {
             throw new BookAlreadyPublishedException();
         }
         if(pagesList.isEmpty()) {
@@ -86,29 +74,18 @@ public class Book implements Iterable<Page> {
      * @throws WrongFormattedBookException          Si les données fournies ne sont pas valide.
      */
     public void setNewData(final BookMetadata data, final String authorMatricule, final String imgPath) {
-        if(this.data.getPublishDate() != null) {
+        if(this.data.get(BookFieldName.PUBLISH_DATE) != null) {
             throw new CannotModifyPublishedBookException();
         }
-        var message = validBook(data.getTitle(), data.getSummary(), ISBN.isValid(data.getIsbn(), authorMatricule));
+        var message = validBook(data.get(BookFieldName.TITLE),
+                data.get(BookFieldName.SUMMARY), ISBN.isValid(data.get(BookFieldName.ISBN), authorMatricule));
         if(message != null) {
             throw new WrongFormattedBookException(message);
         }
         this.imgPath = imgPath;
-        setSummary(data.getSummary());
-        setTitle(data.getTitle());
-        setIsbn(data.getIsbn());
-    }
-
-    /**
-     * Récupère le numéro de page d'une page donnée.
-     *
-     * @param page  Page dont on veut le numéro.
-     *
-     * @return      Numéro de la page.
-     *             0 si la page n'est pas présente dans le livre.
-     */
-    public int getNPageFor(final Page page) {
-        return indexOf(page) + 1;
+        this.data.set(BookFieldName.SUMMARY, data.get(BookFieldName.SUMMARY));
+        this.data.set(BookFieldName.TITLE, data.get(BookFieldName.TITLE));
+        this.data.set(BookFieldName.ISBN, data.get(BookFieldName.ISBN));
     }
 
     /**
@@ -181,7 +158,8 @@ public class Book implements Iterable<Page> {
      *                          Si les infos données ne sont pas valide la méthode renvoie une WrongFormattedBookException.
      */
     public static Book of(final BookMetadata metadata, String authorMatricule, final String filePath) {
-        var message = validBook(metadata.getTitle(), metadata.getSummary(), ISBN.isValid(metadata.getIsbn(), authorMatricule));
+        var message = validBook(metadata.get(BookFieldName.TITLE),
+                metadata.get(BookFieldName.SUMMARY), ISBN.isValid(metadata.get(BookFieldName.ISBN), authorMatricule));
         if(message != null) {
             throw new WrongFormattedBookException(message);
         }
@@ -207,7 +185,8 @@ public class Book implements Iterable<Page> {
      *                          Si les infos données ne sont pas valide la méthode renvoie une WrongFormattedBookException.
      */
     public static Book of(final BookMetadata metadata, String authorMatricule) {
-        var message = validBook(metadata.getTitle(), metadata.getSummary(), ISBN.isValid(metadata.getIsbn(), authorMatricule));
+        var message = validBook(metadata.get(BookFieldName.TITLE),
+                metadata.get(BookFieldName.SUMMARY), ISBN.isValid(metadata.get(BookFieldName.ISBN), authorMatricule));
         if(message != null) {
             throw new WrongFormattedBookException(message);
         }
@@ -338,7 +317,7 @@ public class Book implements Iterable<Page> {
         if(this == obj) { return true; }
         if(!(obj instanceof Book)) { return false; }
         Book that = (Book) obj;
-        return this.data.getIsbn().equals(that.data.getIsbn());
+        return this.data.get(BookFieldName.ISBN).equals(that.data.get(BookFieldName.ISBN));
     }
 
     @Override

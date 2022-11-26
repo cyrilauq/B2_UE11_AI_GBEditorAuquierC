@@ -16,9 +16,18 @@ import java.util.TreeMap;
 import static org.helmo.gbeditor.infrastructures.jdbc.SQLInstructions.*;
 
 /**
- * S'occupe des opérations en base se données liées aux pages d'un livre
+ * S'occupe de certaines des opérations en base se données liées aux pages d'un livre
  */
 public class PageBDRepository {
+
+    /**
+     * Ajoute les pages d'un livre à un PreparedStatement.
+     *
+     * @param dto   Livre qui contient les pages qu'on souhaite ajouter
+     * @param stmt  Contient la requête pour l'ajout des pages.
+     *
+     * @throws SQLException
+     */
     protected static void addPageToStmt(final BookDTO dto, final PreparedStatement stmt) throws SQLException {
         for(final var p : dto) {
             addPageToStmt(p, dto.id, stmt);
@@ -26,6 +35,15 @@ public class PageBDRepository {
         stmt.executeBatch();
     }
 
+    /**
+     * Ajoute les choix d'une page à une page en base de données.
+     *
+     * @param connection    Connection à la base de données.
+     * @param dto           Itérable contenant les pages que l'on souhaite ajouter.
+     * @param id_book       identifiant du livre en base de donnée, auquel les pages appartiennent.
+     *
+     * @throws SQLException
+     */
     protected static void addChoicesToPages(final Connection connection, final Iterable<PageDTO> dto, final int id_book) throws SQLException {
         try(final var stmt = connection.prepareStatement(INSERT_CHOICES_STMT)) {
             for(final var page : dto) {
@@ -44,6 +62,14 @@ public class PageBDRepository {
         }
     }
 
+    /**
+     * Ajoute une page donnée à un PreparedStatement donné.
+     *
+     * @param dto       Page à ajouter en base de donnée.
+     * @param id_book   identifiant en base de données du livre auquel appartient la page.
+     * @param stmt      PreparedStatement permettant l'ajout en base de données de la page.
+     * @throws SQLException
+     */
     protected static void addPageToStmt(final PageDTO dto, final int id_book, final PreparedStatement stmt) throws SQLException {
         if(id_book != -1) {
             stmt.setString(1, dto.getContent());
@@ -72,6 +98,15 @@ public class PageBDRepository {
         }
     }
 
+    /**
+     * Récupère les pages provenant d'un PreparedStatement donné.
+     *
+     * @param stmt  PreparedStatement qui contient les pages à récupérée.
+     *
+     * @return      Une liste de page.
+     *
+     * @throws SQLException
+     */
     protected static List<PageDTO> getPageFromStmt(final PreparedStatement stmt) throws SQLException {
         final List<PageDTO> result = new ArrayList<>();
         try(final var rs = stmt.executeQuery()) {

@@ -2,16 +2,21 @@ package org.helmo.gbeditor.domains;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Cette classe permet de stocker les informations générales d'un livre: titre, auteur, isbn et résumé.
  *
  * @author cyril
+ *
+ * Pour stocker les attributs d'une BookMetaData j'ai choisi une Map, car je voulais lier des clés(BookFieldName = nom des attributs)
+ * à des valeurs(String = valeur des attributs).
+ * Pour l'implémentation de la Map j'ai choisi une HashMap, car je ne souhaitais pas avoir de tris sur mes attributs et que j'allais souvent utiliser
+ * la méthode get qui a une CTT en O(1) pour une HashMap contraiement àla TreeMap où la sa CTT en en O(logN).
  */
 public class BookMetadata {
-    private Map<BookFieldName, String> attributes = new TreeMap<>();
+    private final Map<BookFieldName, String> attributes = new HashMap<>();
 
     /**
      * Crée un nouvel objet BookMetaData sur base d'infos données.
@@ -30,10 +35,6 @@ public class BookMetadata {
         attributes.put(BookFieldName.PUBLISH_DATE, "");
     }
 
-    public String getTitle() {
-        return get(BookFieldName.TITLE);
-    }
-
     /**
      * Récupère la valeur de l'attribut recherché.
      *
@@ -44,14 +45,10 @@ public class BookMetadata {
      * @throws FieldNotFoundException si l'attribut recherché n'existe pas.
      */
     public String get(final BookFieldName attribute) {
-        if(attribute == null || !attributes.containsKey(attribute)) {
-            throw new FieldNotFoundException("Le champ chercher n'a pas été trouvé.");
-        }
+        verifyIfFieldExists(attribute);
         var val = attributes.get(attribute);
         return val.isEmpty() ? null : val;
     }
-
-    public String getPublishDate() { return get(BookFieldName.PUBLISH_DATE); }
 
     public void setPublishDate(final LocalDateTime publishDate) {
         attributes.put(BookFieldName.PUBLISH_DATE, publishDate == null ? "" : publishDate.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")));
@@ -63,25 +60,22 @@ public class BookMetadata {
 
     public String getIsbn() { return get(BookFieldName.SYS_ISBN); }
 
-    public String getSummary() {
-        return get(BookFieldName.SUMMARY);
+    public void set(final BookFieldName attribute, final String value) {
+        verifyIfNonImmuableField(attribute);
+        verifyIfFieldExists(attribute);
+        attributes.put(attribute, value);
     }
 
-    public String getAuthor() {
-        return get(BookFieldName.AUTHOR);
+    private void verifyIfNonImmuableField(BookFieldName attribute) {
+        if(attribute == BookFieldName.AUTHOR || (attribute == BookFieldName.PUBLISH_DATE && get(BookFieldName.PUBLISH_DATE) != null)) {
+            throw new IllegalArgumentException("The mentioned field cannot be changed.");
+        }
     }
 
-    public void setTitle(String title) {
-        attributes.put(BookFieldName.AUTHOR, title);
-    }
-
-    public void setIsbn(String isbn) {
-        attributes.put(BookFieldName.ISBN, new ISBN(isbn).forUser());
-        attributes.put(BookFieldName.SYS_ISBN, new ISBN(isbn).toString());
-    }
-
-    public void setSummary(String resume) {
-        attributes.put(BookFieldName.SUMMARY, resume);
+    private void verifyIfFieldExists(BookFieldName attribute) {
+        if(attribute == null || !attributes.containsKey(attribute)) {
+            throw new FieldNotFoundException("Le champ chercher n'a pas été trouvé.");
+        }
     }
 
     @Override

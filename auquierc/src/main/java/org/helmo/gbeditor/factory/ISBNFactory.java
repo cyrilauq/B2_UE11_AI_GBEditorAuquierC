@@ -23,6 +23,24 @@ public class ISBNFactory {
             total += Integer.parseInt(isbn.charAt(i) + "") * (10 - i);
         }
         final int temp = 11 - (total % 11);
-        return new ISBN(isbn + temp);
+        String result = isbn + temp;
+        if(result.length() == ISBN.ISBN_MAX_LENGTH) {
+            String result2 = isbn.substring(0, 9);
+            if(result.endsWith("10")) {
+                result = result2 +  "X";
+            } else {
+                result = result2 +  "0";
+            }
+        }
+        return new ISBN(formatIsbn(result));
+    }
+
+    public static String formatIsbn(final String codeIsbn) {
+        if(codeIsbn.length() < ISBN.ISBN_MIN_LENGTH) { return codeIsbn; }
+        var builder = new StringBuilder(codeIsbn)
+                .insert(9, "-")
+                .insert(7, "-")
+                .insert(1, "-");
+        return builder.toString();
     }
 }

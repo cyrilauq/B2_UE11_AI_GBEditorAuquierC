@@ -1,14 +1,13 @@
 package org.helmo.gbeditor.infrastructures;
 
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
-import org.helmo.gbeditor.infrastructures.dto.PageDTO;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
 
-import static org.helmo.gbeditor.infrastructures.jdbc.SQLInstructions.SELECT_CHOICES_FROM_PAGE_STMT;
-import static org.helmo.gbeditor.infrastructures.jdbc.SQLInstructions.SELECT_PAGE_FROM_ISBN_STMT;
-
+/**
+ * S'occupe de certaines des opérations en base se données liées aux livres.
+ */
 public class BookBDRepository {
     protected static BookDTO convertResultSetToDTO(final Connection connection, final ResultSet rs) throws SQLException {
         var isbn = rs.getString("isbn");

@@ -1,5 +1,7 @@
 package org.helmo.gbeditor.domains;
 
+import org.helmo.gbeditor.factory.ISBNFactory;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -9,6 +11,9 @@ import java.util.regex.Pattern;
  * @author  Cyril Auquier
  */
 public class ISBN {
+    public static final int ISBN_MIN_LENGTH = 10;
+    public static final int ISBN_MAX_LENGTH = 11;
+    public static final char LANG_CODE = '2';
     private final String codeIsbn;
 
     /**
@@ -17,17 +22,7 @@ public class ISBN {
      * @param isbn  Chaîne de caractères représentant le code ISBN
      */
     public ISBN(String isbn) {
-        String temp = isbn.replaceAll("-", "");
-        if(!temp.endsWith("10") && (temp.endsWith("0") || temp.endsWith("X"))) {
-            String result = temp.substring(0, 9);
-            if(temp.endsWith("0")) {
-                this.codeIsbn = result +  "11";
-            } else {
-                this.codeIsbn = result +  "10";
-            }
-        } else {
-            this.codeIsbn = temp;
-        }
+        this.codeIsbn = isbn;
     }
 
     /**
@@ -41,7 +36,7 @@ public class ISBN {
         if(isbn == null) {
             throw new WrongFormattedISBNException("The ISBN cannot be null");
         }
-        return new ISBN(isbn);
+        return new ISBN(ISBNFactory.formatIsbn(isbn.replace("-", "")));
     }
 
     /**
@@ -77,7 +72,7 @@ public class ISBN {
      *              retourne alors null.
      */
     private static String validDataFor(final String isbn, final String matriculeId) {
-        if(isbn.charAt(0) != '2') {
+        if(isbn.charAt(0) != LANG_CODE) {
             return ISBNTypeError.WRONG_LANG_CODE.message;
         } else if(!Pattern.matches("[0-9]" + matriculeId + "([0-9]+)[A-Za-z]?", isbn)) {
             return ISBNTypeError.WRONG_AUTHOR.message;
@@ -174,15 +169,7 @@ public class ISBN {
      *          </ul>
      */
     public String forUser() {
-        String result = codeIsbn;
-        if(result.length() == 11) {
-            if(result.endsWith("10")) {
-                result = codeIsbn.substring(0, 9) + "X";
-            } else {
-                result = codeIsbn.substring(0, 9) + "0";
-            }
-        }
-        return formatIsbn(result);
+        return codeIsbn;
     }
 
     @Override
@@ -198,17 +185,13 @@ public class ISBN {
     }
 
     @Override
-    public String toString() {
-        return formatIsbn(codeIsbn);
+    public int hashCode() {
+        return Objects.hash(codeIsbn);
     }
 
-    private String formatIsbn(final String codeIsbn) {
-        if(codeIsbn.length() < 10) { return codeIsbn; }
-        var builder = new StringBuilder(codeIsbn)
-                .insert(9, "-")
-                .insert(7, "-")
-                .insert(1, "-");
-        return builder.toString();
+    @Override
+    public String toString() {
+        return codeIsbn;
     }
 
     /**

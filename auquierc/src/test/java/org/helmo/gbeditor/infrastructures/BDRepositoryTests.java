@@ -1,12 +1,18 @@
 package org.helmo.gbeditor.infrastructures;
 
-import org.helmo.gbeditor.domains.*;
+import org.helmo.gbeditor.domains.Book;
+import org.helmo.gbeditor.domains.BookFieldName;
+import org.helmo.gbeditor.domains.BookMetadata;
+import org.helmo.gbeditor.domains.Page;
 import org.helmo.gbeditor.infrastructures.exception.UnableToConnectException;
 import org.helmo.gbeditor.infrastructures.exception.UnableToTearDownException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -81,7 +87,7 @@ public class BDRepositoryTests {
                 "200106", "fileName.png"
         );
         repo.add(book1, book2);
-        assertIterableEquals(List.of(book1, book2), repo.getBooks());
+        compareResult(List.of(book1, book2), repo.getBooks());
     }
 
     @Test
@@ -99,7 +105,7 @@ public class BDRepositoryTests {
         book1.addBegin(new Page("Hello"));
         repo.save(book1);
         repo.remove(book2.get(BookFieldName.ISBN));
-        assertIterableEquals(List.of(book1), repo.getBooks());
+        compareResult(List.of(book1), repo.getBooks());
         assertIterableEquals(book1, repo.getBooks().get(0));
     }
 
@@ -116,9 +122,9 @@ public class BDRepositoryTests {
         );
         repo.add(book1, book2);
         repo.remove(book2.get(BookFieldName.ISBN));
-        assertIterableEquals(List.of(book1), repo.getBooks());
+        compareResult(List.of(book1), repo.getBooks());
         repo.add(book2);
-        assertIterableEquals(List.of(book1, book2), repo.getBooks());
+        compareResult(List.of(book1, book2), repo.getBooks());
     }
 
     @Test
@@ -138,7 +144,7 @@ public class BDRepositoryTests {
                 "200106", "fileName.png"
         );
         repo.add(book2);
-        assertIterableEquals(List.of(book1, book2), repo.getBooks());
+        compareResult(List.of(book1, book2), repo.getBooks());
     }
 
     @Test
@@ -164,7 +170,7 @@ public class BDRepositoryTests {
                 "200106", "fileName.png"
         );
         repo.add(book2);
-        assertIterableEquals(List.of(book1, book2), repo.getBooks());
+        compareResult(List.of(book1, book2), repo.getBooks());
     }
 
     @Test
@@ -188,10 +194,10 @@ public class BDRepositoryTests {
                 "200106", "fileName.png"
         );
         repo.add(book2);
-        assertIterableEquals(List.of(book1, book2), repo.getBooks());
+        compareResult(List.of(book1, book2), repo.getBooks());
         book2.addEnd(page2);
         repo.save(book1);
-        assertIterableEquals(List.of(book1, book2), repo.getBooks());
+        compareResult(List.of(book1, book2), repo.getBooks());
     }
 
     @Test
@@ -217,10 +223,10 @@ public class BDRepositoryTests {
                 "200106", "fileName.png"
         );
         repo.add(book2);
-        assertIterableEquals(List.of(book1, book2), repo.getBooks());
+        compareResult(List.of(book1, book2), repo.getBooks());
         book1.removePage(page2);
         repo.save(book1);
-        assertIterableEquals(List.of(book1, book2), repo.getBooks());
+        compareResult(List.of(book1, book2), repo.getBooks());
     }
 
     @Test
@@ -240,7 +246,7 @@ public class BDRepositoryTests {
         book1.addEnd(page4);
         book1.addEnd(page5);
         repo.add(book1);
-        assertIterableEquals(List.of(book1), repo.getBooks());
+        compareResult(List.of(book1), repo.getBooks());
         var book1Iter = book1.iterator();
         var repo1Iter = repo.getBooks().get(0).iterator();
         assertIterableEquals(book1, repo.getBooks().get(0));
@@ -257,7 +263,7 @@ public class BDRepositoryTests {
         book1.publish();
         repo.save(book1);
         var result = repo.getBooks();
-        assertIterableEquals(List.of(book1), result);
+        compareResult(List.of(book1), result);
         assertEquals(currentDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")), result.get(0).get(BookFieldName.PUBLISH_DATE));
     }
 
@@ -268,12 +274,19 @@ public class BDRepositoryTests {
                 "200106", "fileName.png"
         );
         repo.add(book1, book2);
-        assertIterableEquals(List.of(book1, book2), repo.getBooks());
+        compareResult(List.of(book1, book2), repo.getBooks());
         book1.setNewData(
                 new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );
         repo.save(book1);
-        assertIterableEquals(List.of(bookResult, book2), repo.getBooks());
+        compareResult(List.of(bookResult, book2), repo.getBooks());
+    }
+
+    private void compareResult(final Collection<Book> expected, final Collection<Book> actual) {
+        assertEquals(expected.size(), actual.size());
+        for(final var e : expected) {
+            assertTrue(actual.contains(e));
+        }
     }
 }

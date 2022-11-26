@@ -9,7 +9,10 @@ import org.helmo.gbeditor.infrastructures.jdbc.ConnectionFactory;
 import org.helmo.gbeditor.repositories.DataRepository;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.helmo.gbeditor.infrastructures.BookBDRepository.*;
 import static org.helmo.gbeditor.infrastructures.PageBDRepository.*;
@@ -21,8 +24,6 @@ import static org.helmo.gbeditor.infrastructures.jdbc.SQLInstructions.*;
 public class BDRepository implements DataRepository {
 
     private Connection connection;
-    private final List<Book> allBooks = new ArrayList<>();
-    private final List<BookDTO> allDtos = new ArrayList<>();
     private final SortedSet<String> existingIsbn = new TreeSet<>();
 
     private String author;
@@ -212,7 +213,10 @@ public class BDRepository implements DataRepository {
     public boolean remove(String... books) {
         Transaction
                 .from(connection = factory.newConnection())
-                .commit((con) -> List.of(books).forEach(this::removeBook))
+                .commit((con) -> List.of(books).forEach(b -> {
+                        removeBook(b);
+                        tracker.remove(b);
+                }))
                 .onRollback((ex) -> {throw new DataManipulationException("Une erreur est survenue lors de la suppression du livre.", ex);})
                 .execute();
         closeConnection();
@@ -222,21 +226,13 @@ public class BDRepository implements DataRepository {
     @Override
     public List<Book> getBooks() {
         loadBooks();
-        tracker.clear();
-        allBooks.clear();
-        allDtos.forEach(dto -> {
-            var temp = Mapping.convertToBook(dto);
-            allBooks.add(temp);
-            tracker.put(temp, dto);
-        });
-        return new ArrayList<>(allBooks);
+        return new ArrayList<>(tracker.getAllBooks());
     }
 
     @Override
     public void loadBooks() {
         tracker.clear();
         existingIsbn.clear();
-        allDtos.clear();
         try(PreparedStatement loadStmt = (connection = factory.newConnection()).prepareStatement(SELECT_ALL_BOOKS_STMT)) {
             loadStmt.setString(1, author);
             loadDataFromStmt(loadStmt);
@@ -251,7 +247,6 @@ public class BDRepository implements DataRepository {
             while (rs.next() && !rs.wasNull()) {
                 var tempDTO = convertResultSetToDTO(connection, rs);
                 tempDTO.pages = getPageFor(tempDTO.getIsbn());
-                allDtos.add(tempDTO);
                 tracker.put(Mapping.convertToBook(tempDTO), tempDTO);
                 existingIsbn.add(tempDTO.getIsbn());
             }
@@ -283,7 +278,7 @@ public class BDRepository implements DataRepository {
     @Override
     public Book searchBookFor(String isbn) {
         // TODO : Charger toutes les données du livre ici.
-        for (final var b : allBooks) {
+        for (final var b : tracker.getAllBooks()) {
             if(b.get(BookFieldName.ISBN).equalsIgnoreCase(isbn)) {
                 return b;
             }
