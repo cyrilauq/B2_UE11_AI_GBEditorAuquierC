@@ -1,6 +1,6 @@
 package org.helmo.gbeditor.domains;
 
-import org.helmo.gbeditor.domains.factory.BookFactory;
+import org.helmo.gbeditor.factory.BookFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

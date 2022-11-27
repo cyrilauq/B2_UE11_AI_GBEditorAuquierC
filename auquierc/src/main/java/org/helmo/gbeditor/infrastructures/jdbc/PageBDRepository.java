@@ -1,4 +1,4 @@
-package org.helmo.gbeditor.infrastructures;
+package org.helmo.gbeditor.infrastructures.jdbc;
 
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
@@ -26,7 +26,7 @@ public class PageBDRepository {
      * @param dto   Livre qui contient les pages qu'on souhaite ajouter
      * @param stmt  Contient la requête pour l'ajout des pages.
      *
-     * @throws SQLException
+     * @throws SQLException Si une erreur SQL s'est produite.
      */
     protected static void addPageToStmt(final BookDTO dto, final PreparedStatement stmt) throws SQLException {
         for(final var p : dto) {
@@ -42,7 +42,7 @@ public class PageBDRepository {
      * @param dto           Itérable contenant les pages que l'on souhaite ajouter.
      * @param id_book       identifiant du livre en base de donnée, auquel les pages appartiennent.
      *
-     * @throws SQLException
+     * @throws SQLException Si une erreur SQL s'est produite.
      */
     protected static void addChoicesToPages(final Connection connection, final Iterable<PageDTO> dto, final int id_book) throws SQLException {
         try(final var stmt = connection.prepareStatement(INSERT_CHOICES_STMT)) {
@@ -68,7 +68,8 @@ public class PageBDRepository {
      * @param dto       Page à ajouter en base de donnée.
      * @param id_book   identifiant en base de données du livre auquel appartient la page.
      * @param stmt      PreparedStatement permettant l'ajout en base de données de la page.
-     * @throws SQLException
+     *
+     * @throws SQLException Si une erreur SQL s'est produite.
      */
     protected static void addPageToStmt(final PageDTO dto, final int id_book, final PreparedStatement stmt) throws SQLException {
         if(id_book != -1) {
@@ -89,6 +90,15 @@ public class PageBDRepository {
         }
     }
 
+    /**
+     * Récupère la première clef, entière, résultant de l'exécution d'un PreparedStatement donné.
+     *
+     * @param loadStmt  PreparedStatement duquel on veut récupérer la première clef.
+     *
+     * @return          Si l'exécution retourne au moins un tuple, la première clef entière résultant de cette exécution.
+     *
+     * @throws SQLException Si une erreur SQL s'est produite.
+     */
     protected static int getFirstKey(PreparedStatement loadStmt) throws SQLException {
         try(final var keys = loadStmt.executeQuery()) {
             if(keys.next() && !keys.wasNull()) {
@@ -105,7 +115,7 @@ public class PageBDRepository {
      *
      * @return      Une liste de page.
      *
-     * @throws SQLException
+     * @throws SQLException Si une erreur SQL s'est produite.
      */
     protected static List<PageDTO> getPageFromStmt(final PreparedStatement stmt) throws SQLException {
         final List<PageDTO> result = new ArrayList<>();

@@ -1,4 +1,4 @@
-package org.helmo.gbeditor.domains.factory;
+package org.helmo.gbeditor.factory;
 
 import org.helmo.gbeditor.domains.*;
 

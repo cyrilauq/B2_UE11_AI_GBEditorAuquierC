@@ -33,23 +33,6 @@ public class BookMetadata {
     }
 
     /**
-     * Crée un nouvel objet BookMetaData sur base d'infos données.
-     *
-     * @param title         Titre du livre
-     * @param isbn          ISBN du livre
-     * @param resume        Résumé du livre
-     * @param author        Auteur du livre
-     * @param publishDate   Date de publication du livre.
-     */
-    public BookMetadata(final String title, final String isbn, final String resume, final String author, final String publishDate) {
-        attributes.put(BookFieldName.ISBN, ISBN.of(isbn).forUser());
-        attributes.put(BookFieldName.AUTHOR, author);
-        attributes.put(BookFieldName.SUMMARY, resume);
-        attributes.put(BookFieldName.TITLE, title);
-        attributes.put(BookFieldName.PUBLISH_DATE, publishDate);
-    }
-
-    /**
      * Récupère la valeur de l'attribut recherché.
      *
      * @param attribute     Attribut recherché.

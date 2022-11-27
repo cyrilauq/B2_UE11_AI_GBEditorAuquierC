@@ -1,10 +1,9 @@
 package org.helmo.gbeditor.presenter;
 
-import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookTypeError;
 import org.helmo.gbeditor.domains.ISBN;
 import org.helmo.gbeditor.domains.Session;
-import org.helmo.gbeditor.infrastructures.JsonRepository;
+import org.helmo.gbeditor.infrastructures.jdbc.JsonRepository;
 import org.helmo.gbeditor.infrastructures.RepositoryFactory;
 import org.helmo.gbeditor.repositories.DataRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,6 @@
 package org.helmo.gbeditor.domains;
 
-import org.helmo.gbeditor.domains.factory.ISBNFactory;
+import org.helmo.gbeditor.factory.ISBNFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

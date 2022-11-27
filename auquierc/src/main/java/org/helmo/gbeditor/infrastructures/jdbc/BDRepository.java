@@ -1,11 +1,12 @@
-package org.helmo.gbeditor.infrastructures;
+package org.helmo.gbeditor.infrastructures.jdbc;
 
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
+import org.helmo.gbeditor.infrastructures.Mapping;
+import org.helmo.gbeditor.infrastructures.Tracker;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
 import org.helmo.gbeditor.infrastructures.exception.*;
-import org.helmo.gbeditor.infrastructures.jdbc.ConnectionFactory;
 import org.helmo.gbeditor.repositories.DataRepository;
 import org.helmo.gbeditor.repositories.exceptions.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.exceptions.DataManipulationException;
@@ -17,8 +18,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.helmo.gbeditor.infrastructures.BookBDRepository.*;
-import static org.helmo.gbeditor.infrastructures.PageBDRepository.*;
+import static org.helmo.gbeditor.infrastructures.jdbc.BookBDRepository.*;
+import static org.helmo.gbeditor.infrastructures.jdbc.PageBDRepository.*;
 import static org.helmo.gbeditor.infrastructures.jdbc.SQLInstructions.*;
 
 /**

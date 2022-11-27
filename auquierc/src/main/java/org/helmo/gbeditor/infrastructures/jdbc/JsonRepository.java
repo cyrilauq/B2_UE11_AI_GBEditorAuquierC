@@ -1,9 +1,10 @@
-package org.helmo.gbeditor.infrastructures;
+package org.helmo.gbeditor.infrastructures.jdbc;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
+import org.helmo.gbeditor.infrastructures.Mapping;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.repositories.exceptions.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.DataRepository;
@@ -167,7 +168,7 @@ public class JsonRepository implements DataRepository {
     @Override
     public Book searchBookFor(String isbn) {
         for(final var b : books) {
-            if (b.hasIsbn(isbn)) {
+            if (b.get(BookFieldName.ISBN).equalsIgnoreCase(isbn)) {
                 return b;
             }
         }

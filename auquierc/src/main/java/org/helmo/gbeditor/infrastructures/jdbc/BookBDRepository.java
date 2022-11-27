@@ -1,4 +1,4 @@
-package org.helmo.gbeditor.infrastructures;
+package org.helmo.gbeditor.infrastructures.jdbc;
 
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 

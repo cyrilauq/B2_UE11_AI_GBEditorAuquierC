@@ -3,6 +3,7 @@ package org.helmo.gbeditor.infrastructures;
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookMetadata;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
+import org.helmo.gbeditor.infrastructures.jdbc.JsonRepository;
 import org.helmo.gbeditor.repositories.DataRepository;
 import org.junit.jupiter.api.Test;
 

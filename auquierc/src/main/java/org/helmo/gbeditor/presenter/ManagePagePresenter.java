@@ -70,8 +70,7 @@ public class ManagePagePresenter extends Presenter implements PageViewHandler {
 
     @Override
     public void onConfirmedDelete(String content) {
-        currentBook.removePage(currentBook.getPageFor(content));
-        if(!currentBook.containsPage(currentBook.getPageFor(content))) {
+        if(currentBook.removePage(currentBook.getPageFor(content))) {
             repo.save(currentBook);
             refresh();
         }

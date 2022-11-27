@@ -1,6 +1,6 @@
 package org.helmo.gbeditor.domains;
 
-import org.helmo.gbeditor.domains.factory.BookFactory;
+import org.helmo.gbeditor.factory.BookFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -129,7 +129,7 @@ public class Book implements Iterable<Page> {
     }
 
     /**
-     * Crée un nuveau livre à partir d'un titre, un résumé, un auteur et un code ISBN donné.
+     * Crée un nouveau livre à partir d'un titre, un résumé, un auteur et un code ISBN donné.
      *
      * @param bookMetadata  Meta data du livre.
      */
@@ -139,18 +139,6 @@ public class Book implements Iterable<Page> {
 
     public String getImgPath() {
         return imgPath;
-    }
-
-    /**
-     * Vérifie qu'un livre a le même ISBN que celui donné.
-     *
-     * @param isbn  L'ISBN qu'on cherche dans le livre.
-     *
-     * @return      Si le livre a un ISBN identique a celui donné, elle renvoie false.
-     *              Sinon renvoie false.
-     */
-    public boolean hasIsbn(final String isbn) {
-        return data.get(BookFieldName.ISBN).replace("-", "").equals(isbn.replace("-", ""));
     }
 
     /**
@@ -207,7 +195,7 @@ public class Book implements Iterable<Page> {
      * @return      True si la page est présente dans le livre.
      *              False, si la page n'est pas présente dans le livre.
      */
-    public boolean containsPage(final Page page) {
+    private boolean containsPage(final Page page) {
         return pagesList.contains(page);
     }
 
@@ -216,10 +204,13 @@ public class Book implements Iterable<Page> {
      * Supprime aussi les liens de la page avec d'autres pages du livre.
      *
      * @param toRemove  Page à supprimer.
+     *
+     * @return          True si la page était présente dans le livre et si après suppression elle n'est plus présente dans le livre.
+     *                  False si la page n'était pas présente dans le livre ou si elle est toujours présente après sa suppression.
      */
-    public void removePage(final Page toRemove) {
+    public boolean removePage(final Page toRemove) {
         forEach(p -> p.remove(toRemove));
-        pagesList.remove(toRemove);
+        return pagesList.remove(toRemove) && !containsPage(toRemove);
     }
 
     @Override

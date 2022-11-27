@@ -153,7 +153,15 @@ public class Mapping {
         return result;
     }
 
-    protected static String convertISBNFromDTO(final String isbn) {
+    /**
+     * Convertit un isbn donné en isbn prévu pour l'affichage.
+     *
+     * @param isbn  Isbn à convertir
+     *
+     * @return      Convertit l'isbn pour qu'il soit formatté pour l'affichage dans l'application.
+     *              Exemple : isbn côté affichage 2-200106-30-11 ==> isbn côté mémoire 2-200106-30-0
+     */
+    public static String convertISBNFromDTO(final String isbn) {
         final var temp = isbn.replaceAll("-", "");
         if(temp.length() == ISBN.ISBN_MAX_LENGTH) {
             String result = temp.substring(0, 9);
@@ -165,7 +173,15 @@ public class Mapping {
         return temp;
     }
 
-    protected static String convertISBNToDTO(final String isbn) {
+    /**
+     * Convertit un isbn donné en isbn stocké coté mémoire.
+     *
+     * @param isbn  Isbn à convertir
+     *
+     * @return      Convertit l'isbn pour qu'il soit formatté pour le côté mémoire de l'application.
+     *              Exemple : isbn côté affichage 2-200106-30-0 ==> isbn côté mémoire 2-200106-30-11
+     */
+    public static String convertISBNToDTO(final String isbn) {
         final var temp = isbn.replaceAll("-", "");
         if(temp.length() == ISBN.ISBN_MIN_LENGTH) {
             String result = temp.substring(0, 9);

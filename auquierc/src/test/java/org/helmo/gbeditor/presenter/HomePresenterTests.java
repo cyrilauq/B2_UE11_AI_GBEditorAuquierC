@@ -1,7 +1,8 @@
 package org.helmo.gbeditor.presenter;
 
 import org.helmo.gbeditor.domains.Session;
-import org.helmo.gbeditor.infrastructures.JsonRepository;
+import org.helmo.gbeditor.infrastructures.RepositoryType;
+import org.helmo.gbeditor.infrastructures.jdbc.JsonRepository;
 import org.helmo.gbeditor.infrastructures.RepositoryFactory;
 import org.helmo.gbeditor.modeles.ExtendedBookDescription;
 import org.helmo.gbeditor.modeles.LittleBookDescription;
@@ -66,12 +67,14 @@ public class HomePresenterTests {
         session = new Session();
         session.setAuthor("Auquier", "Cyril");
         repo.setCurrentAuthor("Auquier Cyril");
-        final var factory = RepositoryFactory.get(
-                Paths.get(
+        repo = new RepositoryFactory(RepositoryType.LOCAL_MY_SQL_DB) {
+            @Override
+            public DataRepository newRepository() {
+                return of(Paths.get(
                         "src", "test", "resources", "PresenterTests"
-                ).toString(), "all_same_books", "Auquier Cyril"
-        );
-        final var repo = factory.newRepository();
+                ).toString(), "all_same_books");
+            }
+        }.newRepository();
         repo.setCurrentAuthor("Auquier Cyril");
         presenter = new HomePresenter(session, repo);
         presenter.setView(mockedView);
@@ -85,12 +88,14 @@ public class HomePresenterTests {
     void userSelectedOneBookThenDisplayHisDetails() {
         session = new Session();
         session.setAuthor("Auquier", "Cyril");
-        final var factory = RepositoryFactory.get(
-                Paths.get(
+        repo = new RepositoryFactory(RepositoryType.LOCAL_MY_SQL_DB) {
+            @Override
+            public DataRepository newRepository() {
+                return of(Paths.get(
                         "src", "test", "resources", "PresenterTests"
-                ).toString(), "all_same_books", "Auquier Cyril"
-        );
-        final var repo = factory.newRepository();
+                ).toString(), "all_same_books");
+            }
+        }.newRepository();
         repo.setCurrentAuthor("Auquier Cyril");
         presenter = new HomePresenter(session, repo);
         presenter.setView(mockedView);
