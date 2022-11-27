@@ -1,11 +1,9 @@
 package org.helmo.gbeditor.presenter;
 
-import org.helmo.gbeditor.domains.Book;
-import org.helmo.gbeditor.domains.BookMetadata;
-import org.helmo.gbeditor.domains.ISBN;
-import org.helmo.gbeditor.domains.Session;
-import org.helmo.gbeditor.factory.ISBNFactory;
-import org.helmo.gbeditor.infrastructures.exception.BookAlreadyExistsException;
+import org.helmo.gbeditor.domains.*;
+import org.helmo.gbeditor.domains.factory.BookFactory;
+import org.helmo.gbeditor.domains.factory.ISBNFactory;
+import org.helmo.gbeditor.repositories.exceptions.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.DataRepository;
 import org.helmo.gbeditor.repositories.FileUtils;
 
@@ -63,12 +61,12 @@ public class CreateBookPresenter extends Presenter {
 
     private Book getBookFor(final BookMetadata bookMetadata, String authorMatricul, final String filePath) {
         if(filePath == null || filePath.isBlank()) {
-            return Book.of(bookMetadata, authorMatricul);
+            return BookFactory.of(bookMetadata, authorMatricul);
         }
-        return Book.of(bookMetadata, authorMatricul,
+        return BookFactory.of(bookMetadata, authorMatricul,
                 FileUtils.copyFile(filePath,
                         Paths.get(System.getProperty("user.home"), "ue36", "e200106").toAbsolutePath().toString(),
-                        bookMetadata.getIsbn()
+                        bookMetadata.get(BookFieldName.ISBN)
                 )
         );
     }

@@ -9,7 +9,17 @@ import java.util.ArrayList;
  * S'occupe de certaines des opérations en base se données liées aux livres.
  */
 public class BookBDRepository {
-    protected static BookDTO convertResultSetToDTO(final Connection connection, final ResultSet rs) throws SQLException {
+
+    /**
+     * Convertit un ResultSet donné en BTO.
+     *
+     * @param rs    ResultSet à convertir en DTO
+     *
+     * @return      Un DTO contenant les informations du ResultSet.
+     *
+     * @throws SQLException Si une des opérations avec la base de donnée a échoué.
+     */
+    protected static BookDTO convertResultSetToDTO(final ResultSet rs) throws SQLException {
         var isbn = rs.getString("isbn");
         var publishDate = rs.getTimestamp("datePublication");
         var result = new BookDTO(rs.getString("title"),
@@ -29,7 +39,7 @@ public class BookBDRepository {
      * @param dto       DTO à ajouter au PreparedStament.
      * @param saveStmt  PreparedStatement à utiliser.
      *
-     * @throws SQLException
+     * @throws SQLException Si une des opérations avec la base de donnée a échoué.
      */
     protected static void addDtoToUpdateStmt(BookDTO dto, PreparedStatement saveStmt) throws SQLException {
         saveStmt.setString(1, dto.getTitle());
@@ -51,7 +61,7 @@ public class BookBDRepository {
      * @param dto       DTO à sauvegarder
      * @param saveStmt  PreparedStatement permettant la sauvegarde du DTO
      *
-     * @throws SQLException
+     * @throws SQLException Si une des opérations avec la base de donnée a échoué.
      */
     protected static void addDtoToInserStmt(BookDTO dto, PreparedStatement saveStmt) throws SQLException {
         saveStmt.setString(1, dto.getTitle());
@@ -61,12 +71,19 @@ public class BookBDRepository {
         saveStmt.setString(5, dto.getAuthor());
     }
 
+    /**
+     * Convertit un ResultSet, qui est le résultat d'un PreparedStatement donné, en DTO.
+     *
+     * @param stmt  PreparedStatement qui donnera le ResultSet à convertir.
+     *
+     * @return      La conversion en DTO du ResultSet si l'exécution du PreparedStatement a retourmé un résultat.
+     *              Null si l'exécution du PreparedStatement ne contenait aucun résultat.
+     *
+     * @throws SQLException Si une des opérations avec la base de donnée a échoué.
+     */
     protected static BookDTO convertResultSetToDTO(final PreparedStatement stmt) throws SQLException {
         try(final var rs = stmt.executeQuery()) {
-            while (rs.next() && !rs.wasNull()) {
-                return convertResultSetToDTO(stmt.getConnection(), rs);
-            }
+            return rs.next() && !rs.wasNull() ? convertResultSetToDTO(rs) : null;
         }
-        return null;
     }
 }

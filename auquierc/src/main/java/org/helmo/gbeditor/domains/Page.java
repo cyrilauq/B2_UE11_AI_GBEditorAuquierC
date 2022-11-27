@@ -124,8 +124,16 @@ public class Page implements Iterable<String>, Comparable<Page> {
         return getContent().compareTo(o.content);
     }
 
+    /**
+     * Définit une exception qui sera lancée lorsqu'on cherchera à assigner la page courante comme page cible d'une de ses choix.
+     */
     public static class TheTargetPageCannotBeTheSourcePage extends RuntimeException {
 
+        /**
+         * Crée une nouvelle TheTargetPageCannotBeTheSourcePage avec un message donné.
+         *
+         * @param message   Message donné à l'exception.
+         */
         public TheTargetPageCannotBeTheSourcePage(final String message) {
             super(message);
         }

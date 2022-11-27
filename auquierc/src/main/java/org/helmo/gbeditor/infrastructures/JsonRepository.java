@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
-import org.helmo.gbeditor.infrastructures.exception.BookAlreadyExistsException;
+import org.helmo.gbeditor.repositories.exceptions.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.DataRepository;
 
 import java.io.BufferedReader;

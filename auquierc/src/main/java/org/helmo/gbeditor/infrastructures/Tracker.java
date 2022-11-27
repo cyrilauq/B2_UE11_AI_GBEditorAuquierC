@@ -63,6 +63,11 @@ public class Tracker {
         return result;
     }
 
+    /**
+     * Supprimer le livre ayant l'isbn donné du tracker.
+     *
+     * @param isbn  Isbn du livre à supprimer.
+     */
     public void remove(final String isbn) {
         Book toRemove = null;
         for(final var b : books.keySet()) {
@@ -76,6 +81,11 @@ public class Tracker {
         }
     }
 
+    /**
+     * Récupère tous les livres sauvegardés par le tracker.
+     *
+     * @return  Une livre de tous les livres présents dans le tracker.
+     */
     public List<Book> getAllBooks() {
         return new ArrayList<>(books.keySet());
     }

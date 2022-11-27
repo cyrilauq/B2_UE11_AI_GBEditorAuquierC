@@ -4,7 +4,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.helmo.gbeditor.presenter.ChoiceViewHandler;
+import org.helmo.gbeditor.presenter.ChoiceViewEventHandler;
 
 public class ChoiceView extends HBox {
 
@@ -12,7 +12,7 @@ public class ChoiceView extends HBox {
 
     private final Button deleteBtn = new Button("Supprimer");
 
-    public ChoiceView(final String choice, final int numPage, final String target, final ChoiceViewHandler handler) {
+    public ChoiceView(final String choice, final int numPage, final String target, final ChoiceViewEventHandler handler) {
         choiceLbl.setText(choice);
         deleteBtn.setOnAction(a -> handler.onConfirmedDelete(choice));
         getChildren().addAll(new VBox(choiceLbl, new Label("Aller en page " + numPage + ": " + target)), deleteBtn);

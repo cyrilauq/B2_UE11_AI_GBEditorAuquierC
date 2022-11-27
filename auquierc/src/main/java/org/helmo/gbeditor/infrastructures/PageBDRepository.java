@@ -2,7 +2,7 @@ package org.helmo.gbeditor.infrastructures;
 
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
-import org.helmo.gbeditor.infrastructures.exception.DataManipulationException;
+import org.helmo.gbeditor.repositories.exceptions.DataManipulationException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

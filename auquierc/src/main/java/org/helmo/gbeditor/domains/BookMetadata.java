@@ -1,14 +1,12 @@
 package org.helmo.gbeditor.domains;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Cette classe permet de stocker les informations générales d'un livre: titre, auteur, isbn et résumé.
  *
- * @author cyril
+ * @author Cyril
  *
  * Pour stocker les attributs d'une BookMetaData j'ai choisi une Map, car je voulais lier des clés(BookFieldName = nom des attributs)
  * à des valeurs(String = valeur des attributs).
@@ -28,11 +26,27 @@ public class BookMetadata {
      */
     public BookMetadata(final String title, final String isbn, final String resume, final String author) {
         attributes.put(BookFieldName.ISBN, ISBN.of(isbn).forUser());
-        attributes.put(BookFieldName.SYS_ISBN, ISBN.of(isbn).toString());
         attributes.put(BookFieldName.AUTHOR, author);
         attributes.put(BookFieldName.SUMMARY, resume);
         attributes.put(BookFieldName.TITLE, title);
         attributes.put(BookFieldName.PUBLISH_DATE, null);
+    }
+
+    /**
+     * Crée un nouvel objet BookMetaData sur base d'infos données.
+     *
+     * @param title         Titre du livre
+     * @param isbn          ISBN du livre
+     * @param resume        Résumé du livre
+     * @param author        Auteur du livre
+     * @param publishDate   Date de publication du livre.
+     */
+    public BookMetadata(final String title, final String isbn, final String resume, final String author, final String publishDate) {
+        attributes.put(BookFieldName.ISBN, ISBN.of(isbn).forUser());
+        attributes.put(BookFieldName.AUTHOR, author);
+        attributes.put(BookFieldName.SUMMARY, resume);
+        attributes.put(BookFieldName.TITLE, title);
+        attributes.put(BookFieldName.PUBLISH_DATE, publishDate);
     }
 
     /**
@@ -49,16 +63,12 @@ public class BookMetadata {
         return attributes.get(attribute);
     }
 
-    public void setPublishDate(final LocalDateTime publishDate) {
-        attributes.put(BookFieldName.PUBLISH_DATE, publishDate == null ? "" : publishDate.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")));
-    }
-
-    public void publish() {
-        attributes.put(BookFieldName.PUBLISH_DATE, LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")));
-    }
-
-    public String getIsbn() { return get(BookFieldName.SYS_ISBN); }
-
+    /**
+     * Attribue une valeur donnée à un attribut de la classe donné.
+     *
+     * @param attribute Attribut auquel on souhaite attribuer une nouvelle valeur.
+     * @param value     Nouvelle valeur de l'attribut donné.
+     */
     public void set(final BookFieldName attribute, final String value) {
         verifyIfNonImmuableField(attribute);
         verifyIfFieldExists(attribute);

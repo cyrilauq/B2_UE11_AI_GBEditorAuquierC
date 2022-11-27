@@ -3,7 +3,7 @@ package org.helmo.gbeditor.presenter;
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.Page;
 import org.helmo.gbeditor.domains.Session;
-import org.helmo.gbeditor.infrastructures.exception.UnableToSavePageException;
+import org.helmo.gbeditor.repositories.exceptions.UnableToSavePageException;
 import org.helmo.gbeditor.modeles.ListChoiceItem;
 import org.helmo.gbeditor.repositories.DataRepository;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Gérer ce qui va être affiché à l'écran utilisateur et comment le programme va réagir au évènement lancés par sa vue.
  */
-public class ModifyPagePresenter extends Presenter implements PageViewHandler, ChoiceViewHandler {
+public class ModifyPagePresenter extends Presenter implements PageViewHandler, ChoiceViewEventHandler {
 
     private ModifyPageInterface view;
     private final Session session;

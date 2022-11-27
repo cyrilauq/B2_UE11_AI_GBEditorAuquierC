@@ -17,8 +17,6 @@ public class View extends VBox implements ViewInterface {
     private Consumer<String> showPopUp;
     private final ViewName viewName;
 
-    protected Stage stage;
-
     /**
      * Crée une nouvelle Vuew avec un titre donné.
      *
@@ -44,8 +42,6 @@ public class View extends VBox implements ViewInterface {
     public void setRefresh(Consumer<String> refresh) {
         this.refresh = refresh;
     }
-
-    public void setStage(final Stage stage) { this.stage = stage; }
 
     public void setShowPopUp(Consumer<String> showPopUp) {
         this.showPopUp = showPopUp;

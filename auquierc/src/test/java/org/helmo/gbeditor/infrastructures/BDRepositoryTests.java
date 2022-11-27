@@ -4,6 +4,7 @@ import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.domains.BookMetadata;
 import org.helmo.gbeditor.domains.Page;
+import org.helmo.gbeditor.domains.factory.BookFactory;
 import org.helmo.gbeditor.infrastructures.exception.UnableToConnectException;
 import org.helmo.gbeditor.infrastructures.exception.UnableToTearDownException;
 import org.junit.jupiter.api.AfterEach;
@@ -25,11 +26,11 @@ public class BDRepositoryTests {
 
     @BeforeEach
     public void setUp() throws Exception {
-        book1 = Book.of(
+        book1 = BookFactory.of(
                 new BookMetadata("Title","2-200106-05-X", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );
-        book2 = Book.of(
+        book2 = BookFactory.of(
                 new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );
@@ -78,29 +79,12 @@ public class BDRepositoryTests {
 
     @Test
     public void whenBdContains2BookThenRepoGiveTwoBooksCorrectlyFormatted() {
-        var book1 = Book.of(
-                new BookMetadata("Title","2-200106-05-X", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
-        var book2 = Book.of(
-                new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
         repo.add(book1, book2);
         compareResult(List.of(book1, book2), repo.getBooks());
     }
 
     @Test
     public void whenBdContains2BookThenRepoCanRemoveAtLeastOneBook() {
-        // TODO : Corriger le mapping pour pouvoir récupérer les pages dans le bon ordre
-        var book1 = Book.of(
-                new BookMetadata("Title","2-200106-05-X", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
-        var book2 = Book.of(
-                new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
         repo.add(book1, book2);
         book1.addBegin(new Page("Hello"));
         repo.save(book1);
@@ -111,15 +95,6 @@ public class BDRepositoryTests {
 
     @Test
     public void whenDeleteABookThenCanReAddTheSameBookInTheDB() {
-        var book1 = Book.of(
-                new BookMetadata("Title","2-200106-05-X", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
-
-        var book2 = Book.of(
-                new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
         repo.add(book1, book2);
         repo.remove(book2.get(BookFieldName.ISBN));
         compareResult(List.of(book1), repo.getBooks());
@@ -129,17 +104,9 @@ public class BDRepositoryTests {
 
     @Test
     public void whenBookIsAlreadyInDBThenModifyIt() {
-        var book1 = Book.of(
-                new BookMetadata("Title","2-200106-05-X", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
-        var book2 = Book.of(
-                new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
         repo.add(book1, book2);
         repo.remove(book2.get(BookFieldName.ISBN));
-        book2 = Book.of(
+        book2 = BookFactory.of(
                 new BookMetadata("Title Book V2","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );
@@ -149,14 +116,6 @@ public class BDRepositoryTests {
 
     @Test
     public void whenBookHasPagesThenRepoSaveTheBookAndItsPages() {
-        var book1 = Book.of(
-                new BookMetadata("Title","2-200106-05-X", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
-        var book2 = Book.of(
-                new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
         var page1 = new Page("Page 1");
         var page2 = new Page("Page 2");
         book1.addBegin(page1);
@@ -165,7 +124,7 @@ public class BDRepositoryTests {
         book2.addEnd(page2);
         repo.add(book1, book2);
         repo.remove(book2.get(BookFieldName.ISBN));
-        book2 = Book.of(
+        book2 = BookFactory.of(
                 new BookMetadata("Title Book V2","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );
@@ -175,14 +134,6 @@ public class BDRepositoryTests {
 
     @Test
     public void whenAddPageThatAlreadyExistsThenUpdatePage() {
-        var book1 = Book.of(
-                new BookMetadata("Title","2-200106-05-X", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
-        var book2 = Book.of(
-                new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
         var page1 = new Page("Page 1");
         var page2 = new Page("Page 2");
         book1.addEnd(page1);
@@ -190,7 +141,7 @@ public class BDRepositoryTests {
         repo.add(book1, book2);
         repo.remove(book2.get(BookFieldName.ISBN));
         compareResult(List.of(book1), repo.getBooks());
-        book2 = Book.of(
+        book2 = BookFactory.of(
                 new BookMetadata("Title Book V2","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );
@@ -203,14 +154,6 @@ public class BDRepositoryTests {
 
     @Test
     public void whenDeletePageThenDeletePageWithoutThrowingException() {
-        var book1 = Book.of(
-                new BookMetadata("Title","2-200106-05-X", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
-        var book2 = Book.of(
-                new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
-                "200106", "fileName.png"
-        );
         var page1 = new Page("Page 1");
         var page2 = new Page("Page 2");
         book1.addBegin(page1);
@@ -219,7 +162,7 @@ public class BDRepositoryTests {
         book2.addEnd(page2);
         repo.add(book1, book2);
         repo.remove(book2.get(BookFieldName.ISBN));
-        book2 = Book.of(
+        book2 = BookFactory.of(
                 new BookMetadata("Title Book V2","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );
@@ -270,7 +213,7 @@ public class BDRepositoryTests {
 
     @Test
     void whenISBNOfBookIsChangedAndBookSavedThenNoBooksAreAddedAndTheBookIsUpdatedInTheDB() {
-        var bookResult = Book.of(
+        var bookResult = BookFactory.of(
                 new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );
@@ -286,7 +229,7 @@ public class BDRepositoryTests {
 
     @Test
     void whenIsbnIsChangedAndTheBookSavedThenNoBookIsAddedButTheBookIsUpdatedInTheDB() {
-        var result = Book.of(
+        var result = BookFactory.of(
                 new BookMetadata("Title","2-200106-30-0", "Un test", "Auquier Cyril"),
                 "200106", "fileName.png"
         );

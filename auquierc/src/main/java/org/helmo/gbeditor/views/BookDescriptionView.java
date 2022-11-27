@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.helmo.gbeditor.modeles.LittleBookDescription;
-import org.helmo.gbeditor.presenter.BookDescriptionHandler;
+import org.helmo.gbeditor.presenter.BookDescriptionEventHandler;
 import org.helmo.gbeditor.views.style.Theme;
 
 /**
@@ -40,9 +40,9 @@ public class BookDescriptionView extends VBox {
      * Permet de créer une vue de description de livre.
      *
      * @param book      Description du livre à afficher.
-     * @param handler
+     * @param handler   Gestionnaire des évènements propre à la vue.
      */
-    public BookDescriptionView(final LittleBookDescription book, final BookDescriptionHandler handler) {
+    public BookDescriptionView(final LittleBookDescription book, final BookDescriptionEventHandler handler) {
         setPrefWidth(100);
 
         title.setText(book.getTitle());

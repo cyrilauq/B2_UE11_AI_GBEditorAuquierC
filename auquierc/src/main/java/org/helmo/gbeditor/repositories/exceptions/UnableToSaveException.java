@@ -1,4 +1,4 @@
-package org.helmo.gbeditor.infrastructures.exception;
+package org.helmo.gbeditor.repositories.exceptions;
 
 public class UnableToSaveException extends RuntimeException {
     /**

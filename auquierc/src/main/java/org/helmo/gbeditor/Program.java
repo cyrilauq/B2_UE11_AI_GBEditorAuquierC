@@ -1,7 +1,6 @@
 package org.helmo.gbeditor;
 
 import javafx.application.Application;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.infrastructures.RepositoryFactory;
@@ -16,7 +15,7 @@ public class Program extends Application {
     /**
      * Lance le programme.
      *
-     * @param args
+     * @param args  Arguments passés au programme.
      */
     public static void main(String[] args) {
         launch(args);
@@ -33,7 +32,6 @@ public class Program extends Application {
         stage.setY(100);
 
         stage.setScene(mainWindow);
-        mainWindow.setStage(stage);
 
         stage.show();
     }
@@ -46,7 +44,7 @@ public class Program extends Application {
     private static MainWindow getMainWindow() {
         var repo = new RepositoryFactory(false).newRepository();
         var session = new Session();
-        return new MainWindow(new Pane(),
+        return new MainWindow(
                 new LoginView(ViewName.LOGIN_VIEW, new LoginPresenter(session, repo)),
                 new CreateBookView(ViewName.CREATE_BOOK_VIEW, new CreateBookPresenter(session, repo)),
                 new ModifyBookView(ViewName.MODIFY_BOOK_VIEW, new ModifyBookPresenter(session, repo)),

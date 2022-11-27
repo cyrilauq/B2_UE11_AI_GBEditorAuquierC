@@ -3,8 +3,8 @@ package org.helmo.gbeditor.presenter;
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.domains.Session;
-import org.helmo.gbeditor.infrastructures.exception.DataManipulationException;
-import org.helmo.gbeditor.infrastructures.exception.UnableToOpenResourceException;
+import org.helmo.gbeditor.repositories.exceptions.DataManipulationException;
+import org.helmo.gbeditor.repositories.exceptions.UnableToOpenResourceException;
 import org.helmo.gbeditor.modeles.ExtendedBookDescription;
 import org.helmo.gbeditor.modeles.LittleBookDescription;
 import org.helmo.gbeditor.repositories.DataRepository;
@@ -14,10 +14,9 @@ import java.util.List;
 
 /**
  * Gérer ce qui va être affiché à l'écran utilisateur et comment le programme va réagir aux évènements lancés par sa vue.
- *
- *  TODO : Empêcher la publication ne contenant aucune page.
+ * TODO : Empêcher la publication ne contenant aucune page.
  */
-public class HomePresenter extends Presenter implements BookDescriptionHandler, BookDetailsHandler {
+public class HomePresenter extends Presenter implements BookDescriptionEventHandler, BookDetailsEventHandler {
     private final static int MAX_BOOKS_PAGE = 8;
     // TODO : Load livre dans la methode getBookFor(final String isbn);
     private HomeInterface view;
@@ -32,7 +31,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
      * Crée un nouvel objet HomePresenter.
      *
      * @param session   Session courante de l'utilisateur.
-     * @param repo
+     * @param repo      Repository utilisé pendant l'exécution de l'application.
      */
     public HomePresenter(final Session session, final DataRepository repo) {
         this.repo = repo;
@@ -44,6 +43,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
         currentPage = 0;
         try {
             refresh();
+            view.showPopUp(ViewName.CREATE_BOOK_VIEW.getName());
         } catch (UnableToOpenResourceException e) {
             view.setMessage(e.getMessage(), TypeMessage.ERROR);
         }
@@ -100,9 +100,7 @@ public class HomePresenter extends Presenter implements BookDescriptionHandler, 
                 session.setCurrentBook(found);
                 session.setCurrentIsbn(isbn);
                 view.setDetails(getExtendedBookDescriptionFor(found));
-                found.forEach(p -> {
-                    view.addAvailablePages(found.getNForPage(p), p.getContent());
-                });
+                found.forEach(p -> view.addAvailablePages(found.getNForPage(p), p.getContent()));
             }
         } catch (DataManipulationException e) {
             view.setMessage("Le livre n'a pas pu être récupéré.", TypeMessage.ERROR);

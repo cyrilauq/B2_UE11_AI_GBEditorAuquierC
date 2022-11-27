@@ -1,5 +1,6 @@
 package org.helmo.gbeditor.domains;
 
+import org.helmo.gbeditor.domains.factory.BookFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ public class BookTests {
 
     @BeforeEach
     void setUp() {
-        book = Book.of(
+        book = BookFactory.of(
                 new BookMetadata("Title","2-200106-05-X", "Un test", "You"),
                 "200106"
         );
@@ -38,22 +39,22 @@ public class BookTests {
     @Test
     void whenCreateOnBookWithWrongIsbnThenThrowException() {
         assertThrows(Book.WrongFormattedBookException.class,
-                () -> Book.of(
+                () -> BookFactory.of(
                         new BookMetadata("Title","2-200106-05-5", "Un test", "You"),
                         "200106"
                 ));
         assertThrows(Book.WrongFormattedBookException.class,
-                () -> Book.of(
+                () -> BookFactory.of(
                         new BookMetadata("Title","2-0-05-5", "Un test", "You"),
                         "200106"
                 ));
         assertThrows(Book.WrongFormattedBookException.class,
-                () -> Book.of(
+                () -> BookFactory.of(
                         new BookMetadata("Title","", "Un test", "You"),
                         "200106"
                 ));
         assertThrows(ISBN.WrongFormattedISBNException.class,
-                () -> Book.of(
+                () -> BookFactory.of(
                         new BookMetadata("Title",null, "Un test", "You"),
                         "200106"
                 ));
@@ -62,12 +63,12 @@ public class BookTests {
     @Test
     void whenCreateOnBookWithWrongTitleThenThrowException() {
         assertThrows(Book.WrongFormattedBookException.class,
-                () -> Book.of(
+                () -> BookFactory.of(
                         new BookMetadata(null,"2-200106-05-5", "Un test", "You"),
                         "200106"
                 ));
         assertThrows(Book.WrongFormattedBookException.class,
-                () -> Book.of(
+                () -> BookFactory.of(
                         new BookMetadata(null,"2-200106-05-X", "Un test", "You"),
                         "200106", "fileName.png"
                 ));
@@ -76,17 +77,17 @@ public class BookTests {
     @Test
     void whenCreateOnBookWithWrongResumeThenThrowException() {
         assertThrows(Book.WrongFormattedBookException.class,
-                () -> Book.of(
+                () -> BookFactory.of(
                         new BookMetadata("Title","2-200106-05-5", "", "You"),
                         "200106"
                 ));
         assertThrows(Book.WrongFormattedBookException.class,
-                () -> Book.of(
+                () -> BookFactory.of(
                         new BookMetadata("Title","2-200106-05-5", null, "You"),
                         "200106"
                 ));
         assertThrows(Book.WrongFormattedBookException.class,
-                () -> Book.of(
+                () -> BookFactory.of(
                         new BookMetadata("Title","2-200106-05-5", null, "You"),
                         "200106", "fileName.png"
                 ));
@@ -95,12 +96,12 @@ public class BookTests {
     @Test
     void whenCreateOnValidBookThenDoesNotThrowException() {
         assertDoesNotThrow(() ->
-                Book.of(
+                BookFactory.of(
                         new BookMetadata("Title","2-200106-05-X", "Un test", "You"),
                         "200106"
                 ));
         assertDoesNotThrow(() ->
-                Book.of(
+                BookFactory.of(
                         new BookMetadata("Title","2-200106-05-X", "Un test", "You"),
                         "200106", "fileName.png"
                 ));
@@ -108,7 +109,7 @@ public class BookTests {
 
     @Test
     void aBookObjetIsNeverEqualToAnObjetThatIsNotAnInstanceOfBookClass() {
-        var book = Book.of(
+        var book = BookFactory.of(
                 new BookMetadata("Title","2-200106-05-X", "Un test", "You"),
                 "200106", "fileName.png"
         );
@@ -120,11 +121,11 @@ public class BookTests {
     @Test
     void whenEqualsWithTwoBookWithSameTitleButDifferentIsbnThenFalse() {
         assertNotEquals(
-                Book.of(
+                BookFactory.of(
                         new BookMetadata("Title","2-200106-05-X", "Un test", "You"),
                         "200106", "fileName.png"
                 ),
-                Book.of(
+                BookFactory.of(
                         new BookMetadata("Title","2-200106-30-0", "Un test", "You"),
                         "200106", "fileName.png"
                 )
@@ -134,11 +135,11 @@ public class BookTests {
     @Test
     void whenEqualsWithTwoBookWithSameIsbnButDifferentTitleThenTrue() {
         assertEquals(
-                Book.of(
+                BookFactory.of(
                         new BookMetadata("Title","2-200106-05-X", "Un test", "You"),
                         "200106", "fileName.png"
                 ),
-                Book.of(
+                BookFactory.of(
                         new BookMetadata("kmlkmlk","2-200106-05-X", "Un test", "You"),
                         "200106", "fileName.png"
                 )
@@ -147,7 +148,7 @@ public class BookTests {
 
     @Test
     void whenEqualsWithTwoIdenticalReferencesThenTrue() {
-        var book = Book.of(
+        var book = BookFactory.of(
                 new BookMetadata("kmlkmlk","2-200106-05-X", "Un test", "You"),
                 "200106", "fileName.png"
         );
@@ -232,7 +233,7 @@ public class BookTests {
 
     @Test
     void addOnePageToBook() {
-        var book = Book.of(
+        var book = BookFactory.of(
                 new BookMetadata("Test", "2-200106-05-X", "Test", "You You"),
                 "200106",
                 ""
@@ -245,7 +246,7 @@ public class BookTests {
 
     @Test
     void addTwoPageToBook() {
-        var book = Book.of(
+        var book = BookFactory.of(
                 new BookMetadata("Test", "2-200106-05-X", "Test", "You You"),
                 "200106",
                 ""
@@ -258,13 +259,12 @@ public class BookTests {
         assertEquals(1, book.getNForPage(page1));
         assertEquals(2, book.getNForPage(page2));
         assertEquals(page2, book.getPageFor("Page 2"));
-        assertEquals(2, book.pageCount());
         assertIterableEquals(book, pages);
     }
 
     @Test
     void whenPageDeleteThenAllReferenceInOtherPagesAreDeleted() {
-        var book = Book.of(
+        var book = BookFactory.of(
                 new BookMetadata("Test", "2-200106-05-X", "Test", "You You"),
                 "200106",
                 ""
@@ -281,18 +281,17 @@ public class BookTests {
         assertEquals(1, book.getNForPage(page1));
         assertEquals(2, book.getNForPage(page3));
         assertEquals(page3, book.getPageFor("Page 3"));
-        assertEquals(2, book.pageCount());
         assertFalse(page1.getChoices().values().contains(page2));
         assertFalse(page3.getChoices().values().contains(page2));
     }
 
     @Test
     void whenChangeMetaDataOfTheBookThenTheChangedBookNoMoreEqualsTheAncientOne() {
-        var changedBook = Book.of(
+        var changedBook = BookFactory.of(
                 new BookMetadata("Title","2-200106-05-X", "Un test", "You"),
                 "200106"
         );
-        var expected = Book.of(
+        var expected = BookFactory.of(
                 new BookMetadata("Title","2-200106-30-0", "Un test", "You"),
                 "200106"
         );
@@ -309,11 +308,11 @@ public class BookTests {
 
     @Test
     void whenChangeDataOfBookWithInvalidInformationThenThrowException() {
-        var book1 = Book.of(
+        var book1 = BookFactory.of(
                 new BookMetadata("Title","2-200106-05-X", "Un test", "You"),
                 "200106"
         );
-        var book2 = Book.of(
+        var book2 = BookFactory.of(
                 new BookMetadata("Title","2-200106-30-0", "Un test", "You"),
                 "200106"
         );

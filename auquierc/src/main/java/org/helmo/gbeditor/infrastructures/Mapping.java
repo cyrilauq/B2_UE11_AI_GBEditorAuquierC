@@ -66,31 +66,6 @@ public class Mapping {
     }
 
     /**
-     * Convertit une dto en petit Book.
-     * Seules les informations servant à la présentation seront utilisées.
-     *
-     * @param dto   DTO à convertir
-     *
-     * @return
-     */
-    public static Book smallConvertToBook(final BookDTO dto) {
-        // TODO : implementé smallConvertToBook
-        return null;
-    }
-
-    /**
-     * Convertit toutes les informations d'un DTO en livre.
-     *
-     * @param dto   DTO à convertir
-     *
-     * @return
-     */
-    public static Book bigConvertToBook(final BookDTO dto) {
-        // TODO : implementé smallConvertToBook
-        return null;
-    }
-
-    /**
      * Convertit un BookDTO de version 1.1 vers un objet Book.
      *
      * @return  Un objet Book représentant l'équivalent du BookDTO courant.
@@ -135,9 +110,7 @@ public class Mapping {
 
     private static List<Page> convertToPages(final List<PageDTO> pages) {
         final List<Page> result = new ArrayList<>();
-        pages.forEach(p -> {
-            result.add(new Page(p.getContent()));
-        });
+        pages.forEach(p -> result.add(new Page(p.getContent())));
         for(int i = 0; i < result.size(); i++) {
             var page = result.get(i);
             var choices = pages.get(i).getChoices();
@@ -189,7 +162,7 @@ public class Mapping {
             }
             return result +  "0";
         }
-        return isbn;
+        return temp;
     }
 
     protected static String convertISBNToDTO(final String isbn) {
@@ -198,10 +171,11 @@ public class Mapping {
             String result = temp.substring(0, 9);
             if(temp.endsWith("0")) {
                 return result +  "11";
+            } else if(temp.endsWith("X")) {
+                return result +  "10";
             }
-            return result +  "10";
         }
-        return isbn;
+        return temp;
     }
 
 }

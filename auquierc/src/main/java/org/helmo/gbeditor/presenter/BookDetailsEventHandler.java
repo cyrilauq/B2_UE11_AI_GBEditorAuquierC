@@ -5,7 +5,7 @@ package org.helmo.gbeditor.presenter;
  *
  * TODO : Réfléchir à un nom plus parlant
  */
-public interface BookDetailsHandler {
+public interface BookDetailsEventHandler {
 
     /**
      * Permet à l'utilisateur publier un livre ayant l'ISBN donné.

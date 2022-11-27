@@ -87,7 +87,7 @@ public class ExtendedBookDescription {
     }
 
     /**
-     * Détermine si la descritpion à une image ou non.
+     * Détermine si la description à une image ou non.
      *
      * @return  True si l'image de la description n'est pas vide et non null.
      *          False sinon

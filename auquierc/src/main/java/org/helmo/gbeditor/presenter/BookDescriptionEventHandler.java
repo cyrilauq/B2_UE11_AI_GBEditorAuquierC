@@ -4,7 +4,7 @@ package org.helmo.gbeditor.presenter;
  * Définit les méthodes qui seront exposées pour pouvoir interagir avec une BookDescriptionView.
  * TODO : Réfléchir à un autre nom pour cette interface
  */
-public interface BookDescriptionHandler {
+public interface BookDescriptionEventHandler {
 
     /**
      * Affiche les détails d'un livre portant l'ISBN donné.

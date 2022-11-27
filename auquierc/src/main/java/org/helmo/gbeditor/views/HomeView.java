@@ -66,8 +66,7 @@ public class HomeView extends View implements HomeInterface {
         noBtnPopupBook.setOnAction(a -> deleteBookPopup.hide());
     }
 
-    private final Button yesBtnPopupPage = new Button("Oui"); {
-    }
+    private final Button yesBtnPopupPage = new Button("Oui");
     private final Button noBtnPopupPage = new Button("Non");
 
     private final FlowPane deletePagePopupContent = PopupPaneFactory.newPane("Êtes-vous sûr de vouloir supprimer la page?"); {
@@ -115,26 +114,6 @@ public class HomeView extends View implements HomeInterface {
 
     private void notifyOnCreatePressed() {
         presenter.onCreate();
-    }
-
-    private void notifyOnModifyBook() {
-        presenter.onModifyBook("");
-    }
-
-    private void notifyOnDeleteButton() {
-        deleteBookPopup.show(getScene().getWindow());
-    }
-
-    private void notifyOnNewPage() {
-        presenter.onNotifyNewPage();
-    }
-
-    private void notifyOnModifyPage(final int num, final String content) {
-
-    }
-
-    private void notifyOnDeletePage(final int num, final String content) {
-        deletePagePopup.show(stage);
     }
 
     @Override

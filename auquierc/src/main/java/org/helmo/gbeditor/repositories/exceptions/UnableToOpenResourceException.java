@@ -1,4 +1,4 @@
-package org.helmo.gbeditor.infrastructures.exception;
+package org.helmo.gbeditor.repositories.exceptions;
 
 /**
  * Définit une exception qui sera lancée quand l'application ne sera pas capable d'ouvrir la ressources utilisée.

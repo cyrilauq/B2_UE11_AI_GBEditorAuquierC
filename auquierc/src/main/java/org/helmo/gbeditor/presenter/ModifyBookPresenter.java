@@ -1,8 +1,8 @@
 package org.helmo.gbeditor.presenter;
 
 import org.helmo.gbeditor.domains.*;
-import org.helmo.gbeditor.factory.ISBNFactory;
-import org.helmo.gbeditor.infrastructures.exception.BookAlreadyExistsException;
+import org.helmo.gbeditor.domains.factory.ISBNFactory;
+import org.helmo.gbeditor.repositories.exceptions.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.DataRepository;
 
 /**

@@ -1,4 +1,4 @@
-package org.helmo.gbeditor.infrastructures.exception;
+package org.helmo.gbeditor.repositories.exceptions;
 
 /**
  * Définit une erreur qui sera lancée lorsqu'un livre qu'on veut ajouter existe déjà.

@@ -1,6 +1,7 @@
 package org.helmo.gbeditor.presenter;
 
 import org.helmo.gbeditor.domains.Book;
+import org.helmo.gbeditor.domains.BookTypeError;
 import org.helmo.gbeditor.domains.ISBN;
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.infrastructures.JsonRepository;
@@ -38,37 +39,37 @@ public class CreateBookPresenterTests {
     @Test
     void createBookWitNullTitle() {
         presenter.createNewBook(null, "", "", "");
-        verifyOneCallForSetMessage(Book.BookTypeError.EMPTY_TITLE.getMessage());
+        verifyOneCallForSetMessage(BookTypeError.EMPTY_TITLE.getMessage());
     }
 
     @Test
     void createBookWitEmptyTitle() {
         presenter.createNewBook("", "", "", "");
-        verifyOneCallForSetMessage(Book.BookTypeError.EMPTY_TITLE.getMessage());
+        verifyOneCallForSetMessage(BookTypeError.EMPTY_TITLE.getMessage());
     }
 
     @Test
     void createBookWithNullResume() {
         presenter.createNewBook("Test", "", null, "");
-        verifyOneCallForSetMessage(Book.BookTypeError.EMPTY_RESUME.getMessage());
+        verifyOneCallForSetMessage(BookTypeError.EMPTY_RESUME.getMessage());
     }
 
     @Test
     void createBookWithEmptyResume() {
         presenter.createNewBook("Test", "", "", "");
-        verifyOneCallForSetMessage(Book.BookTypeError.EMPTY_RESUME.getMessage());
+        verifyOneCallForSetMessage(BookTypeError.EMPTY_RESUME.getMessage());
     }
 
     @Test
     void createBookWithTooLongTitle() {
         presenter.createNewBook("j".repeat(156), "", "fffff", "");
-        verifyOneCallForSetMessage(Book.BookTypeError.TITLE_TOO_LONG.getMessage());
+        verifyOneCallForSetMessage(BookTypeError.TITLE_TOO_LONG.getMessage());
     }
 
     @Test
     void createBookWithTooLongResume() {
         presenter.createNewBook("Test", "", "f".repeat(550), "");
-        verifyOneCallForSetMessage(Book.BookTypeError.RESUME_TOO_LONG.getMessage());
+        verifyOneCallForSetMessage(BookTypeError.RESUME_TOO_LONG.getMessage());
     }
 
     @Test

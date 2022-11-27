@@ -1,5 +1,8 @@
-package org.helmo.gbeditor.infrastructures.exception;
+package org.helmo.gbeditor.repositories.exceptions;
 
+/**
+ * Définit deux exceptions qui seront lancées en cas d'erreurs lors de manipulations de données.
+ */
 public class DataManipulationException extends RuntimeException {
 
     /**

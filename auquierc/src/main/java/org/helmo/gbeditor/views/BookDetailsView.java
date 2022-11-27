@@ -8,15 +8,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.helmo.gbeditor.modeles.ExtendedBookDescription;
-import org.helmo.gbeditor.presenter.BookDetailsHandler;
+import org.helmo.gbeditor.presenter.BookDetailsEventHandler;
 import org.helmo.gbeditor.views.style.Theme;
 
 /**
  * Cette classe s'occupe de l'affichage des détails d'un livre et certaines actions à l'utilisateur(modifier, publier et gérer les pages).
  */
 public class BookDetailsView extends VBox {
-
-    private BookDetailsHandler handler;
 
     private final Text sldBookTitle = new Text(); {
         sldBookTitle.setText("Pas de livre sélectionné");
@@ -71,8 +69,7 @@ public class BookDetailsView extends VBox {
      *
      * @param handler   Handler avec lequel la vue interagira.
      */
-    public void setHandler(BookDetailsHandler handler) {
-        this.handler = handler;
+    public void setHandler(BookDetailsEventHandler handler) {
         updateBtn.setOnAction(a -> handler.onModifyBook(sldBookISBN.getText()));
         publishBtn.setOnAction(a -> handler.onPublishBook(sldBookISBN.getText()));
         managePagesBtn.setOnAction(a -> handler.onManagePages(sldBookISBN.getText()));
@@ -85,7 +82,7 @@ public class BookDetailsView extends VBox {
      */
     public void setBookDetails(final ExtendedBookDescription book) {
         setDetails(book);
-        enableBtns(book.canBePublished());
+        enableBtns(!book.canBePublished());
     }
 
     private void setDetails(final ExtendedBookDescription book) {

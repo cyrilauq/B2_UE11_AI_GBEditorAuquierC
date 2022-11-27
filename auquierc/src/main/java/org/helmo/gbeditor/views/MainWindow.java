@@ -1,11 +1,8 @@
 package org.helmo.gbeditor.views;
 
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
 import org.helmo.gbeditor.presenter.ViewName;
 import org.helmo.gbeditor.views.style.Theme;
 
@@ -19,19 +16,18 @@ import java.util.Map;
  */
 public class MainWindow extends Scene {
     private final Map<String, View> views = new HashMap<>();
-    private final Popup popup = new Popup();
     private View currentView;
-    private Stage stage;
-    private Stage sndStage;
+    private final Pane mainView = new Pane(new Pane());
+    private final Pane sndView = new Pane(new Pane());
 
     /**
      * Crée une nouvelle MainWindow avec un Pane et des vues données.
      *
-     * @param root      Conteneur de départ.
      * @param views     Vues que l'application devra utiliser.
      */
-    public MainWindow(final Pane root, final View... views) {
-        super(root, Theme.WINDOW_WIDTH, Theme.WINDOW_HEIGHT);
+    public MainWindow(final View... views) {
+        super(new Pane(), Theme.WINDOW_WIDTH + Theme.SND_WINDOW_WIDTH, Theme.WINDOW_HEIGHT);
+        setRoot(new HBox(mainView, sndView));
         getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
         initViews(views);
     }
@@ -47,24 +43,8 @@ public class MainWindow extends Scene {
         }
     }
 
-    private void initSndStage() {
-        sndStage = new Stage();
-        sndStage.setScene(new Scene(new VBox(), Theme.WINDOW_WIDTH * .7, Theme.WINDOW_HEIGHT));
-        sndStage.initOwner(stage);
-        sndStage.getScene().getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
-        sndStage.initModality(Modality.WINDOW_MODAL);
-        sndStage.setResizable(false);
-        sndStage.setX(105 + Theme.WINDOW_WIDTH);
-        sndStage.setY(100);
-    }
-
     private void setSndView(final String viewName) {
-        var found = foundView(viewName);
-        if(found != null) {
-            sndStage.getScene().setRoot(found);
-            found.onEnter(currentView == null ? "" : currentView.getTitle());
-            sndStage.show();
-        }
+        sndView.getChildren().set(0, foundView(viewName));
     }
 
     /**
@@ -79,7 +59,7 @@ public class MainWindow extends Scene {
 
         found.onEnter(currentView.getTitle());
         currentView.onLeave(found.getTitle());
-        setRoot(currentView = found);
+        mainView.getChildren().set(0, currentView = found);
     }
 
     private View foundView(final String viewName) {
@@ -97,14 +77,6 @@ public class MainWindow extends Scene {
      */
     public void start(final ViewName viewName) {
         goTo(viewName.getName());
-    }
-
-    public void setStage(final Stage stage) {
-        this.stage = stage;
-        for(var v : views.keySet()) {
-            views.get(v).setStage(stage);
-        }
-        initSndStage();
     }
 
     private void refreshAll(final String fromView) {

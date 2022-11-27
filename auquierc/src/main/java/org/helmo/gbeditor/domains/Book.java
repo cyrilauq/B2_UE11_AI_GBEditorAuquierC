@@ -1,6 +1,9 @@
 package org.helmo.gbeditor.domains;
 
+import org.helmo.gbeditor.domains.factory.BookFactory;
+
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,9 +14,6 @@ import java.util.List;
  * @author  Cyril Auquier
  */
 public class Book implements Iterable<Page> {
-    private final static int TITLE_MAX_LENGTH = 150;
-    private final static int SUMMARY_MAX_LENGTH = 500;
-
     private final BookMetadata data;
     private String imgPath;
 
@@ -51,7 +51,7 @@ public class Book implements Iterable<Page> {
         if(pagesList.isEmpty()) {
             throw new CannotPublishEmptyBookException();
         }
-        data.publish();
+        data.set(BookFieldName.PUBLISH_DATE, LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")));
     }
 
     /**
@@ -60,7 +60,7 @@ public class Book implements Iterable<Page> {
      * @param publishDate   Date à laquelle le livre a été publié.
      */
     public void setPublishDate(final LocalDateTime publishDate) {
-        data.setPublishDate(publishDate);
+        data.set(BookFieldName.PUBLISH_DATE, publishDate == null ? null : publishDate.format(DateTimeFormatter.ofPattern("dd-MM-yy à HH:mm")));
     }
 
     /**
@@ -77,7 +77,7 @@ public class Book implements Iterable<Page> {
         if(this.data.get(BookFieldName.PUBLISH_DATE) != null) {
             throw new CannotModifyPublishedBookException();
         }
-        var message = validBook(data.get(BookFieldName.TITLE),
+        var message = BookFactory.validBook(data.get(BookFieldName.TITLE),
                 data.get(BookFieldName.SUMMARY), ISBN.isValid(data.get(BookFieldName.ISBN), authorMatricule));
         if(message != null) {
             throw new WrongFormattedBookException(message);
@@ -142,69 +142,6 @@ public class Book implements Iterable<Page> {
     }
 
     /**
-     * Crée un livre sur base des informations données et vérifie que ces données soient correctes et cohérentes.
-     * Elle doivent être non null et non vide.
-     *
-     * @param metadata          Les données générales du livre.
-     * @param authorMatricule   Le matricule de l'auteur du livre.
-     * @param filePath          Le chemin d'accès à l'image de couverture du livre.
-     *
-     * @return                  Un livre correctement formatté.
-     *                          C'est à dire avec:
-     *                              - un titre non null et non vide
-     *                              - un auteur non null et non vide
-     *                              - un isbn non null et non vide
-     *                              - un résumé non null et non vide
-     *                          Si les infos données ne sont pas valide la méthode renvoie une WrongFormattedBookException.
-     */
-    public static Book of(final BookMetadata metadata, String authorMatricule, final String filePath) {
-        var message = validBook(metadata.get(BookFieldName.TITLE),
-                metadata.get(BookFieldName.SUMMARY), ISBN.isValid(metadata.get(BookFieldName.ISBN), authorMatricule));
-        if(message != null) {
-            throw new WrongFormattedBookException(message);
-        }
-        return new Book(
-                metadata,
-                filePath
-        );
-    }
-
-    /**
-     * Crée un livre sur base des informations données et vérifie que ces données soient correctes et cohérentes.
-     * Elle doivent être non null et non vide.
-     *
-     * @param metadata          Les données générales du livre.
-     * @param authorMatricule   Le matricule de l'auteur du livre.
-     *
-     * @return                  Un livre correctement formatté.
-     *                          C'est à dire avec:
-     *                              - un titre non null et non vide
-     *                              - un auteur non null et non vide
-     *                              - un isbn non null et non vide
-     *                              - un résumé non null et non vide
-     *                          Si les infos données ne sont pas valide la méthode renvoie une WrongFormattedBookException.
-     */
-    public static Book of(final BookMetadata metadata, String authorMatricule) {
-        var message = validBook(metadata.get(BookFieldName.TITLE),
-                metadata.get(BookFieldName.SUMMARY), ISBN.isValid(metadata.get(BookFieldName.ISBN), authorMatricule));
-        if(message != null) {
-            throw new WrongFormattedBookException(message);
-        }
-        return new Book(
-                metadata
-        );
-    }
-
-    private static String validBook(String title, String resume, String validIsbn) {
-        if(title == null || title.isBlank()) {
-            return BookTypeError.EMPTY_TITLE.getMessage();
-        } else if (resume == null || resume.isBlank()) {
-            return BookTypeError.EMPTY_RESUME.getMessage();
-        }
-        return verifyContent(title, resume, validIsbn);
-    }
-
-    /**
      * Vérifie qu'un livre a le même ISBN que celui donné.
      *
      * @param isbn  L'ISBN qu'on cherche dans le livre.
@@ -213,7 +150,7 @@ public class Book implements Iterable<Page> {
      *              Sinon renvoie false.
      */
     public boolean hasIsbn(final String isbn) {
-        return data.getIsbn().replace("-", "").equals(isbn.replace("-", ""));
+        return data.get(BookFieldName.ISBN).replace("-", "").equals(isbn.replace("-", ""));
     }
 
     /**
@@ -225,14 +162,15 @@ public class Book implements Iterable<Page> {
      *              Si la page n'a pas de lien avec d'autres pages, renvoie false.
      */
     public boolean pageIsATarget(final Page page) {
+        var count = 0;
         for(final var p : this) {
             for(final var c : p) {
                 if(p.getPageForChoice(c).equals(page)) {
-                    return true;
+                    count++;
                 }
             }
         }
-        return false;
+        return count != 0;
     }
 
     /**
@@ -273,24 +211,6 @@ public class Book implements Iterable<Page> {
         return pagesList.contains(page);
     }
 
-    private static String verifyContent(final String title, final String resume, final String validIsbn) {
-        if(title.length() > TITLE_MAX_LENGTH) {
-            return BookTypeError.TITLE_TOO_LONG.getMessage();
-        } else if(resume.length() > SUMMARY_MAX_LENGTH) {
-            return BookTypeError.RESUME_TOO_LONG.getMessage();
-        }
-        return validIsbn;
-    }
-
-    /**
-     * Récupère le nombre de pages présente dans le livre.
-     *
-     * @return      Le nombre de page présente dans le livre.
-     */
-    public int pageCount() {
-        return pagesList.size();
-    }
-
     /**
      * Supprime une page donnée du livre.
      * Supprime aussi les liens de la page avec d'autres pages du livre.
@@ -322,7 +242,7 @@ public class Book implements Iterable<Page> {
 
     @Override
     public int hashCode() {
-        return data.getIsbn().hashCode();
+        return data.get(BookFieldName.ISBN).hashCode();
     }
 
     @Override
@@ -379,27 +299,6 @@ public class Book implements Iterable<Page> {
          */
         public BookAlreadyPublishedException() {
             super("Le livre a déjà été publié.");
-        }
-    }
-
-    /**
-     * Enumère les différents types d'erreurs possible lors de la création d'un livre.
-     * Elle permettra, entre autre, de ne pas avoir à modifier les tests si les messages doivent changer.
-     *
-     * @author cyril
-     */
-    public enum BookTypeError {
-        TITLE_TOO_LONG("La longueur du titre ne peut pas être supérieur à 150 caractères."),
-        RESUME_TOO_LONG("La longueur du résumé ne peut pas être supérieur à 500 caractères."),
-        EMPTY_RESUME("Le champ du résumé ne peut pas être vide."),
-        EMPTY_TITLE("Le champ du titre ne peut pas être vide.");
-
-        private final String message;
-
-        BookTypeError(String message) { this.message = message; }
-
-        public String getMessage() {
-            return message;
         }
     }
 

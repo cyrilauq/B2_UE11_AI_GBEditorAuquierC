@@ -28,7 +28,7 @@ public class RepositoryFactory {
     }
 
     /**
-     * Crée une nouvelle factory mémorisant le type de ressources qui seron utilisées.
+     * Crée une nouvelle factory mémorisant le type de ressource qui sera utilisée.
      *
      * @param repoType  Type de ressources.
      */
@@ -42,8 +42,8 @@ public class RepositoryFactory {
         if(isJson) {
             return of(Paths.get(System.getProperty("user.home"), "ue36"), "e200106");
         }
-//        return of(DRIVER, LOCAL_DB_URL, LOCAL_DB_USER, LOCAL_DB_PASSWORD);
-        return of(DRIVER, DB_URL, DB_USER, DB_PASSWORD);
+        return of(DRIVER, LOCAL_DB_URL, LOCAL_DB_USER, LOCAL_DB_PASSWORD);
+//        return of(DRIVER, DB_URL, DB_USER, DB_PASSWORD);
     }
 
     /**

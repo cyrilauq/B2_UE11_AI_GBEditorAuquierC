@@ -9,7 +9,6 @@ public enum BookFieldName {
     SUMMARY,
     AUTHOR,
     ISBN,
-    PUBLISH_DATE,
-    SYS_ISBN;
+    PUBLISH_DATE;
 
 }

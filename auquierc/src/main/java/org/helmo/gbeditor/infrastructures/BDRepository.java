@@ -2,12 +2,14 @@ package org.helmo.gbeditor.infrastructures;
 
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
-import org.helmo.gbeditor.factory.ISBNFactory;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.infrastructures.dto.PageDTO;
 import org.helmo.gbeditor.infrastructures.exception.*;
 import org.helmo.gbeditor.infrastructures.jdbc.ConnectionFactory;
 import org.helmo.gbeditor.repositories.DataRepository;
+import org.helmo.gbeditor.repositories.exceptions.BookAlreadyExistsException;
+import org.helmo.gbeditor.repositories.exceptions.DataManipulationException;
+import org.helmo.gbeditor.repositories.exceptions.UnableToSavePageException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class BDRepository implements DataRepository {
     /**
      * Créer un nouveau BDRepository sur base d'une factory et d'un auteur donnée.
      *
-     * @param factory
+     * @param factory   Factory qui gère la création de la connection à la base de données.
      */
     public BDRepository(final ConnectionFactory factory) {
         this.factory = factory;
@@ -58,7 +60,10 @@ public class BDRepository implements DataRepository {
         }
     }
 
-    public void tearDown() throws SQLException {
+    /**
+     * Supprime les tables de la base de données.
+     */
+    public void tearDown() {
         executeStmt(DROP_CHOICES_STMT);
         executeStmt(DROP_PAGE_STMT);
         executeStmt(DROP_BOOK_STMT);
@@ -90,7 +95,7 @@ public class BDRepository implements DataRepository {
                 .from(connection = factory.newConnection())
                 .commit((con) -> {
                     for(final var b : books) {
-                        verifyIfBookExists(containsBook(Mapping.convertISBNToDTO(b.get(BookFieldName.SYS_ISBN))));
+                        verifyIfBookExists(containsBook(Mapping.convertISBNToDTO(b.get(BookFieldName.ISBN))));
                         var dto = Mapping.convertToBookDTO(b);
                         saveAuthorIfNotExists(dto.getAuthor());
                         saveBook(dto);
@@ -184,7 +189,7 @@ public class BDRepository implements DataRepository {
 
     @Override
     public void save(Book book) {
-        verifyIfBookExists(!tracker.contains(book) && containsBook(book.get(BookFieldName.SYS_ISBN)));
+        verifyIfBookExists(!tracker.contains(book) && containsBook(book.get(BookFieldName.ISBN)));
         Transaction
                 .from(connection = factory.newConnection())
                 .commit((con) -> updateBook(book))
@@ -246,7 +251,7 @@ public class BDRepository implements DataRepository {
     private void loadDataFromStmt(PreparedStatement loadStmt) throws SQLException {
         try (final var rs = loadStmt.executeQuery()) {
             while (rs.next() && !rs.wasNull()) {
-                var tempDTO = convertResultSetToDTO(connection, rs);
+                var tempDTO = convertResultSetToDTO(rs);
                 tracker.put(Mapping.convertToBook(tempDTO), tempDTO);
                 existingIsbn.add(tempDTO.getIsbn());
             }

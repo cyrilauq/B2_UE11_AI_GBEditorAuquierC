@@ -1,4 +1,4 @@
-package org.helmo.gbeditor.factory;
+package org.helmo.gbeditor.domains.factory;
 
 import org.helmo.gbeditor.domains.ISBN;
 
@@ -8,13 +8,13 @@ import org.helmo.gbeditor.domains.ISBN;
 public class ISBNFactory {
 
     /**
-     * Génére automatiquement le code ISBN pour un nouveau livre.
+     * Génère automatiquement le code ISBN pour un nouveau livre.
      *
      * @param langCode      Code du groupe linguistique auquel appartient le livre
      * @param authorMat     Matricule de l'auteur ayant encodé le livre.
-     * @param nBook       Le numéro du livre courant.
+     * @param nBook         Le numéro du livre courant.
      *
-     * @return
+     * @return              Un isbn valide résultant d'un calcul réalisé avec les informations données.
      */
     public static ISBN computeISBNFor(int langCode, String authorMat, int nBook) {
         final String isbn = langCode + authorMat + (nBook < 10 ? "0" : "") + nBook;
@@ -35,6 +35,13 @@ public class ISBNFactory {
         return new ISBN(formatIsbn(result));
     }
 
+    /**
+     * Format l'isbn pour qu'il soit représenté comme ici : 1-234567-89-0
+     *
+     * @param codeIsbn  Isbn à formatter.
+     *
+     * @return          L'isbn donné formatté comme suit : 1-234567-89-0
+     */
     public static String formatIsbn(final String codeIsbn) {
         if(codeIsbn.length() < ISBN.ISBN_MIN_LENGTH) { return codeIsbn; }
         var builder = new StringBuilder(codeIsbn)

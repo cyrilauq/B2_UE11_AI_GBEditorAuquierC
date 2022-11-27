@@ -6,6 +6,7 @@ import java.util.Objects;
  * Définit les informations qui seront données à la vue lorsqu'on voudra afficher un livre.
  */
 public class LittleBookDescription {
+    private static final String NON_PUBLISHED_STATE = "Non publié";
     private final String title;
     private final String imgPath;
     private final String author;
@@ -51,7 +52,7 @@ public class LittleBookDescription {
      *          Sinon, "Publié".
      */
     public String getPublishState() {
-        return publishDate == null ? "Non publié" : "Publié";
+        return publishDate == null ? NON_PUBLISHED_STATE : "Publié";
     }
 
     /**
@@ -62,7 +63,7 @@ public class LittleBookDescription {
      *              False si le livre a une date de publication.
      */
     public boolean canBePublished() {
-        return publishDate != null;
+        return publishDate == null;
     }
 
     public String getIsbn() {
