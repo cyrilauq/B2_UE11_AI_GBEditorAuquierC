@@ -1,6 +1,6 @@
 package org.helmo.gbeditor.domains;
 
-import org.helmo.gbeditor.factory.ISBNFactory;
+import org.helmo.gbeditor.domains.factory.ISBNFactory;
 
 import java.util.Objects;
 import java.util.regex.Pattern;

@@ -37,18 +37,6 @@ public class JsonRepositoryTests {
     public void getDataFromAWrongFormattedFile() throws URISyntaxException {
         var path = Paths.get(getClass().getResource("/read_book_non_existing").toURI()).toString();
         var filePath = Paths.get(path, "wrong_formatted.json");
-        try {
-            if(!Files.exists(filePath)) {
-                Files.createFile(filePath);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try(var bw = Files.newBufferedWriter(Paths.get(path, "wrong_formatted"))) {
-            bw.write("[,{");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         final DataRepository jr = new JsonRepository(Path.of(path), "wrong_formatted");
         List<BookDTO> expected = new ArrayList<>();
         var actual = jr.getData();

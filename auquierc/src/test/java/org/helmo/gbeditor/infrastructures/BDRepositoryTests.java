@@ -4,10 +4,10 @@ import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.domains.BookMetadata;
 import org.helmo.gbeditor.domains.Page;
-import org.helmo.gbeditor.factory.BookFactory;
-import org.helmo.gbeditor.infrastructures.exception.UnableToConnectException;
+import org.helmo.gbeditor.domains.factory.BookFactory;
 import org.helmo.gbeditor.infrastructures.exception.UnableToTearDownException;
 import org.helmo.gbeditor.infrastructures.jdbc.BDRepository;
+import org.helmo.gbeditor.repositories.exceptions.DataManipulationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,12 +65,12 @@ public class BDRepositoryTests {
 
     @Test
     public void createBDRepositoryWrongParamsValuesThrowUnableToConnectException() {
-        assertThrows(UnableToConnectException.class, () ->
+        assertThrows(DataManipulationException.class, () ->
                 RepositoryFactory.of(
                         "org.apache.derby.jdbc.EmbeddedDriver",
                         "jdbc:derby:Tests",
                         "",
-                        ""));
+                        "").getBooks());
     }
 
     @Test

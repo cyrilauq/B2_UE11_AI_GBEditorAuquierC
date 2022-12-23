@@ -1,4 +1,4 @@
-package org.helmo.gbeditor.modeles;
+package org.helmo.gbeditor.presenter.viewmodels;
 
 /**
  * Cette classe représente les informations qui seront utilisées pour l'affichage d'un choix.

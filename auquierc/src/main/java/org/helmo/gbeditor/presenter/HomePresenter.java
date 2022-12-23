@@ -5,8 +5,8 @@ import org.helmo.gbeditor.domains.BookFieldName;
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.repositories.exceptions.DataManipulationException;
 import org.helmo.gbeditor.repositories.exceptions.UnableToOpenResourceException;
-import org.helmo.gbeditor.modeles.ExtendedBookDescription;
-import org.helmo.gbeditor.modeles.LittleBookDescription;
+import org.helmo.gbeditor.presenter.viewmodels.ExtendedBookDescription;
+import org.helmo.gbeditor.presenter.viewmodels.LittleBookDescription;
 import org.helmo.gbeditor.repositories.DataRepository;
 
 import java.util.ArrayList;
@@ -14,9 +14,8 @@ import java.util.List;
 
 /**
  * Gérer ce qui va être affiché à l'écran utilisateur et comment le programme va réagir aux évènements lancés par sa vue.
- * TODO : Empêcher la publication ne contenant aucune page.
  */
-public class HomePresenter extends Presenter implements BookDescriptionEventHandler, BookDetailsEventHandler {
+public class HomePresenter extends Presenter implements BookDescriptionEventHandler, PageViewHandler, BookDetailsEventHandler {
     private final static int MAX_BOOKS_PAGE = 8;
     // TODO : Load livre dans la methode getBookFor(final String isbn);
     private HomeInterface view;
@@ -64,6 +63,9 @@ public class HomePresenter extends Presenter implements BookDescriptionEventHand
         view.setAuthorName(session.getAuthor());
     }
 
+    // TODO : Supprimer les méthodes qui ne sont pas utilisée
+
+
     private void displayBooks() {
         try {
             view.clearBooks();
@@ -100,7 +102,6 @@ public class HomePresenter extends Presenter implements BookDescriptionEventHand
                 session.setCurrentBook(found);
                 session.setCurrentIsbn(isbn);
                 view.setDetails(getExtendedBookDescriptionFor(found));
-                found.forEach(p -> view.addAvailablePages(found.getNForPage(p), p.getContent()));
             }
         } catch (DataManipulationException e) {
             view.setMessage("Le livre n'a pas pu être récupéré.", TypeMessage.ERROR);
@@ -110,7 +111,8 @@ public class HomePresenter extends Presenter implements BookDescriptionEventHand
     private static ExtendedBookDescription getExtendedBookDescriptionFor(Book found) {
         return new ExtendedBookDescription(
                 getLittleBookDescriptionFor(found),
-                found.get(BookFieldName.SUMMARY)
+                found.get(BookFieldName.SUMMARY),
+                found.iterator()
         );
     }
 
@@ -126,7 +128,7 @@ public class HomePresenter extends Presenter implements BookDescriptionEventHand
     /**
      * Affiche les livres de la page suivante.
      */
-    public void onNextPagePressed() {
+    private void onNextPagePressed() {
         if((currentPage + 1) * MAX_BOOKS_PAGE < books.size()) {
             currentPage++;
             refresh();
@@ -136,10 +138,23 @@ public class HomePresenter extends Presenter implements BookDescriptionEventHand
     /**
      * Affiche les livres de la page précendente.
      */
-    public void onPreviousPagePressed() {
+    private void onPreviousPagePressed() {
         if((currentPage - 1) > -1) {
             currentPage--;
             refresh();
+        }
+    }
+
+    /**
+     * Permet de changer de page si {@code move} est inférieur à 0 alors, on considérera qu'il faut aller sur la page précédente sinon sur la page suivante.
+     *
+     * @param move  Mouvement vers la page.
+     */
+    public void onMovePage(int move) {
+        if(move > 0) {
+            onNextPagePressed();
+        } else {
+            onPreviousPagePressed();
         }
     }
 
@@ -164,19 +179,6 @@ public class HomePresenter extends Presenter implements BookDescriptionEventHand
     }
 
     /**
-     * Supprime la page choisie par l'utilisateur après qu'il est supprimé sa suppression.
-     *
-     * @param pageContent  Contenu de la page à supprimer.
-     */
-    public void onDeletePageConfirmed(final String pageContent) {
-        if(pageContent == null || pageContent.isEmpty()) {
-            return;
-        }
-        // TODO : Supprimer la page.
-        refresh();
-    }
-
-    /**
      * Réagit à l'évènement de modification de page ayant le contenu donné et rédirige l'utilsateur vers las vue de modification de page..
      * Le page sera modifiable si et seulement si le choix est non null et non vide.
      *
@@ -198,6 +200,7 @@ public class HomePresenter extends Presenter implements BookDescriptionEventHand
         try {
             currentBook.publish();
             repo.save(currentBook);
+            view.refreshAll(ViewName.HOME_VIEW);
         } catch (DataManipulationException e) {
             view.setMessage("Le livre n'a pas pu être publié.", TypeMessage.ERROR);
         } catch (Book.BookAlreadyPublishedException | Book.CannotPublishEmptyBookException e) {
@@ -214,35 +217,28 @@ public class HomePresenter extends Presenter implements BookDescriptionEventHand
     public void onModifyBook(final String isbn) {
         if(isbn == null || isbn.isEmpty()) { return; }
         session.setCurrentIsbn(isbn);
-        view.goTo(ViewName.MODIFY_BOOK_VIEW.getName());
+        view.showPopUp(ViewName.MODIFY_BOOK_VIEW.getName());
     }
 
     @Override
     public void onManagePages(String isbn) {
         if(isbn == null || isbn.isEmpty()) { return; }
-        // TODO : Créer la vue ManagePagesView, permet d'ajouter une page, supprimer un page ou modifier une page.
-        view.goTo(ViewName.MANAGE_PAGE_VIEW.getName());
-    }
-
-    /**
-     * Supprime le livre possédant l'ISBN voulu.
-     *
-     * @param isbn  ISBN du livre à supprimer.
-     */
-    public void onDeleteBook(final String isbn) {
-        if(isbn == null || isbn.isEmpty()) { return; }
-
-    }
-
-    /**
-     * Affiche le formulaire de création de page.
-     */
-    public void onNotifyNewPage() {
-        view.showPopUp(ViewName.CREATE_PAGE_VIEW.getName());
+        view.showPopUp(ViewName.MANAGE_PAGE_VIEW.getName());
     }
 
     @Override
     public void onRefresh() {
         refresh();
+    }
+
+    @Override
+    public void onEdit(String content) {
+        session.setCurrentPageContent(content);
+        view.showPopUp(ViewName.MODIFY_PAGE_VIEW.getName());
+    }
+
+    @Override
+    public void onConfirmedDelete(String content) {
+
     }
 }

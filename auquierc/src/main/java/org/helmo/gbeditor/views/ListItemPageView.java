@@ -24,11 +24,10 @@ public class ListItemPageView extends VBox {
 
     private final Label contentLbl = new Label();
 
-    public ListItemPageView(final int numPage, final String content, final boolean isAlone, final PageViewHandler handler) {
+    public ListItemPageView(final int numPage, final String content, final int nPageBranchment, final PageViewHandler handler) {
         editBtn.setOnAction(a -> handler.onEdit(content));
 
-        confirmDelete.setContentText(isAlone ? "Voulez-vous vraiment supprimer cette page ?":
-                "Cette page est la cible de choix.\nÊtes-vous sûr de vouloir la supprimer.");
+        confirmDelete.setContentText(getContentText(nPageBranchment));
         contentLbl.setText(content);
         editBtn.setOnAction(e -> handler.onEdit(content));
         deleteBtn.setOnAction(e -> {
@@ -39,6 +38,11 @@ public class ListItemPageView extends VBox {
             }
         });
         getChildren().addAll(new Label("" + numPage), contentLbl, editBtn, deleteBtn);
+    }
+
+    private static String getContentText(int nPageBranchment) {
+        return nPageBranchment == 0 ? "Voulez-vous vraiment supprimer cette page ?" :
+                "Cette page est référencée dans " + nPageBranchment + " autre(s) page(s).\nÊtes-vous sûr de vouloir la supprimer?";
     }
 
     public ListItemPageView(final int numPage, final String content) {

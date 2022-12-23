@@ -11,9 +11,9 @@ public interface ManagePageInterface extends ViewInterface {
      *
      * @param numPage   Numéro de la page à afficher.
      * @param content   Text de la page à afficher.
-     * @param isAlone   Détermine si la page est la destination de choix ou non.
+     * @param nPageBranchment   Détermine si la page est la destination de choix ou non.
      */
-    void addPage(final int numPage, final String content, final boolean isAlone);
+    void addPage(final int numPage, final String content, final int nPageBranchment);
 
     /**
      * Supprime les pages affichées à l'utilisateur.

@@ -1,13 +1,16 @@
-package org.helmo.gbeditor.modeles;
+package org.helmo.gbeditor.presenter.viewmodels;
 
-import java.util.Objects;
+import org.helmo.gbeditor.domains.Page;
+
+import java.util.*;
 
 /**
  * Définit les informations qui seront données à la vue lorsqu'on voudra afficher les détails d'un livre.
  */
-public class ExtendedBookDescription {
+public class ExtendedBookDescription implements Iterable<PageBookDescription> {
     private final String resume;
     private final LittleBookDescription littleBookDescription;
+    private final List<PageBookDescription> pages = new ArrayList<>();
 
     /**
      * Créer une nouvelle ExtendedBookDescription ==> descritpion détaillée d'un livre.
@@ -18,6 +21,26 @@ public class ExtendedBookDescription {
     public ExtendedBookDescription(LittleBookDescription littleBookDescription, final String resume) {
         this.littleBookDescription = littleBookDescription;
         this.resume = resume;
+    }
+
+    /**
+     * Créer une nouvelle ExtendedBookDescription ==> descritpion détaillée d'un livre.
+     *
+     * @param littleBookDescription Objet LittleBookDescription représentant une petite description du livre
+     * @param resume                Résumé du livre
+     */
+    public ExtendedBookDescription(LittleBookDescription littleBookDescription, final String resume, Iterator<Page> pages) {
+        this.littleBookDescription = littleBookDescription;
+        this.resume = resume;
+        addPages(pages);
+    }
+
+    private void addPages(Iterator<Page> pages) {
+        int count = 0;
+        while(pages.hasNext()) {
+            count++;
+            this.pages.add(new PageBookDescription(count, pages.next().getContent()));
+        }
     }
 
     /**
@@ -117,5 +140,10 @@ public class ExtendedBookDescription {
     @Override
     public int hashCode() {
         return Objects.hash(resume, littleBookDescription);
+    }
+
+    @Override
+    public Iterator<PageBookDescription> iterator() {
+        return pages.iterator();
     }
 }

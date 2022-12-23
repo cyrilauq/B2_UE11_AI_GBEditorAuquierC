@@ -46,13 +46,12 @@ public class BookBDRepository {
         saveStmt.setString(2, dto.getResume());
         saveStmt.setString(3, dto.getIsbn());
         saveStmt.setString(4, dto.getImgPath());
-        saveStmt.setString(5, dto.getAuthor());
         if(dto.getPublishDate() == null) {
-            saveStmt.setTimestamp(6, null);
+            saveStmt.setTimestamp(5, null);
         } else {
-            saveStmt.setTimestamp(6, Timestamp.valueOf(dto.getPublishDate()));
+            saveStmt.setTimestamp(5, Timestamp.valueOf(dto.getPublishDate()));
         }
-        saveStmt.setInt(7, dto.id);
+        saveStmt.setInt(6, dto.id);
     }
 
     /**

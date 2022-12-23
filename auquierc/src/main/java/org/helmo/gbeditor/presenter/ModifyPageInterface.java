@@ -1,6 +1,6 @@
 package org.helmo.gbeditor.presenter;
 
-import org.helmo.gbeditor.modeles.ListChoiceItem;
+import org.helmo.gbeditor.presenter.viewmodels.ListChoiceItem;
 
 /**
  * Définit les méthodes qui seront implémentées par la vue et qui permettront au presenter d'interagir avec elle.

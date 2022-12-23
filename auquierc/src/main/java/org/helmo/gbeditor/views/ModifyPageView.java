@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import org.helmo.gbeditor.modeles.ListChoiceItem;
+import org.helmo.gbeditor.presenter.viewmodels.ListChoiceItem;
 import org.helmo.gbeditor.presenter.ModifyPageInterface;
 import org.helmo.gbeditor.presenter.ModifyPagePresenter;
 import org.helmo.gbeditor.presenter.TypeMessage;

@@ -2,13 +2,17 @@ package org.helmo.gbeditor.views;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.helmo.gbeditor.modeles.ExtendedBookDescription;
+import org.helmo.gbeditor.presenter.viewmodels.ExtendedBookDescription;
+import org.helmo.gbeditor.presenter.viewmodels.PageBookDescription;
 import org.helmo.gbeditor.presenter.BookDetailsEventHandler;
+import org.helmo.gbeditor.presenter.PageViewHandler;
 import org.helmo.gbeditor.views.style.Theme;
 
 /**
@@ -29,12 +33,10 @@ public class BookDetailsView extends VBox {
     }
     private final Button updateBtn = new Button("Modifier"); {
         updateBtn.setDisable(true);
-//        updateBtn.setOnAction(a -> notifyOnModifyBook());
     }
 
     private final Button deleteBtn = new Button("Supprimer"); {
         deleteBtn.setDisable(true);
-//        deleteBtn.setOnAction(a -> notifyOnDeleteButton());
     }
 
     private final Button publishBtn = new Button("Publier"); {
@@ -52,6 +54,14 @@ public class BookDetailsView extends VBox {
         managePagesBtn.setDisable(true);
     }
 
+    private final VBox pagePnl = new VBox();
+    private final ScrollPane pageScrollPnl = new ScrollPane(); {
+        pageScrollPnl.setPrefHeight(200);
+        pageScrollPnl.setContent(pagePnl);
+        pageScrollPnl.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        pageScrollPnl.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+    }
+
     private final VBox sldBook = new VBox(); {
         var selectedBookHeader = new HBox();
         var selectedBookInfo = new VBox();
@@ -61,11 +71,17 @@ public class BookDetailsView extends VBox {
         selectedBookHeader.getChildren().addAll(sldBookImg, selectedBookInfo);
         sldBook.getChildren().addAll(selectedBookHeader, selectedBookResume, actionBtn);
         sldBook.setPrefWidth(Theme.WINDOW_WIDTH * .35);
-        getChildren().add(sldBook);
+        getChildren().addAll(sldBook, pageScrollPnl);
+    }
+
+    private final GridPane pagesPnl = new GridPane(); {
+        pagesPnl.add(new Label("N°"), 0, 0);
+        pagesPnl.add(new Label("Contenu"), 1, 0);
+        pagesPnl.add(new Label("Option"), 2, 0);
     }
 
     /**
-     * Définit l'handler de la BookDetailsView.
+     * Définit le handler de la BookDetailsView.
      *
      * @param handler   Handler avec lequel la vue interagira.
      */
@@ -73,6 +89,13 @@ public class BookDetailsView extends VBox {
         updateBtn.setOnAction(a -> handler.onModifyBook(sldBookISBN.getText()));
         publishBtn.setOnAction(a -> handler.onPublishBook(sldBookISBN.getText()));
         managePagesBtn.setOnAction(a -> handler.onManagePages(sldBookISBN.getText()));
+    }
+
+    public void addPages(Iterable<PageBookDescription> pages, PageViewHandler handler) {
+        pagePnl.getChildren().clear();
+        for(final var p : pages) {
+            pagePnl.getChildren().add(new PageBookDescriptionView(p, handler));
+        }
     }
 
     /**
@@ -90,9 +113,7 @@ public class BookDetailsView extends VBox {
         sldBookTitle.setText(book.getTitle());
         sldBookAuthor.setText(book.getAuthor());
         sldBookISBN.setText(book.getIsbn());
-        if(book.hasImg()) {
-            sldBookImg.setImage(new Image(book.getImgPath()));
-        }
+        sldBookImg.setImage(new Image(book.hasImg() ? book.getImgPath() : Theme.DEFAULT_BOOK_COVER));
     }
 
     /**

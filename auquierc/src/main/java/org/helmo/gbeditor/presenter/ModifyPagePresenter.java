@@ -4,7 +4,7 @@ import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.Page;
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.repositories.exceptions.UnableToSavePageException;
-import org.helmo.gbeditor.modeles.ListChoiceItem;
+import org.helmo.gbeditor.presenter.viewmodels.ListChoiceItem;
 import org.helmo.gbeditor.repositories.DataRepository;
 
 import java.util.ArrayList;
@@ -50,24 +50,25 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler, C
      * @param targetContent Contenu de la page cible.
      */
     public void onChoiceCreated(final String label, final String targetContent) {
-        var target = currentBook.getPageFor(targetContent);
-        if(target != null) {
-            try {
-                currentPage.addChoice(label, target);
-                repo.save(currentBook);
-                view.setMessage("Le choix a bien été ajouté.", TypeMessage.MESSAGE);
-                refresh();
-            } catch (Page.TheTargetPageCannotBeTheSourcePage e) {
-                view.setMessage("La page cible du choix ne peut pas être la même que la page de destination.", TypeMessage.MESSAGE);
-            }
+        if(label == null || label.isBlank()) {
+            view.setMessage("L'intitulé d'un choix ne peut pas être vide.", TypeMessage.MESSAGE);
+        } else if(targetContent == null) {
+            view.setMessage("Vous ne pouvez pas ajouter de choix sans spécifier de page de destination.", TypeMessage.MESSAGE);
         } else {
-            if(label == null || label.isBlank()) {
-                view.setMessage("L'intitulé d'un choix ne peut pas être vide.", TypeMessage.MESSAGE);
+            var target = currentBook.getPageFor(targetContent);
+            if(target != null) {
+                try {
+                    currentPage.addChoice(label, target);
+                    repo.save(currentBook);
+                    view.setMessage("Le choix a bien été ajouté.", TypeMessage.MESSAGE);
+                    refresh();
+                } catch (Page.TheTargetPageCannotBeTheSourcePage e) {
+                    view.setMessage("La page cible du choix ne peut pas être la même que la page de destination.", TypeMessage.MESSAGE);
+                }
             } else {
-                view.setMessage("Vous ne pouvez pas ajouter de choix sans spécifier de page de destination.", TypeMessage.MESSAGE);
+                view.setMessage("La page spécifiée n'a pas été trouvée.", TypeMessage.MESSAGE);
             }
         }
-        // TODO : Avertir utilisateur si page est la cible de choix.
     }
 
     @Override
@@ -81,7 +82,6 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler, C
     }
 
     private void refresh() {
-        // TODO : Faut-il
         setCurrentInfos();
         view.setPageContent(currentPage.getContent());
         setChoices();
@@ -108,7 +108,7 @@ public class ModifyPagePresenter extends Presenter implements PageViewHandler, C
 
     @Override
     public void onHomePressed() {
-        view.goTo(ViewName.MANAGE_PAGE_VIEW.getName());
+        view.showPopUp(ViewName.MANAGE_PAGE_VIEW.getName());
     }
 
     @Override

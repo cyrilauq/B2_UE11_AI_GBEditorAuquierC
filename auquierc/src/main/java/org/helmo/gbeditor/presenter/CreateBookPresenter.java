@@ -1,11 +1,12 @@
 package org.helmo.gbeditor.presenter;
 
 import org.helmo.gbeditor.domains.*;
-import org.helmo.gbeditor.factory.BookFactory;
-import org.helmo.gbeditor.factory.ISBNFactory;
+import org.helmo.gbeditor.domains.factory.BookFactory;
+import org.helmo.gbeditor.domains.factory.ISBNFactory;
 import org.helmo.gbeditor.repositories.exceptions.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.DataRepository;
 import org.helmo.gbeditor.repositories.FileUtils;
+import org.helmo.gbeditor.repositories.exceptions.DataManipulationException;
 
 import java.nio.file.Paths;
 
@@ -82,14 +83,18 @@ public class CreateBookPresenter extends Presenter {
      */
     @Override
     public void onEnter(String fromView) {
-        setView(view);
-        view.setAuthorName(session.getAuthor());
-        view.setIsbn(
-                ISBNFactory.computeISBNFor(LANG_CODE,
-                        session
-                                .getMatricule()
-                                .substring(1),
-                        getLastBookNumber() + 1).forUser());
+        try {
+            setView(view);
+            view.setAuthorName(session.getAuthor());
+            view.setIsbn(
+                    ISBNFactory.computeISBNFor(LANG_CODE,
+                            session
+                                    .getMatricule()
+                                    .substring(1),
+                            getLastBookNumber() + 1).forUser());
+        } catch(DataManipulationException e) {
+            view.setMessage("Une erreur est survenue lors du chargement des données.", TypeMessage.ERROR);
+        }
     }
 
     private int getLastBookNumber() {

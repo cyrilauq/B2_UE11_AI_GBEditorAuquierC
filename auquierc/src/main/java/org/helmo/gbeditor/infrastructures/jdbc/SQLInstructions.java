@@ -80,7 +80,7 @@ public class SQLInstructions {
     public static final String SELECT_ALL_BOOKS_STMT = "SELECT b.id_book, b.title, b.resume, b.isbn, b.imgPath, " +
             "a.name AS author, b.datePublication " +
             "FROM book b " +
-            "LEFT JOIN author a ON a.id_author = b.id_author " +
+            "JOIN author a ON a.id_author = b.id_author " +
             "WHERE a.name = ?";
 
     public static final String SELECT_BOOKS_WITH_ISBN_STMT = "SELECT b.id_book, b.title, b.resume, b.isbn, b.imgPath, " +
@@ -94,7 +94,6 @@ public class SQLInstructions {
 
     public static final String UPDATE_BOOKS_STMT = "UPDATE book SET " +
             "title = ?, resume = ?, isbn = ?, imgPath = ?, " +
-            "id_author = (SELECT a.id_author FROM author a WHERE a.name = ?), " +
             "datePublication = ? " +
             "WHERE id_book = ?";
 

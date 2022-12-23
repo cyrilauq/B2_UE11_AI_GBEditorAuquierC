@@ -1,4 +1,4 @@
-package org.helmo.gbeditor.modeles;
+package org.helmo.gbeditor.presenter.viewmodels;
 
 import java.util.Objects;
 

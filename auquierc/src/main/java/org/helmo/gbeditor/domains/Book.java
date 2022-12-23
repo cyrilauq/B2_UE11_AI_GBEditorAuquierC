@@ -1,6 +1,6 @@
 package org.helmo.gbeditor.domains;
 
-import org.helmo.gbeditor.factory.BookFactory;
+import org.helmo.gbeditor.domains.factory.BookFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -149,7 +149,7 @@ public class Book implements Iterable<Page> {
      * @return      Si la page est liée à au moins une autre page, renvoie true.
      *              Si la page n'a pas de lien avec d'autres pages, renvoie false.
      */
-    public boolean pageIsATarget(final Page page) {
+    public int getPageBranchment(final Page page) {
         var count = 0;
         for(final var p : this) {
             for(final var c : p) {
@@ -158,7 +158,7 @@ public class Book implements Iterable<Page> {
                 }
             }
         }
-        return count != 0;
+        return count;
     }
 
     /**
@@ -182,7 +182,7 @@ public class Book implements Iterable<Page> {
 
     public Page getPageFor(final String content) {
         return pagesList.stream()
-                .filter(p -> p.getContent().equalsIgnoreCase(content))
+                .filter(p -> p.getContent().compareToIgnoreCase(content) == 0)
                 .findFirst()
                 .orElse(null);
     }

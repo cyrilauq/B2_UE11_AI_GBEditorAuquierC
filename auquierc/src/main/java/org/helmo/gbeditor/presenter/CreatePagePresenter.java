@@ -96,7 +96,7 @@ public class CreatePagePresenter extends Presenter {
 
     @Override
     public void onHomePressed() {
-        view.goTo(ViewName.MANAGE_PAGE_VIEW.getName());
+        view.showPopUp(ViewName.MANAGE_PAGE_VIEW.getName());
     }
 
     /**

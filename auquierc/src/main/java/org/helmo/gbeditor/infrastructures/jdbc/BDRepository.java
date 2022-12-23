@@ -251,7 +251,7 @@ public class BDRepository implements DataRepository {
 
     private void loadDataFromStmt(PreparedStatement loadStmt) throws SQLException {
         try (final var rs = loadStmt.executeQuery()) {
-            while (rs.next() && !rs.wasNull()) {
+            while (rs.next()) {
                 var tempDTO = convertResultSetToDTO(rs);
                 tracker.put(Mapping.convertToBook(tempDTO), tempDTO);
                 existingIsbn.add(tempDTO.getIsbn());
@@ -293,10 +293,13 @@ public class BDRepository implements DataRepository {
             if(tempDTO != null) {
                 tempDTO.pages = getPageFor(tempDTO.getIsbn());
                 result = Mapping.convertToBook(tempDTO);
+                tracker.remove(isbn);
+                tracker.put(result, tempDTO);
             }
         } catch (SQLException e) {
             throw new DataManipulationException("Une erreur est survenue lors de la récupération du livre ayant l'ISBN: " + isbn, e);
         }
+        closeConnection();
         return result;
     }
 }

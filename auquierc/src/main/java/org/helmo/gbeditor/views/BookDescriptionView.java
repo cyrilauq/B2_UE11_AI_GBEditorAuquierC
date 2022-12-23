@@ -4,7 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import org.helmo.gbeditor.modeles.LittleBookDescription;
+import org.helmo.gbeditor.presenter.viewmodels.LittleBookDescription;
 import org.helmo.gbeditor.presenter.BookDescriptionEventHandler;
 import org.helmo.gbeditor.views.style.Theme;
 

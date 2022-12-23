@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.helmo.gbeditor.domains.Session;
 import org.helmo.gbeditor.infrastructures.RepositoryFactory;
+import org.helmo.gbeditor.infrastructures.RepositoryType;
 import org.helmo.gbeditor.presenter.*;
 import org.helmo.gbeditor.views.*;
 
@@ -42,7 +43,7 @@ public class Program extends Application {
      * @return  Retourne une nouvelle MainWindow avec une Session et un Repository.
      */
     private static MainWindow getMainWindow() {
-        var repo = new RepositoryFactory(false).newRepository();
+        var repo = new RepositoryFactory(RepositoryType.MY_SQL_DB).newRepository();
         var session = new Session();
         return new MainWindow(
                 new LoginView(ViewName.LOGIN_VIEW, new LoginPresenter(session, repo)),

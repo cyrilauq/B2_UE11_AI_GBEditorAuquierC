@@ -6,8 +6,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Popup;
-import org.helmo.gbeditor.modeles.ExtendedBookDescription;
-import org.helmo.gbeditor.modeles.LittleBookDescription;
+import org.helmo.gbeditor.presenter.viewmodels.ExtendedBookDescription;
+import org.helmo.gbeditor.presenter.viewmodels.LittleBookDescription;
 import org.helmo.gbeditor.presenter.HomeInterface;
 import org.helmo.gbeditor.presenter.HomePresenter;
 import org.helmo.gbeditor.presenter.TypeMessage;
@@ -46,26 +46,6 @@ public class HomeView extends View implements HomeInterface {
 
     private final HomePresenter presenter;
 
-    private final Button yesBtnPopupBook = new Button("Oui"); {
-        yesBtnPopupBook.setOnAction(a -> onNotifyDeleteBook());
-    }
-    private final Button noBtnPopupBook = new Button("Non");
-
-    private final FlowPane deletePopupContent = new FlowPane(); {
-        deletePopupContent.getChildren().addAll(
-                new Label("Êtes-vous sûr de vouloir supprimer le livre?"),
-                yesBtnPopupBook,
-                noBtnPopupBook);
-        deletePopupContent.setAlignment(Pos.CENTER);
-        deletePopupContent.setPrefWidth(120);
-        deletePopupContent.setPrefHeight(120);
-    }
-
-    private final Popup deleteBookPopup = new Popup(); {
-        deleteBookPopup.getContent().add(deletePopupContent);
-        noBtnPopupBook.setOnAction(a -> deleteBookPopup.hide());
-    }
-
     private final Button yesBtnPopupPage = new Button("Oui");
     private final Button noBtnPopupPage = new Button("Non");
 
@@ -96,13 +76,11 @@ public class HomeView extends View implements HomeInterface {
         this.presenter = presenter;
         this.presenter.setView(this);
         sldBook.setHandler(this.presenter);
-        previousBtn.setOnAction(a -> presenter.onPreviousPagePressed());
-        nextBtn.setOnAction(a -> presenter.onNextPagePressed());
+        previousBtn.setOnAction(a -> presenter.onMovePage(-1));
+        nextBtn.setOnAction(a -> presenter.onMovePage(1));
     }
 
-    private void onNotifyDeleteBook() {
-        presenter.onDeleteBook("");
-    }
+    // TODO : Changer la tailles des 2 fenêtre pour qu'elles ne se supperposents plus et évite tout problèmes avec les boutons
 
     private void notifyOnPageEdit(final String pageContent) {
         presenter.onModifyPage(pageContent);
@@ -139,7 +117,9 @@ public class HomeView extends View implements HomeInterface {
 
     @Override
     public void setDetails(ExtendedBookDescription bookDescription) {
+
         sldBook.setBookDetails(bookDescription);
+        sldBook.addPages(bookDescription, bookDescription.canBePublished() ? presenter : null);
     }
 
     @Override

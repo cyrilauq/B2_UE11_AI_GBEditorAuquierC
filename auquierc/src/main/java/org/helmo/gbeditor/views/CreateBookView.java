@@ -50,7 +50,7 @@ public class CreateBookView extends View implements CreateBookInterface {
         resumeFld.setPrefColumnCount(150);
         resumeFld.setPrefRowCount(20);
         resumeFld.setWrapText(true);
-        resumeFld.addEventHandler(KeyEvent.KEY_TYPED, new KeyTypesHandler(resumeFld, nbCharLbl, 500));
+        resumeFld.addEventHandler(KeyEvent.ANY, new KeyTypesHandler(resumeFld, nbCharLbl, 500));
     }
 
     private final Button createBtn = new Button("Créer le livre"); {

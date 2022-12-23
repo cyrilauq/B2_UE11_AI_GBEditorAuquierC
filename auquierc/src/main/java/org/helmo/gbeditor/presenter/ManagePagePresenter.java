@@ -38,7 +38,7 @@ public class ManagePagePresenter extends Presenter implements PageViewHandler {
      * Définit l'action à réaliser lorsque l'utilisateur souhaite créer une nouvelle page.
      */
     public void onNewPagePressed() {
-        view.goTo(ViewName.CREATE_PAGE_VIEW.getName());
+        view.showPopUp(ViewName.CREATE_PAGE_VIEW.getName());
     }
 
     @Override
@@ -54,25 +54,25 @@ public class ManagePagePresenter extends Presenter implements PageViewHandler {
     private void refresh() {
         view.clearPages();
         currentBook = session.getCurrentBook();
-        currentBook.forEach(p -> view.addPage(currentBook.getNForPage(p), p.getContent(), !currentBook.pageIsATarget(p)));
+        currentBook.forEach(p -> view.addPage(currentBook.getNForPage(p), p.getContent(), currentBook.getPageBranchment(p)));
     }
 
     @Override
     public void onHomePressed() {
-        view.goTo(ViewName.HOME_VIEW.getName());
+        view.showPopUp(ViewName.MODIFY_PAGE_VIEW.getName());
     }
 
     @Override
     public void onEdit(final String content) {
         session.setCurrentPageContent(content);
-        view.goTo(ViewName.MODIFY_PAGE_VIEW.getName());
+        view.showPopUp(ViewName.MODIFY_PAGE_VIEW.getName());
     }
 
     @Override
     public void onConfirmedDelete(String content) {
         if(currentBook.removePage(currentBook.getPageFor(content))) {
             repo.save(currentBook);
-            refresh();
+            view.refreshAll(ViewName.MANAGE_PAGE_VIEW);
         }
     }
 }

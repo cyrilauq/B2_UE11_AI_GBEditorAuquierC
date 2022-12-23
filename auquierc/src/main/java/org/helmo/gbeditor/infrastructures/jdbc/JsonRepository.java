@@ -1,6 +1,7 @@
 package org.helmo.gbeditor.infrastructures.jdbc;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
 import org.helmo.gbeditor.domains.Book;
 import org.helmo.gbeditor.domains.BookFieldName;
@@ -8,6 +9,7 @@ import org.helmo.gbeditor.infrastructures.Mapping;
 import org.helmo.gbeditor.infrastructures.dto.BookDTO;
 import org.helmo.gbeditor.repositories.exceptions.BookAlreadyExistsException;
 import org.helmo.gbeditor.repositories.DataRepository;
+import org.helmo.gbeditor.repositories.exceptions.DataManipulationException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -85,8 +87,8 @@ public class JsonRepository implements DataRepository {
                 Collections.sort(temp);
                 return new ArrayList<>(temp);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | JsonIOException e) {
+            throw new DataManipulationException(e);
         }
     }
 
@@ -96,7 +98,7 @@ public class JsonRepository implements DataRepository {
             try {
                 Files.createFile(pathFile);
             } catch (IOException ex) {
-                throw new FileException("L'acquisition du fichier a échoué: " + ex.getMessage(), ex);
+                throw new DataManipulationException("L'acquisition du fichier a échoué: " + ex.getMessage(), ex);
             }
         }
     }
@@ -108,7 +110,7 @@ public class JsonRepository implements DataRepository {
         } catch (FileAlreadyExistsException ignored) {
 
         } catch (IOException ex) {
-            throw new FileException("L'acquisition du dossier a échoué: ", ex);
+            throw new DataManipulationException("L'acquisition du dossier a échoué: ", ex);
         }
     }
 
@@ -131,9 +133,11 @@ public class JsonRepository implements DataRepository {
             gson.toJson(existingBooks, w);
         } catch (IOException e) {
             this.books.removeAll(List.of(books));
-            throw new RuntimeException(e);
+            throw new DataManipulationException("Une erreur est survenue lors de la sauvegardes des livres.", e);
         }
     }
+
+    // TODO Mettre les mêmes messages dans les throw des implémentation de DataRepository
 
     @Override
     public void save(Book book) {
@@ -146,7 +150,7 @@ public class JsonRepository implements DataRepository {
             gson.toJson(existingBooks, w);
         } catch (IOException e) {
             books.remove(book);
-            throw new RuntimeException(e);
+            throw new DataManipulationException("Une erreur est survenue lors de la sauvegarde de la modification du livres.", e);
         }
     }
 

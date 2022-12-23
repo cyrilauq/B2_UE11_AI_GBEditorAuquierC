@@ -1,7 +1,7 @@
 package org.helmo.gbeditor.presenter;
 
-import org.helmo.gbeditor.modeles.ExtendedBookDescription;
-import org.helmo.gbeditor.modeles.LittleBookDescription;
+import org.helmo.gbeditor.presenter.viewmodels.ExtendedBookDescription;
+import org.helmo.gbeditor.presenter.viewmodels.LittleBookDescription;
 
 /**
  * Définit les méthodes que HomeView exposera à son presenter, HomePresenter.

@@ -26,7 +26,7 @@ public class MainWindow extends Scene {
      * @param views     Vues que l'application devra utiliser.
      */
     public MainWindow(final View... views) {
-        super(new Pane(), Theme.WINDOW_WIDTH + Theme.SND_WINDOW_WIDTH, Theme.WINDOW_HEIGHT);
+        super(new Pane(), Theme.WINDOW_WIDTH * 2, Theme.WINDOW_HEIGHT);
         setRoot(new HBox(mainView, sndView));
         getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
         initViews(views);
@@ -34,7 +34,6 @@ public class MainWindow extends Scene {
 
     private void initViews(final View... views) {
         for(final var v : views) {
-            // TODO : se documenter sur les références de méthodes.
             currentView = v;
             v.setRouter(this::goTo);
             v.setShowPopUp(this::setSndView);
@@ -44,8 +43,10 @@ public class MainWindow extends Scene {
     }
 
     private void setSndView(final String viewName) {
-        sndView.getChildren().set(0, foundView(viewName));
-    }
+        var found = foundView(viewName);
+        found.onEnter(viewName);
+        sndView.getChildren().set(0, found);
+   }
 
     /**
      * Permet de voyager d'une vue à une autre.

@@ -47,12 +47,17 @@ public class ManagePageView extends View implements ManagePageInterface {
     }
 
     @Override
-    public void addPage(final int numPage, final String content, final boolean isAlone) {
-        allPages.getChildren().add(new ListItemPageView(numPage, content, isAlone, presenter));
+    public void addPage(final int numPage, final String content, final int nPageBranchment) {
+        allPages.getChildren().add(new ListItemPageView(numPage, content, nPageBranchment, presenter));
     }
 
     @Override
     public void clearPages() {
         allPages.getChildren().clear();
+    }
+
+    @Override
+    public void refresh() {
+        presenter.onRefresh();
     }
 }
